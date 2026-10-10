@@ -18,7 +18,7 @@ struct BillingScheduleSheet: View {
             }.pickerStyle(.segmented)
             DatePicker("Renewal date", selection: $date, displayedComponents: .date)
             Text("Next: " + BillingSchedule(provider: provider, accountKey: nil, anchor: date, interval: interval)
-                .nextRenewal().formatted(.dateTime.month(.abbreviated).day().year()))
+                .nextRenewal().formatted(.dateTime.month(.abbreviated).day().year().locale(Locale(identifier: "en_US"))))
                 .font(.caption).monospacedDigit()
             Text("Set by you · quota resets stay provider-controlled.")
                 .font(.caption).foregroundStyle(.secondary)

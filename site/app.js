@@ -1,5 +1,6 @@
 (() => {
   const screens = {
+    "unused-history": {title: "The quota you left behind.", body: "Browse recorded resets across your subscriptions. See unused quota over time, with weekly and session limits kept separate.", note: "Only observed near-reset readings count. Missing periods aren't guessed.", label: "Unused history"},
     overview: {title: "The plans you're keeping.", body: "See current quota left across your AI services. Plans with repeated unused headroom move to the front for review.", note: "Current remaining quota isn't expired waste.", label: "Overview"},
     details: {title: "What went unused.", body: "See the quota left near past resets. A few quiet hours aren't enough to label a whole subscription a waste.", note: "Weekly and session limits stay separate.", label: "Past resets"},
     downgrade: {title: "Maybe the smaller plan is enough.", body: "Compare cheaper tiers. Turn the price difference into a weekly, monthly or yearly budget for something outside a chat window.", note: "Published list prices; check that the tier covers your work.", label: "Smaller plans"},

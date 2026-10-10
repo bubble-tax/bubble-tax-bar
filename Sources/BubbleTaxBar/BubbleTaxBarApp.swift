@@ -402,7 +402,7 @@ private struct SubscriptionOverview: View {
                     .help(PlanPricing.caveat)
             }
             if let schedule = store.billingSchedule(provider) {
-                Label("Renews \(schedule.nextRenewal().formatted(.dateTime.month(.abbreviated).day().year())) · \(schedule.interval.title)", systemImage: "calendar")
+                Label("Renews \(schedule.nextRenewal().formatted(.dateTime.month(.abbreviated).day().year().locale(Locale(identifier: "en_US")))) · \(schedule.interval.title)", systemImage: "calendar")
                     .font(.caption).foregroundStyle(.secondary)
                     .help("Renewal schedule set by you. Independent of usage quota resets.")
             }
