@@ -8,7 +8,7 @@ An English-only macOS menu bar app that helps people cancel or downgrade AI subs
 
 ## What it does
 
-The static English landing page lives in [site/](site/README.md), with native macOS demo captures, monochrome persona artwork, a six-screen feature tour, FAQ and configurable download/support links. Preview with `python3 -m http.server 8765 --directory site --bind 127.0.0.1`. GitHub Pages deployment is prepared in `.github/workflows/pages.yml`; destinations in `site/config.js` must be filled before publication.
+The static English landing page lives in [site/](site/README.md), with native macOS demo captures, monochrome persona artwork, a seven-screen feature tour, light/dark themes and configurable download/support links. Preview with `python3 -m http.server 8765 --directory site --bind 127.0.0.1`. GitHub Pages deployment is prepared in `.github/workflows/pages.yml`; destinations in `site/config.js` must be filled before publication.
 
 - Compares ChatGPT/Codex, Claude, Cursor, GitHub Copilot and Antigravity in compact service pages.
 - Puts **Left** first and shows short-window and weekly limits together without adding them up.
@@ -21,7 +21,7 @@ The goal is to spend less on unnecessary subscriptions, not to consume extra tok
 
 ## Run on macOS
 
-Requires macOS 13+, Swift 5.9+ and Python 3.9+. No external packages.
+Requires macOS 14+, Swift 5.9+ and Python 3.9+. The bundled arm64 usage helper requires macOS 14. No external packages.
 
 ```bash
 bash scripts/run.command
@@ -66,7 +66,7 @@ The current vendored helper is macOS arm64. See vendor/codexbar/PROVENANCE.md an
 
 ## Completed changes and savings
 
-**Review first** is enabled by default and can be toggled above the service strip. Evidence-backed review candidates come first; the selected service stays selected on refresh. Completed records are removed from the review queue. Missing, free and unfinished-window readings are not promoted into cancellation verdicts.
+**Cancellation candidates first** is enabled by default and can be toggled in Settings → General. Evidence-backed review candidates come first; the selected service stays selected on refresh. Completed records are removed from the review queue. Missing, free and unfinished-window readings are not promoted into cancellation verdicts.
 
 **Plan actions → Compare downgrade…** compares cheaper published tiers. A Week / Month / Year picker converts the monthly price difference into illustrative real-world budget ideas, from coffee and meals to concerts and travel. These ideas also appear in completed-change previews and Savings history. Exact tier prices are required; the comparison is conditional on the cheaper tier covering your work. Enterprise plans show a sarcastic stock joke and remain excluded from personal savings.
 
@@ -78,4 +78,4 @@ The footer **Refresh** and the speech-bubble refresh icon both query current usa
 
 ## Compact visuals
 
-The main menu pairs current Left with a small expired-window history chart for each quota. The orange persona ring represents estimated unused quota near reset, not remaining quota or cash waste. Service cells show thin remaining-balance bars. Roast headlines stay visible; the info button reveals context and receipts. Long pricing, identity and work-plan explanations are available as tooltips in Details. Savings uses Before/After bars with a shared USD scale and keeps the monthly list-price estimate label visible. No observation or classification rules change with this presentation.
+The main menu pairs current Left with a small expired-window history chart for each quota. The persona ring represents current weekly quota left; it is not an expired-quota or cash-waste estimate. Service cells show thin remaining-balance bars. Roast headlines stay visible; the info button reveals context and receipts. Long pricing, identity and work-plan explanations are available as tooltips in Details. Savings uses Before/After bars with a shared USD scale and keeps the monthly list-price estimate label visible. No observation or classification rules change with this presentation.

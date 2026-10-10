@@ -3,7 +3,7 @@ import PackageDescription
 
 let package = Package(
     name: "BubbleTaxBar",
-    platforms: [.macOS(.v13)],
+    platforms: [.macOS(.v14)],
     products: [.executable(name: "BubbleTaxBar", targets: ["BubbleTaxBar"])],
     targets: [
         .target(name: "BubbleTaxBarCore"),
