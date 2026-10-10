@@ -23,6 +23,10 @@ final class MenuBarDelegate: NSObject, NSApplicationDelegate {
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory)
+        if let iconURL = Bundle.main.url(forResource: "AppIcon", withExtension: "icns") ?? Bundle.module.url(forResource: "AppIcon", withExtension: "icns"),
+           let icon = NSImage(contentsOf: iconURL) {
+            NSApp.applicationIconImage = icon
+        }
         // Local QA overrides; ordinary launches follow the system appearance.
         if CommandLine.arguments.contains("--appearance-light") { NSApp.appearance = NSAppearance(named: .aqua) }
         if CommandLine.arguments.contains("--appearance-dark") { NSApp.appearance = NSAppearance(named: .darkAqua) }

@@ -63,7 +63,7 @@ The point is to spend less, not burn more tokens to justify the bill.
 
 ## Try the preview
 
-**v0.1.0 · Build 2 · Apple silicon · macOS 14+ · Python 3.9+**
+**v0.1.0 · Build 3 · Apple silicon · macOS 14+ · Python 3.9+**
 
 1. [Download the ZIP](https://github.com/bubble-tax/bubble-tax.github.io/releases/download/v0.1.0/Bubble-Tax-0.1.0-macOS-arm64.zip), extract it and move **Bubble Tax.app** to Applications.
 2. Open the app, then click **†** in the menu bar. There is no Dock window.

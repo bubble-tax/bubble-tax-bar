@@ -3,7 +3,7 @@ set -euo pipefail
 project_dir="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$project_dir"
 if [[ "$(uname -s)" != "Darwin" ]]; then
-    echo "Bubble Tax requires macOS 13+. Run this script on your Mac." >&2
+    echo "Bubble Tax requires macOS 14+. Run this script on your Mac." >&2
     exit 1
 fi
 if ! xcrun --find swift >/dev/null 2>&1; then
@@ -16,11 +16,13 @@ if ! python3 -c 'import sys; assert sys.version_info >= (3, 9)' >/dev/null 2>&1;
 fi
 PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s Tests -v
 swift test
+swift scripts/render-app-icon.swift
 swift build -c release
 binary_dir="$(swift build -c release --show-bin-path)"
 app_dir="$project_dir/dist/Bubble Tax.app"
 mkdir -p "$app_dir/Contents/MacOS" "$app_dir/Contents/Resources"
 cp "$binary_dir/BubbleTaxBar" "$app_dir/Contents/MacOS/BubbleTaxBar"
+cp "$project_dir/Sources/BubbleTaxBar/Resources/AppIcon.icns" "$app_dir/Contents/Resources/AppIcon.icns"
 cp "$project_dir/Sources/BubbleTaxBar/Resources/collector.py" "$app_dir/Contents/Resources/collector.py"
 cp "$project_dir/Sources/BubbleTaxBar/Resources/live_usage.py" "$app_dir/Contents/Resources/live_usage.py"
 cp "$project_dir/Sources/BubbleTaxBar/Resources/claude_statusline.py" "$app_dir/Contents/Resources/claude_statusline.py"
@@ -50,7 +52,8 @@ cat > "$app_dir/Contents/Info.plist" <<'PLIST'
 <key>CFBundleExecutable</key><string>BubbleTaxBar</string>
 <key>CFBundlePackageType</key><string>APPL</string>
 <key>CFBundleShortVersionString</key><string>0.1.0</string>
-<key>CFBundleVersion</key><string>2</string>
+<key>CFBundleVersion</key><string>3</string>
+<key>CFBundleIconFile</key><string>AppIcon.icns</string>
 <key>LSMinimumSystemVersion</key><string>14.0</string>
 <key>LSUIElement</key><true/>
 <key>NSHighResolutionCapable</key><true/>
