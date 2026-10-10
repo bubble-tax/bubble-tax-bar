@@ -135,7 +135,11 @@ final class Store: ObservableObject {
         do {
             let enabled = try await Task.detached(priority: .utility) {
                 let process = Process()
-                process.executableURL = URL(fileURLWithPath: "/usr/bin/python3")
+                guard let python = CollectorProcess.python() else {
+                    if action == "status" { return false }
+                    throw NSError(domain: "BubbleTaxBar", code: 1, userInfo: [NSLocalizedDescriptionKey: "Python 3.9+ is needed only for the Claude statusline bridge. Provider quota refresh works without it."])
+                }
+                process.executableURL = URL(fileURLWithPath: python)
                 process.arguments = [script.path, action]
                 let pipe = Pipe(); process.standardOutput = pipe; process.standardError = FileHandle.nullDevice
                 try process.run()
@@ -312,70 +316,61 @@ final class Store: ObservableObject {
         guard !demoMode, ready, !scanning, !providers.isEmpty || data.piFolder != nil else { return }
         scanning = true
         defer { scanning = false }
-        guard let script = Bundle.main.url(forResource: "collector", withExtension: "py") ?? Bundle.module.url(forResource: "collector", withExtension: "py") else {
-            error = "Could not find the usage collector."; return
-        }
+        let script = Bundle.main.url(forResource: "collector", withExtension: "py") ?? Bundle.module.url(forResource: "collector", withExtension: "py")
         let claude = providers.contains(.claude) ? data.claudeFolder : nil
         let codex = providers.contains(.openai) ? data.codexFolder : nil
         let pi = data.piFolder
-        let selected = providers.map(\.rawValue).joined(separator: ",")
         let helper = Bundle.main.bundleURL.appendingPathComponent("Contents/Helpers/CodexBarCLI").path
         let developerHelper = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
             .deletingLastPathComponent().appendingPathComponent("vendor/codexbar/CodexBarCLI").path
         let binary = [helper, developerHelper].first { FileManager.default.isExecutableFile(atPath: $0) }
-        do {
-            let output = try await Task.detached(priority: .utility) {
-                let process = Process()
-                // CLT supplies /usr/bin/python3. Other installs are supported as fallbacks.
-                let candidates = ["/usr/bin/python3", "/opt/homebrew/bin/python3", "/usr/local/bin/python3"]
-                guard let python = candidates.first(where: { FileManager.default.isExecutableFile(atPath: $0) }) else {
-                    throw NSError(domain: "BubbleTaxBar", code: 1, userInfo: [NSLocalizedDescriptionKey: "Python 3.9+ is required. Run xcode-select --install."])
-                }
-                process.executableURL = URL(fileURLWithPath: python)
-                var arguments = [script.path, "--timezone", TimeZone.current.identifier]
-                if let claude { arguments += ["--claude-folder", claude] }
-                if let codex { arguments += ["--codex-folder", codex] }
-                if let pi { arguments += ["--pi-folder", pi] }
-                if let binary { arguments += ["--live-binary", binary, "--providers", selected] }
-                var environment = ProcessInfo.processInfo.environment
-                environment["PATH"] = "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:" +
-                    FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(".local/bin").path
-                process.environment = environment
-                process.arguments = arguments
-                let output = Pipe(); process.standardOutput = output
-                // Parser failures can include local paths: don't echo raw stderr into the UI.
-                process.standardError = FileHandle.nullDevice
-                try process.run()
-                let bytes = output.fileHandleForReading.readDataToEndOfFile()
-                process.waitUntilExit()
-                guard process.terminationStatus == 0 else {
-                    throw NSError(domain: "BubbleTaxBar", code: 2, userInfo: [NSLocalizedDescriptionKey: "Collection failed. Check Python 3.9+ and your log folders."])
-                }
-                return try JSONDecoder().decode(CollectorSnapshot.self, from: bytes)
-            }.value
-            // Archive before removing old-account/plan observations from live data.
-            // Retain observed expired quota beyond the rolling 30-day snapshot.
-            data.unusedQuotaArchive = UnusedQuotaHistory.eligibleWindows(
-                (data.unusedQuotaArchive ?? []) + (data.snapshot?.quotaWindows ?? []) + (output.quotaWindows ?? []))
-            var snapshot = output
-            var previous = data.snapshot?.quotaWindows ?? []
-            for connection in output.connections ?? [] where connection.status == "connected" {
-                let old = data.snapshot?.connections?.first { $0.provider == connection.provider }
-                if connection.accountKey == nil || old?.accountKey != connection.accountKey || old?.planLabel != connection.planLabel {
-                    previous.removeAll { $0.provider == connection.provider }
-                }
-                // Anonymous transcript history is separate from a verified live account.
-                previous.removeAll { $0.provider == connection.provider && $0.accountKey != connection.accountKey }
-            }
-            let history = previous + (output.quotaWindows ?? [])
-            snapshot.quotaWindows = QuotaUsage.compact(history.filter {
-                $0.resetsAt >= Date().timeIntervalSince1970 - 30 * 86400
-            })
-            rememberPaidPlans(snapshot.connections ?? [])
-            data.snapshot = snapshot; data.scannedAt = Date(); error = nil; save()
-        } catch {
-            data.scannedAt = nil; save()
-            self.error = error.localizedDescription
+        let live = if let binary {
+            await NativeUsageCollector.collect(binary: binary, providers: providers)
+        } else {
+            ([ProviderConnection](), [QuotaWindow]())
         }
+        let local = await Task.detached(priority: .utility) { () -> (CollectorSnapshot, String?) in
+            var snapshot = try! JSONDecoder().decode(CollectorSnapshot.self, from: Data("{\"days\":[],\"sources\":[],\"quotaWindows\":[]}".utf8))
+            guard claude != nil || codex != nil || pi != nil else { return (snapshot, nil) }
+            guard let script else { return (snapshot, "The local log collector is missing. Provider quotas are collected separately.") }
+            guard let python = CollectorProcess.python() else {
+                return (snapshot, "Local log activity needs Python 3.9+. Install Python or disconnect local logs in Settings.")
+            }
+            var arguments = [script.path, "--timezone", TimeZone.current.identifier]
+            if let claude { arguments += ["--claude-folder", claude] }
+            if let codex { arguments += ["--codex-folder", codex] }
+            if let pi { arguments += ["--pi-folder", pi] }
+            do {
+                let bytes = try CollectorProcess.run(python, arguments: arguments, timeout: 30)
+                snapshot = try JSONDecoder().decode(CollectorSnapshot.self, from: bytes)
+                return (snapshot, nil)
+            } catch {
+                return (snapshot, "Local log collection failed; check the selected folders and your Python installation.")
+            }
+        }.value
+        var output = local.0
+        output.connections = live.0
+        let connected = Set(live.0.filter { $0.status == "connected" }.map(\.provider))
+        output.quotaWindows = (output.quotaWindows ?? []).filter { !connected.contains($0.provider) } + live.1
+        // Archive before removing old-account/plan observations from live data.
+        // Retain observed expired quota beyond the rolling 30-day snapshot.
+        data.unusedQuotaArchive = UnusedQuotaHistory.eligibleWindows(
+            (data.unusedQuotaArchive ?? []) + (data.snapshot?.quotaWindows ?? []) + (output.quotaWindows ?? []))
+        var snapshot = output
+        var previous = data.snapshot?.quotaWindows ?? []
+        for connection in output.connections ?? [] where connection.status == "connected" {
+            let old = data.snapshot?.connections?.first { $0.provider == connection.provider }
+            if connection.accountKey == nil || old?.accountKey != connection.accountKey || old?.planLabel != connection.planLabel {
+                previous.removeAll { $0.provider == connection.provider }
+            }
+            // Anonymous transcript history is separate from a verified live account.
+            previous.removeAll { $0.provider == connection.provider && $0.accountKey != connection.accountKey }
+        }
+        let history = previous + (output.quotaWindows ?? [])
+        snapshot.quotaWindows = QuotaUsage.compact(history.filter {
+            $0.resetsAt >= Date().timeIntervalSince1970 - 30 * 86400
+        })
+        rememberPaidPlans(snapshot.connections ?? [])
+        data.snapshot = snapshot; data.scannedAt = Date(); error = local.1 ?? (binary == nil ? "The bundled provider collector is missing. Reinstall Bubble Tax." : nil); save()
     }
 }

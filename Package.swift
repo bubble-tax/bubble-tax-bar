@@ -8,6 +8,7 @@ let package = Package(
     targets: [
         .target(name: "BubbleTaxBarCore"),
         .executableTarget(name: "BubbleTaxBar", dependencies: ["BubbleTaxBarCore"], resources: [.copy("Resources/collector.py"), .copy("Resources/live_usage.py"), .copy("Resources/claude_statusline.py"), .copy("Resources/Personas"), .copy("Resources/AppIcon.icns")]),
-        .testTarget(name: "BubbleTaxBarCoreTests", dependencies: ["BubbleTaxBarCore"])
+        .testTarget(name: "BubbleTaxBarCoreTests", dependencies: ["BubbleTaxBarCore"]),
+        .testTarget(name: "BubbleTaxBarCollectorTests", dependencies: ["BubbleTaxBar"])
     ]
 )

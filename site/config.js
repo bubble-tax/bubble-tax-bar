@@ -3,5 +3,5 @@ window.BUBBLE_TAX_BAR_CONFIG = Object.freeze({
   downloadUrl: "https://github.com/bubble-tax/bubble-tax.github.io/releases/download/v0.1.0/Bubble-Tax-0.1.0-macOS-arm64.zip", // GitHub Release asset URL (ZIP or DMG)
   githubUrl: "https://github.com/bubble-tax/bubble-tax.github.io",
   coffeeUrl: "https://buymeacoffee.com/workromancer",
-  releaseLabel: "v0.1.0 Preview · Build 3 · 33.3 MB", // e.g. "v0.1.0 · Apple silicon · unsigned beta"
+  releaseLabel: "v0.1.0 Preview · Build 4 · 33.3 MB", // e.g. "v0.1.0 · Apple silicon · unsigned beta"
 });

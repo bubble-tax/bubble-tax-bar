@@ -63,11 +63,13 @@ The point is to spend less, not burn more tokens to justify the bill.
 
 ## Try the preview
 
-**v0.1.0 · Build 3 · Apple silicon · macOS 14+ · Python 3.9+**
+**v0.1.0 · Build 4 · Apple silicon · macOS 14+**
 
 1. [Download the ZIP](https://github.com/bubble-tax/bubble-tax.github.io/releases/download/v0.1.0/Bubble-Tax-0.1.0-macOS-arm64.zip), extract it and move **Bubble Tax.app** to Applications.
 2. Open the app, then click **†** in the menu bar. There is no Dock window.
 3. Open Settings to connect existing provider sessions or choose local log folders, then refresh.
+
+Provider quota refresh works without Python. Python 3.9+ is optional for local log activity and the Claude statusline bridge.
 
 This preview is **ad-hoc signed and not notarized**. If macOS blocks first launch, follow [Apple's instructions for opening an app from an unknown developer](https://support.apple.com/guide/mac-help/open-a-mac-app-from-an-unknown-developer-mh40616/mac). Installation details and checksums are on the [release page](https://github.com/bubble-tax/bubble-tax.github.io/releases/tag/v0.1.0). No Intel build is included.
 

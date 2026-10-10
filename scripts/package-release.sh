@@ -23,7 +23,9 @@ cp "$project_dir/docs/releases/v$release_version.md" "$staging/RELEASE-NOTES.md"
 cat > "$staging/INSTALL.txt" <<'INSTALL'
 Bubble Tax Preview
 
-Apple silicon / macOS 14+ / Python 3.9+ required.
+Apple silicon / macOS 14+ required.
+Provider quota refresh does not need Python.
+Python 3.9+ is optional for local log activity and the Claude statusline bridge.
 Move Bubble Tax.app to Applications and open it. Look for † in your menu bar.
 Sign in to supported AI tools, then open Settings to connect usage and logs.
 This preview is ad-hoc signed and is not notarized by Apple.
