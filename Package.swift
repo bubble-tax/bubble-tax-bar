@@ -2,12 +2,12 @@
 import PackageDescription
 
 let package = Package(
-    name: "SubRIP",
+    name: "BubbleTaxBar",
     platforms: [.macOS(.v13)],
-    products: [.executable(name: "SubRIP", targets: ["SubRIP"])],
+    products: [.executable(name: "BubbleTaxBar", targets: ["BubbleTaxBar"])],
     targets: [
-        .target(name: "SubRIPCore"),
-        .executableTarget(name: "SubRIP", dependencies: ["SubRIPCore"], resources: [.copy("Resources/collector.py")]),
-        .testTarget(name: "SubRIPCoreTests", dependencies: ["SubRIPCore"])
+        .target(name: "BubbleTaxBarCore"),
+        .executableTarget(name: "BubbleTaxBar", dependencies: ["BubbleTaxBarCore"], resources: [.copy("Resources/collector.py"), .copy("Resources/live_usage.py"), .copy("Resources/claude_statusline.py"), .copy("Resources/Personas")]),
+        .testTarget(name: "BubbleTaxBarCoreTests", dependencies: ["BubbleTaxBarCore"])
     ]
 )

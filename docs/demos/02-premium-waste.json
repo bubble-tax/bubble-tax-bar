@@ -1,0 +1,380 @@
+{
+  "version": 1,
+  "subscriptions": [],
+  "enabledProviders": [
+    "openai",
+    "claude",
+    "cursor",
+    "copilot",
+    "antigravity"
+  ],
+  "scannedAt": 813197271.730613,
+  "snapshot": {
+    "days": [],
+    "sources": [],
+    "connections": [
+      {
+        "provider": "openai",
+        "status": "connected",
+        "source": "demo",
+        "planLabel": "Plus",
+        "accountKey": "demo-openai",
+        "observedAt": 1791504471.730613
+      },
+      {
+        "provider": "claude",
+        "status": "connected",
+        "source": "demo",
+        "planLabel": "Max 20x",
+        "accountKey": "demo-claude",
+        "observedAt": 1791504471.730613
+      },
+      {
+        "provider": "cursor",
+        "status": "connected",
+        "source": "demo",
+        "planLabel": "Free",
+        "accountKey": "demo-cursor",
+        "observedAt": 1791504471.730613
+      },
+      {
+        "provider": "copilot",
+        "status": "connected",
+        "source": "demo",
+        "planLabel": "Free",
+        "accountKey": "demo-copilot",
+        "observedAt": 1791504471.730613
+      },
+      {
+        "provider": "antigravity",
+        "status": "connected",
+        "source": "demo",
+        "planLabel": "Free",
+        "accountKey": "demo-antigravity",
+        "observedAt": 1791504471.730613
+      }
+    ],
+    "quotaWindows": [
+      {
+        "provider": "openai",
+        "limitID": "openai:session",
+        "windowMinutes": 300,
+        "windowLabel": "Session",
+        "accountKey": "demo-openai",
+        "usedPercent": 0,
+        "resetsAt": 1791505371.730613,
+        "observedAt": 1791504461.730613
+      },
+      {
+        "provider": "openai",
+        "limitID": "openai:session",
+        "windowMinutes": 300,
+        "windowLabel": "Session",
+        "accountKey": "demo-openai",
+        "usedPercent": 20,
+        "resetsAt": 1791504411.730613,
+        "observedAt": 1791504351.730613
+      },
+      {
+        "provider": "openai",
+        "limitID": "openai:session",
+        "windowMinutes": 300,
+        "windowLabel": "Session",
+        "accountKey": "demo-openai",
+        "usedPercent": 20,
+        "resetsAt": 1791486411.730613,
+        "observedAt": 1791486351.730613
+      },
+      {
+        "provider": "openai",
+        "limitID": "openai:session",
+        "windowMinutes": 300,
+        "windowLabel": "Session",
+        "accountKey": "demo-openai",
+        "usedPercent": 20,
+        "resetsAt": 1791468411.730613,
+        "observedAt": 1791468351.730613
+      },
+      {
+        "provider": "openai",
+        "limitID": "openai:weekly",
+        "windowMinutes": 10080,
+        "windowLabel": "Weekly",
+        "accountKey": "demo-openai",
+        "usedPercent": 5,
+        "resetsAt": 1791936471.730613,
+        "observedAt": 1791504461.730613
+      },
+      {
+        "provider": "openai",
+        "limitID": "openai:weekly",
+        "windowMinutes": 10080,
+        "windowLabel": "Weekly",
+        "accountKey": "demo-openai",
+        "usedPercent": 20,
+        "resetsAt": 1791504411.730613,
+        "observedAt": 1791504351.730613
+      },
+      {
+        "provider": "openai",
+        "limitID": "openai:weekly",
+        "windowMinutes": 10080,
+        "windowLabel": "Weekly",
+        "accountKey": "demo-openai",
+        "usedPercent": 20,
+        "resetsAt": 1790899611.730613,
+        "observedAt": 1790899551.730613
+      },
+      {
+        "provider": "openai",
+        "limitID": "openai:weekly",
+        "windowMinutes": 10080,
+        "windowLabel": "Weekly",
+        "accountKey": "demo-openai",
+        "usedPercent": 20,
+        "resetsAt": 1790294811.730613,
+        "observedAt": 1790294751.730613
+      },
+      {
+        "provider": "claude",
+        "limitID": "claude:session",
+        "windowMinutes": 300,
+        "windowLabel": "Session",
+        "accountKey": "demo-claude",
+        "usedPercent": 0,
+        "resetsAt": 1791505371.730613,
+        "observedAt": 1791504461.730613
+      },
+      {
+        "provider": "claude",
+        "limitID": "claude:session",
+        "windowMinutes": 300,
+        "windowLabel": "Session",
+        "accountKey": "demo-claude",
+        "usedPercent": 20,
+        "resetsAt": 1791504411.730613,
+        "observedAt": 1791504351.730613
+      },
+      {
+        "provider": "claude",
+        "limitID": "claude:session",
+        "windowMinutes": 300,
+        "windowLabel": "Session",
+        "accountKey": "demo-claude",
+        "usedPercent": 20,
+        "resetsAt": 1791486411.730613,
+        "observedAt": 1791486351.730613
+      },
+      {
+        "provider": "claude",
+        "limitID": "claude:session",
+        "windowMinutes": 300,
+        "windowLabel": "Session",
+        "accountKey": "demo-claude",
+        "usedPercent": 20,
+        "resetsAt": 1791468411.730613,
+        "observedAt": 1791468351.730613
+      },
+      {
+        "provider": "claude",
+        "limitID": "claude:weekly",
+        "windowMinutes": 10080,
+        "windowLabel": "Weekly",
+        "accountKey": "demo-claude",
+        "usedPercent": 5,
+        "resetsAt": 1791936471.730613,
+        "observedAt": 1791504461.730613
+      },
+      {
+        "provider": "claude",
+        "limitID": "claude:weekly",
+        "windowMinutes": 10080,
+        "windowLabel": "Weekly",
+        "accountKey": "demo-claude",
+        "usedPercent": 20,
+        "resetsAt": 1791504411.730613,
+        "observedAt": 1791504351.730613
+      },
+      {
+        "provider": "claude",
+        "limitID": "claude:weekly",
+        "windowMinutes": 10080,
+        "windowLabel": "Weekly",
+        "accountKey": "demo-claude",
+        "usedPercent": 20,
+        "resetsAt": 1790899611.730613,
+        "observedAt": 1790899551.730613
+      },
+      {
+        "provider": "claude",
+        "limitID": "claude:weekly",
+        "windowMinutes": 10080,
+        "windowLabel": "Weekly",
+        "accountKey": "demo-claude",
+        "usedPercent": 20,
+        "resetsAt": 1790294811.730613,
+        "observedAt": 1790294751.730613
+      },
+      {
+        "provider": "cursor",
+        "limitID": "cursor:monthly",
+        "windowMinutes": 43200,
+        "windowLabel": "Monthly",
+        "accountKey": "demo-cursor",
+        "usedPercent": 5,
+        "resetsAt": 1792368471.730613,
+        "observedAt": 1791504461.730613
+      },
+      {
+        "provider": "cursor",
+        "limitID": "cursor:monthly",
+        "windowMinutes": 43200,
+        "windowLabel": "Monthly",
+        "accountKey": "demo-cursor",
+        "usedPercent": 20,
+        "resetsAt": 1791504411.730613,
+        "observedAt": 1791504351.730613
+      },
+      {
+        "provider": "cursor",
+        "limitID": "cursor:monthly",
+        "windowMinutes": 43200,
+        "windowLabel": "Monthly",
+        "accountKey": "demo-cursor",
+        "usedPercent": 20,
+        "resetsAt": 1788912411.730613,
+        "observedAt": 1788912351.730613
+      },
+      {
+        "provider": "cursor",
+        "limitID": "cursor:monthly",
+        "windowMinutes": 43200,
+        "windowLabel": "Monthly",
+        "accountKey": "demo-cursor",
+        "usedPercent": 20,
+        "resetsAt": 1786320411.730613,
+        "observedAt": 1786320351.730613
+      },
+      {
+        "provider": "copilot",
+        "limitID": "copilot:monthly",
+        "windowMinutes": 43200,
+        "windowLabel": "Monthly",
+        "accountKey": "demo-copilot",
+        "usedPercent": 5,
+        "resetsAt": 1792368471.730613,
+        "observedAt": 1791504461.730613
+      },
+      {
+        "provider": "copilot",
+        "limitID": "copilot:monthly",
+        "windowMinutes": 43200,
+        "windowLabel": "Monthly",
+        "accountKey": "demo-copilot",
+        "usedPercent": 20,
+        "resetsAt": 1791504411.730613,
+        "observedAt": 1791504351.730613
+      },
+      {
+        "provider": "copilot",
+        "limitID": "copilot:monthly",
+        "windowMinutes": 43200,
+        "windowLabel": "Monthly",
+        "accountKey": "demo-copilot",
+        "usedPercent": 20,
+        "resetsAt": 1788912411.730613,
+        "observedAt": 1788912351.730613
+      },
+      {
+        "provider": "copilot",
+        "limitID": "copilot:monthly",
+        "windowMinutes": 43200,
+        "windowLabel": "Monthly",
+        "accountKey": "demo-copilot",
+        "usedPercent": 20,
+        "resetsAt": 1786320411.730613,
+        "observedAt": 1786320351.730613
+      },
+      {
+        "provider": "antigravity",
+        "limitID": "antigravity:session",
+        "windowMinutes": 300,
+        "windowLabel": "Session",
+        "accountKey": "demo-antigravity",
+        "usedPercent": 0,
+        "resetsAt": 1791505371.730613,
+        "observedAt": 1791504461.730613
+      },
+      {
+        "provider": "antigravity",
+        "limitID": "antigravity:session",
+        "windowMinutes": 300,
+        "windowLabel": "Session",
+        "accountKey": "demo-antigravity",
+        "usedPercent": 20,
+        "resetsAt": 1791504411.730613,
+        "observedAt": 1791504351.730613
+      },
+      {
+        "provider": "antigravity",
+        "limitID": "antigravity:session",
+        "windowMinutes": 300,
+        "windowLabel": "Session",
+        "accountKey": "demo-antigravity",
+        "usedPercent": 20,
+        "resetsAt": 1791486411.730613,
+        "observedAt": 1791486351.730613
+      },
+      {
+        "provider": "antigravity",
+        "limitID": "antigravity:session",
+        "windowMinutes": 300,
+        "windowLabel": "Session",
+        "accountKey": "demo-antigravity",
+        "usedPercent": 20,
+        "resetsAt": 1791468411.730613,
+        "observedAt": 1791468351.730613
+      },
+      {
+        "provider": "antigravity",
+        "limitID": "antigravity:weekly",
+        "windowMinutes": 10080,
+        "windowLabel": "Weekly",
+        "accountKey": "demo-antigravity",
+        "usedPercent": 5,
+        "resetsAt": 1791936471.730613,
+        "observedAt": 1791504461.730613
+      },
+      {
+        "provider": "antigravity",
+        "limitID": "antigravity:weekly",
+        "windowMinutes": 10080,
+        "windowLabel": "Weekly",
+        "accountKey": "demo-antigravity",
+        "usedPercent": 20,
+        "resetsAt": 1791504411.730613,
+        "observedAt": 1791504351.730613
+      },
+      {
+        "provider": "antigravity",
+        "limitID": "antigravity:weekly",
+        "windowMinutes": 10080,
+        "windowLabel": "Weekly",
+        "accountKey": "demo-antigravity",
+        "usedPercent": 20,
+        "resetsAt": 1790899611.730613,
+        "observedAt": 1790899551.730613
+      },
+      {
+        "provider": "antigravity",
+        "limitID": "antigravity:weekly",
+        "windowMinutes": 10080,
+        "windowLabel": "Weekly",
+        "accountKey": "demo-antigravity",
+        "usedPercent": 20,
+        "resetsAt": 1790294811.730613,
+        "observedAt": 1790294751.730613
+      }
+    ]
+  }
+}

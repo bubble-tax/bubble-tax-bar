@@ -1,116 +1,81 @@
-# SubRIP † — 구독 장례식
+# Bubble Tax †
 
-> 안 쓰는 AI 구독, 편히 보내드리세요.
+Pi coding-agent session activity is supported through Connections → Pi coding agent. Connect `~/.pi/agent/sessions` or choose a custom session directory. Recorded tokens appear by provider in Connections and the matching service's Details. They remain separate from provider-reported quota and cancellation evidence: a local model/provider label cannot prove whether an API key, subscription or extra-usage balance paid for a request. No Pi credentials or conversation contents are stored or transmitted.
 
-AI 구독의 사용 빈도를 기록하고 다음 결제 전 유지·해지 검토를 돕는 macOS 메뉴바 앱입니다. 구독을 묘비 카드로 만들어 공유할 수 있습니다. **SubRIP은 임시 프로젝트명이며 상표·도메인 사용 가능성은 아직 확인하지 않았습니다.**
+Your AI subscriptions. Roasted.
 
-## 지금 구현된 것
+An English-only macOS menu bar app that helps people cancel or downgrade AI subscriptions that are oversized for their actual usage. Click **†** in the menu bar. There is no launch dashboard and no Dock icon.
 
-- SwiftUI 대시보드와 메뉴바 요약, 구독 추가·수정 및 JSON 로컬 저장
-- ChatGPT/Codex, Claude/Claude Code, Gemini, Cursor, 기타 AI 월간 플랜 등록
-- USD/KRW/EUR 별 합계. 통화 간 환산 없이 각각 표시
-- 날짜별 직접 사용 기록, 중요한 가치를 얻은 주기 표시
-- 사용자 선택 폴더에서 Claude Code/Codex JSONL 수집. 5분 간격 갱신
-- 생존 신고 / 장례 후보 / 관찰 중 / 기록 확인 필요 / 안치 완료
-- 사용자 해지 기록, 재구독 복원, 조건부 연간 절약 예상
-- 공유용 1080×1400 묘비 PNG 내보내기. 자동 게시 기능 없음
+## What it does
 
-웹·모바일 사용은 직접 기록합니다. 브라우저 확장, 서비스 로그인, 자동 해지, 결제 API 연동, App Store 배포는 포함되지 않습니다. Cursor/Gemini는 이 버전에서 직접 기록만 지원합니다.
+The static English landing page lives in [site/](site/README.md), with native macOS demo captures, monochrome persona artwork, a six-screen feature tour, FAQ and configurable download/support links. Preview with `python3 -m http.server 8765 --directory site --bind 127.0.0.1`. GitHub Pages deployment is prepared in `.github/workflows/pages.yml`; destinations in `site/config.js` must be filled before publication.
 
-## Mac에서 실행
+- Compares ChatGPT/Codex, Claude, Cursor, GitHub Copilot and Antigravity in compact service pages.
+- Puts **Left** first and shows short-window and weekly limits together without adding them up.
+- Records near-reset balances to identify headroom repeatedly left unused in expired windows.
+- Uses existing service authentication for usage queries, with local Claude/Codex logs as a fallback.
+- Pairs public monthly list-price estimates with usage receipts, English roast bubbles and subscription review links.
+- Treats free, personal and organization-managed plans separately. Missing, stale or incomplete evidence gets no cancellation verdict.
 
-필요 환경: **macOS 13 이상, Swift 5.9 이상(Xcode 15 이상 또는 대응 Command Line Tools), Python 3.9 이상**. 외부 Swift/Python 패키지는 없습니다.
+The goal is to spend less on unnecessary subscriptions, not to consume extra tokens to justify a bill. An open window's remaining quota is not expired waste. Frequent use is evidence of activity, not proof that a paid tier is worth its price. Server plan labels and public list prices are not actual invoices; local logs may omit web, mobile and other-device usage. No plan, price or renewal-date input is required. The “send me the money” line is a joke, with no payment flow.
 
-1. 프로젝트 압축 파일을 풀어 `subrip` 폴더로 이동합니다. 초기 커밋이 있는 `.git`도 포함되어 있습니다.
-2. 개발 도구가 없다면 터미널에서 `xcode-select --install`을 실행하고 설치를 완료합니다. 선택된 Swift가 오래되면 Xcode 15 이상을 설치하고 개발 도구 경로를 선택하세요.
-3. 프로젝트 폴더에서 실행합니다.
+## Run on macOS
+
+Requires macOS 13+, Swift 5.9+ and Python 3.9+. No external packages.
 
 ```bash
 bash scripts/run.command
 ```
 
-수집기 테스트, 네이티브 테스트, 릴리스 빌드를 순서대로 실행하고 `dist/SubRIP.app`을 만들어 엽니다. Finder에서 `scripts/run.command`를 더블클릭해도 됩니다. 앱을 종료해도 데이터는 유지됩니다. 빌드 스크립트는 로컬 개발용 임시 서명을 사용합니다. 다운로드된 파일의 macOS 보안 확인이 나오면 시스템 설정의 개인정보 보호 및 보안에서 출처를 확인한 뒤 허용하세요.
+Builds and tests the app, then opens `dist/Bubble Tax.app`. Click **†** in your menu bar; gear opens Connections. You can also reopen the app to reveal the popover.
 
-Xcode에서 작업하려면 `Package.swift`를 엽니다. 터미널 개발 실행은 `swift run SubRIP`입니다.
+Default folder locations:
 
-## 최초 사용
+- Claude Code: `~/.claude/projects`
+- Codex: `~/.codex/sessions`
 
-1. 실제 결제하는 플랜 이름, 월 구독료, 결제일을 등록합니다. 동일한 플랜에 포함된 ChatGPT/Codex 또는 Claude/Claude Code 비용을 중복 등록하지 마세요.
-2. CLI를 쓴다면 `로그 연결`에서 기본 폴더를 선택합니다. 숨김 폴더는 `⌘⇧G`로 경로를 입력해 열 수 있습니다.
-   - Claude Code: `~/.claude/projects`
-   - Codex: `~/.codex/sessions`
-3. 구독 편집에서 `이 구독으로 결제되는 CLI 로그 포함`을 켭니다. 같은 서비스의 로그는 활성 구독 하나에만 연결할 수 있습니다.
-4. 웹·모바일·다른 기기의 사용한 날을 직접 기록합니다. CLI가 다른 결제 계정/API 키를 사용한다면 그 기록을 개인 구독에 연결하지 마세요.
-5. 기록이 완전한지 확인한 후 편집에서 확인 체크를 저장합니다. 확인은 현재 주기 안에서 최근 7일 이내에 저장된 것만 인정됩니다.
-6. 등록일부터 14일 이상 완료된 관찰일이 쌓이면 낮은 사용 빈도 구독이 장례 후보로 나옵니다. 다음 결제 전에 서비스의 결제 설정에서 직접 해지하고 `해지 기록`을 눌러 안치합니다.
+The build uses a local ad-hoc signature, not Developer ID distribution signing or notarization.
 
-사용 기록은 사용일 단위로 중복 제거됩니다. 오늘은 완료된 관찰일 계산에서 제외됩니다. 이전 사용일도 기록할 수 있지만 가입 이전의 미사용을 추정하지 않습니다.
+## Local data
 
-## 판단 기준
+`~/Library/Application Support/BubbleTaxBar/state.json`, permissions 0600. Existing subscription records remain compatible with the storage model; the menu focuses on remaining quota, observed unused history and renewal value. The original cost/renewal assessment engine remains in BubbleTaxBarCore.
 
-**표시하는 것은 사용 빈도이며 구독 총 토큰의 활용률이 아닙니다.**
+## Verification
 
-- 관찰일 = 현재 결제 주기의 시작과 등록일 중 늦은 날부터 어제까지의 일수
-- 미사용 빈도 점수 = `100 × (1 − 관찰 기간 사용일 / 관찰일)`
-- 14일 미만: 관찰 중
-- 중요한 가치를 얻었다고 표시한 현재 주기: 생존 신고
-- 전체 사용 기록 확인이 없거나 오래됐거나, CLI 수집이 부분/실패/기록 없음이면: 기록 확인 필요
-- 나머지 경우, 사용일 비율이 15% 이하이면: 장례 후보
-- 서비스에서 직접 해지했다고 기록하면: 안치 완료
+The build script runs Python collector and Swift core tests. Coverage includes quota windows, missing/stale receipts, pricing, personas, roast evidence and old-state decoding. Check the menu bar popover and Connections on a Mac after building.
 
-15%는 MVP의 설명 가능한 휴리스틱입니다. 모델 학습 결과나 검증된 절약 기준이 아닙니다. 매일 쓰지 않아도 한 번의 중요한 작업으로 충분한 가치를 얻을 수 있습니다. 플랜 변경·CLI 연결 변경은 관찰 기간을 다시 시작합니다.
+Original conversation and local work history: [LOCAL_HANDOFF.md](docs/LOCAL_HANDOFF.md).
 
-`다음 달 절약 후보`는 후보 구독을 해지할 경우 피할 수 있는 **다음 한 달의 등록된 구독료 합계**입니다. `연 절약 예상`은 안치 구독의 등록된 월 구독료 × 12이며, 재구독하지 않는다는 조건입니다. 이미 절약한 금액, 환급액 또는 사용하지 않은 토큰의 금전 가치가 아닙니다.
+## Quota expiry
 
-결제일이 31일이면 2월에는 해당 월 말일, 3월에는 31일로 계산합니다. 실제 서비스의 갱신 시각·세금·할인·환불은 확인하지 않습니다.
+Live provider queries and supported local rate-limit snapshots supply used percentages, durations and reset timestamps. The menu shows current **Left** and the average last observed unused balance of eligible windows that expired in the past 30 days. Only account-identified observations within 15 minutes of reset qualify for expired-window estimates; usage after that observation is unknown. Missing periods are excluded. Short-window, weekly and monthly limits stay separate.
 
-## 수집기와 개인정보
+Repeated unused headroom supports a cancellation or downgrade review, surfaced as **Review** on the service strip. Work plans use **Review seat**. Both the persona and service roast use the widest reported budget; missing weekly history cannot inherit short-window history. **Early read** means incomplete coverage or fewer than three eligible windows for any represented plan. A quiet short window does not override an actively used weekly budget: 34% weekly remaining means 66% used, not a token-wasting verdict. Local transcript token counts have no subscription quota denominator.
 
-선택한 폴더 안의 JSONL 파일을 읽기 전용으로 처리합니다. 파싱 과정에서 로그를 읽지만 대화 본문은 결과에 포함하지 않습니다. 앱은 토큰 합계, 사용일, 사용량 레코드 수, 소스 상태만 저장합니다. 네트워크 호출, 브라우저 기록 수집, API 키 수집은 없습니다.
+**Details** provides activity and receipts. **Cancel options…** opens the provider's official cancellation instructions; billing changes are completed by the user with the provider. A connected CLI does not establish that a paid subscription exists. Public price sources and caveats are in [PRICE_CATALOG.md](docs/PRICE_CATALOG.md).
 
-- Claude: assistant message ID별 사용량 중복 제거, 스트리밍 업데이트는 각 카운터의 최댓값 사용
-- Codex: 세션 ID별 누적 카운터의 증가량 사용. 동일 카운터를 반복 합산하지 않음
-- Claude 토큰: 입력 + 출력 + 캐시 생성 입력 + 캐시 읽기 입력
-- Codex 토큰: 보고된 total_tokens 또는 input_tokens + output_tokens. 캐시 입력과 추론 출력을 추가 합산하지 않음
-- 시간대: 앱에서 전달한 macOS 현재 시간대의 일자 기준
-- 손상된 줄, 카운터 리셋, 미지원 구조는 부분 수집으로 표시해 해지 검토를 보류
-- 로그가 없거나 삭제되었거나 다른 기기 사용은 감지할 수 없음
-- 로그에 계정·결제 수단이 명확히 없는 경우를 고려해 플랜 연결은 사용자가 지정
+## Live subscriptions and work plans
 
-로컬 저장: `~/Library/Application Support/SubRIP/state.json` (권한 0600). 파일에는 구독 이름·가격·폴더 경로도 포함됩니다. 암호화하지 않으며 로그 전체를 복사하지 않습니다. 저장 파일을 읽지 못하면 덮어쓰기를 중단합니다. 원본을 백업한 뒤 파일을 이동하고 앱을 재실행하면 새 상태로 시작할 수 있습니다.
+Supported collector IDs: ChatGPT/Codex, Claude, Cursor, GitHub Copilot and Antigravity. Google service usage is shown through Antigravity; the separate Gemini collector is no longer enabled. The bundled MIT-licensed CodexBarCLI v0.73.0 performs provider-specific read-only usage queries with existing service authentication; this is not a claim that every provider has a public, supported API. Provider toggles are in Connections. Sign in to each service before refreshing. Missing authentication/permissions remain unavailable; no quota is fabricated.
 
-프로토타입 수집기는 매번 로그를 다시 읽습니다. 큰 로그 폴더에서는 느릴 수 있으며, 증분 인덱싱·내장 Swift 파서는 후속 작업입니다. 현재 앱은 App Sandbox를 적용하지 않은 로컬 개발 빌드입니다.
+Server-supplied plan labels classify personal, free and organization-managed contexts. Enterprise, Business, Team and education labels use “Your boss is gonna love this.” and “Review seat…” instead of personal cancellation instructions. A free plan has no cancellation action. Unknown plan labels do not establish who pays. Workplace quotas may be pooled and personal activity is not organization-wide utilization. No company messages or billing changes are sent.
 
-## 구조
+Raw account email and organization names are not saved: account/workspace identity is hashed to partition quota history. When a verified account or reported plan changes, its previous baseline is discarded. Anonymous transcript history isn't assigned to a verified account; live expiry estimates start with the recorded server snapshots. Model/budget buckets with the same duration stay separate. Unsupported cadence or reset data remains unavailable instead of fabricating expiry. Existing local Claude/Codex token history stays available under Details.
 
-```text
-Sources/SubRIP/              SwiftUI 앱, 저장, 공유 카드, 수집기 실행
-Sources/SubRIPCore/          모델, 결제 주기, 판단 엔진
-Sources/SubRIP/Resources/    표준 라이브러리만 사용하는 Python 수집기
-Tests/SubRIPCoreTests/       네이티브 판단 엔진 테스트
-tests/                      합성 로그로 검증하는 수집기 테스트
-scripts/                    Mac .app 빌드 및 실행
-docs/PRODUCT.md             브랜드, MVP 범위, 수익 가설, 다음 단계
-```
+The current vendored helper is macOS arm64. See vendor/codexbar/PROVENANCE.md and LICENSE. It is bundled inside Bubble Tax; nothing is installed globally.
 
-## 검증 상태
+## Completed changes and savings
 
-작성 환경은 Linux이며 Swift 도구가 설치되어 있지 않습니다. **macOS 앱 빌드·네이티브 테스트·PNG 내보내기·실제 화면은 아직 실행 검증하지 못했습니다.**
+**Review first** is enabled by default and can be toggled above the service strip. Evidence-backed review candidates come first; the selected service stays selected on refresh. Completed records are removed from the review queue. Missing, free and unfinished-window readings are not promoted into cancellation verdicts.
 
-확인한 항목: Python 수집기 테스트 13개 통과, 수집기 CLI 실행, Python 구문 검사, shell 구문 검사, Git 공백 검사. 네이티브 엔진 테스트 11개를 작성했으며 Mac 빌드 스크립트와 CI가 실행하도록 되어 있습니다. CI는 로컬 저장소를 GitHub에 연결한 후에만 동작합니다.
+**Plan actions → Compare downgrade…** compares cheaper published tiers. A Week / Month / Year picker converts the monthly price difference into illustrative real-world budget ideas, from coffee and meals to concerts and travel. These ideas also appear in completed-change previews and Savings history. Exact tier prices are required; the comparison is conditional on the cheaper tier covering your work. Enterprise plans show a sarcastic stock joke and remain excluded from personal savings.
 
-```bash
-python3 -m unittest discover -s tests -v
-swift test
-bash scripts/build-app.sh
-```
+Open **Plan actions → Record completed change…** after completing cancellation or downgrade with the provider. Select the actual new tier for a downgrade, confirm completion and save. Work plans can record a released seat without personal savings. The banknote button opens **Savings**, with completed actions, dates, from/to tiers and an undo for the latest record in each account chain. Undo removes a local record; it does not change the provider subscription.
 
-Mac 수동 확인: 구독 추가 → 재실행 후 복원 → 로그 연결 → 사용 기록 → 메뉴바 열기 → 중요한 가치 표시 → PNG 저장 → 해지 기록 → 재구독 복원.
+Amounts show estimated monthly rate reductions at the bundled public USD list prices. They are not invoices, refunds, accumulated cash saved or unused-quota percentages converted into money. Ambiguous/missing prices are excluded from the estimate. Only the latest record in each account chain contributes to the total, preventing downgrade-then-cancel double counting. Account hashes partition records. Previously observed paid tiers are retained so a provider reporting Free or a cheaper tier does not erase the recording basis.
 
-## 참고한 1차 자료
+The footer **Refresh** and the speech-bubble refresh icon both query current usage. The speech-bubble button also rotates the copy after the collector returns; both show/disable during collection. Failures surface as unavailable rather than inventing a fresh quota. Demo fixtures do not run collectors or write real state.
 
-- [Apple MenuBarExtra](https://developer.apple.com/documentation/swiftui/menubarextra)
-- [Claude Code monitoring](https://code.claude.com/docs/en/monitoring-usage): 공식 계측은 OpenTelemetry를 지원합니다. 이 MVP의 로컬 transcript 파서는 공식 안정 API로 간주하지 않습니다.
-- [Codex protocol source](https://github.com/openai/codex/blob/main/codex-rs/protocol/src/protocol.rs): 토큰 계측 모델 참고. 로컬 로그 호환성은 이후 버전에서 재검증해야 합니다.
+## Compact visuals
 
-라이선스·배포 정책은 출시 전에 결정합니다. 실제 서비스와 제휴한 앱이 아닙니다.
+The main menu pairs current Left with a small expired-window history chart for each quota. The orange persona ring represents estimated unused quota near reset, not remaining quota or cash waste. Service cells show thin remaining-balance bars. Roast headlines stay visible; the info button reveals context and receipts. Long pricing, identity and work-plan explanations are available as tooltips in Details. Savings uses Before/After bars with a shared USD scale and keeps the monthly list-price estimate label visible. No observation or classification rules change with this presentation.

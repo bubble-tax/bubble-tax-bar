@@ -5,3 +5,6 @@ __pycache__/
 *.pyc
 .DS_Store
 *.xcuserstate
+
+# Local-only workspace and deployment notes
+docs/LOCAL_HANDOFF.md

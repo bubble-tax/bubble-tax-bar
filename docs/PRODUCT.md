@@ -1,64 +1,39 @@
-# SubRIP 제품 방향
+# Bubble Tax product direction
 
-## 밈에서 행동까지
+## Purpose
 
-주인공은 토큰 차트가 아니라 사용하지 않는 구독의 묘비입니다.
+Help people cancel or downgrade AI subscriptions that are oversized for their actual needs. English-only, native macOS menu-bar UI. The app makes recurring unused headroom and the cost of keeping a plan easy to question. It does not ask people to generate more tokens to justify paying.
 
-1. 실제 월 구독료와 사용일을 보여줍니다.
-2. 기록이 충분하고 사용 빈도가 낮을 때 장례 후보로 표시합니다.
-3. 사용자가 해지를 기록하면 구독 공동묘지에 안치합니다.
-4. 묘비를 공유하고 다음 구독 갱신을 확인합니다.
+## Current experience
 
-아직 해지하지 않은 구독에는 R.I.P.를 붙이지 않습니다. 관찰 중인 카드는 ‘아직 살아 계신가요?’로 표현합니다. 구독을 적게 쓴 사용자를 비난하기보다 자동 결제의 관성을 웃음거리로 삼습니다.
+- Compare ChatGPT/Codex, Claude, Cursor, GitHub Copilot and Antigravity on one service strip; move horizontally between compact service pages.
+- Put Left first. Show short-window and weekly budgets separately, alongside observed unused balances from expired windows.
+- Use authenticated provider usage where available, with local Claude/Codex records as fallback. No manual plan, price or renewal-date entry is required.
+- Show English meme speech bubbles and an illustrated persona. Humor questions auto-renewal and oversized tiers; actual evidence determines the verdict.
+- Mark repeated unused personal-plan headroom as Review and organization-managed headroom as Review seat. Review first places candidates first without changing the selected service on refresh. Open provider guidance/settings for the user to complete changes.
+- Record user-completed cancellations, downgrades and seat releases locally. Savings shows monthly list-price reductions, dates and undo; completed changes leave the review queue.
+- Use a hardcoded public monthly list-price catalog. Those amounts are estimates, not collected invoices or verified savings.
 
-## 카피
+## Evidence rules
 
-브랜드: **SubRIP † / 구독 장례식**
+Current remaining quota is not expired waste. An unfinished quiet window cannot establish a cancellation verdict. Repeated near-reset observations support a review, not a claim that the plan has no value.
 
-메인: **안 쓰는 AI 구독, 편히 보내드리세요.**
+Choose the widest reported quota consistently for both the persona and service roast. If weekly history is missing, do not substitute quiet 5-hour history for the plan-level judgment. Still display both limits and their receipts.
 
-보조: **돈은 나가는데, AI는 쉬고 있나요?**
+Early read applies when any represented plan has fewer than three eligible expired windows, or plan coverage is incomplete. This prevents a combined sample count from hiding thin evidence for individual services. The persona remains provisional while that label is present.
 
-영문: **Give your unused AI subscriptions a proper goodbye.**
+High usage means Usage confirmed; it does not prove value for money. A cheaper tier may meet the same needs. Quota percentages are not directly convertible into cash, refunded spend, token counts or measured environmental impact.
 
-플랜 이름과 실제 기록으로 만든 묘비가 공유의 중심입니다. 자동으로 서비스 로고·상표를 넣거나 미사용 토큰의 가격을 지어내지 않습니다. 이름·상표·도메인 검토는 출시 전에 진행합니다.
+Free plans have no paid cancellation action. Work seats and possibly shared quotas stay outside personal billing totals. Missing or unidentified billing remains conditional. No cancellation or company message is sent automatically.
 
-## 초기 사용자와 차별화 가설
+## Next product priorities
 
-개발자는 CLI 자동 수집으로 시작하고, 일반 사용자는 직접 사용일을 기록합니다. 두 그룹 모두 ‘다음 달에도 이 구독을 유지할까?’라는 결정을 돕습니다.
+1. Separate provider cancellation and downgrade destinations. Current Plan actions includes cancellation guidance/settings and a completed-change record; it does not choose or change tiers automatically.
+2. Support user-verified billing amounts if needed, without making price entry a prerequisite. Current completed-change totals use public list prices and are estimates of monthly rate reduction.
+3. Account for required premium features, occasional critical work and shared company budgets before offering specific recommendations. Low usage alone cannot price those benefits.
 
-차별화 가설은 (1) 결제 전 판단, (2) 이해할 수 있는 기준, (3) 대화 본문을 전송하지 않는 로컬 처리, (4) 공유하고 싶은 묘비입니다. 경쟁 제품의 최신 기능이나 시장 우위를 조사·입증한 문서는 아닙니다.
+## Success
 
-전체 AI 구독 활동을 자동 수집하는 기능은 현재 구현하지 않았습니다. 브라우저 확장은 향후 별도 동의와 명확한 사이트 권한으로 도입하며, 브라우저 방문만으로 ‘가치를 얻었다’고 계산하지 않습니다.
+Success is useful cancellation or downgrade decisions and fewer unnecessary recurring subscriptions, not more token consumption or more time inside this app. Track false-positive reviews and whether people later need to restore a plan. Current MVP sends no product analytics externally; validate with voluntarily shared tester feedback.
 
-## 수익 모델 가설
-
-사용자의 구독을 줄이는 앱이므로 초기에는 일회성 구매가 어울립니다. 다음은 시장 검증 전 실험안입니다.
-
-| 구성 | 가설 |
-| --- | --- |
-| 무료 | 직접 구독 기록, 기본 묘비 공유 |
-| 유료 일회성 | CLI 자동 수집, 구독 수 확대, 카드 테마, 갱신 알림 |
-| 초기 가격 실험 | US$9 또는 US$19, 사용자 인터뷰로 비교 |
-| 수익 원칙 | 해지 판단에 영향을 주는 AI 서비스 제휴 수수료 없음 |
-
-현재 코드에는 유료 잠금, 결제, 라이선스 또는 업셀 UI가 없습니다. ‘평생 모든 기능·업데이트’ 약속도 하지 않습니다. 연속적인 로그 호환성 유지 비용을 확인한 뒤 판매 범위를 정합니다.
-
-## 다음 단계
-
-1. Mac에서 네이티브 빌드 및 실제 로그로 데이터 대조. 실제 로그는 저장소에 커밋하지 않음
-2. 결제 주기·사용일 표시와 공유 카드 테스트, 잘못된 후보 비율 조사
-3. 직접 기록의 지속률 확인 후 웹 확장 필요성 결정
-4. 증분 수집, Swift 내장 파서, CLI 로그 버전별 회귀 fixture
-5. 사용자 삭제·백업·복원, 주기별 가치 확인·실제 절약 기록
-6. 앱 아이콘, 접근성, 로그인 시 실행, 갱신 알림
-7. 배포용 Developer ID 서명·공증, 개인정보 문서, 업데이트 체계
-
-## 성공 판단
-
-- 사용자가 등록 이후 14일 동안 기록을 유지하는가?
-- 장례 후보 중 사용자가 실제 해지/다운그레이드로 이어지는 비율은?
-- 중요한 구독을 후보로 잘못 제안하는 비율은?
-- 묘비를 공유한 사람과 유입 사용자가 실제 기록까지 이어지는가?
-
-MVP는 분석 데이터를 외부로 보내지 않습니다. 초기에는 동의한 테스터의 인터뷰와 직접 공유한 기록으로 검증합니다.
+Verified cash savings, renewal reminders, monetization and cemetery sharing remain future ideas. Completed-change history and list-price monthly reduction estimates are implemented. There is no subscription upsell or affiliate cancellation incentive.

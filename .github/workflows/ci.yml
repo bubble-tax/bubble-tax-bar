@@ -6,6 +6,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Collector tests
-        run: python3 -m unittest discover -s tests -v
+        run: python3 -m unittest discover -s Tests -v
       - name: Native tests and build
         run: bash scripts/build-app.sh

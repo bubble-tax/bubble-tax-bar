@@ -1,0 +1,434 @@
+[
+  {
+    "name": "donationAngel",
+    "mode": "RGBA",
+    "size": [
+      1254,
+      1254
+    ],
+    "alphaRange": [
+      0,
+      255
+    ],
+    "corners": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "name": "environmentalist",
+    "mode": "RGBA",
+    "size": [
+      1254,
+      1254
+    ],
+    "alphaRange": [
+      0,
+      255
+    ],
+    "corners": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "name": "bubbleSponsor",
+    "mode": "RGBA",
+    "size": [
+      1254,
+      1254
+    ],
+    "alphaRange": [
+      0,
+      255
+    ],
+    "corners": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "name": "collector",
+    "mode": "RGBA",
+    "size": [
+      1254,
+      1254
+    ],
+    "alphaRange": [
+      0,
+      255
+    ],
+    "corners": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "name": "tokenMaxxer",
+    "mode": "RGBA",
+    "size": [
+      1254,
+      1254
+    ],
+    "alphaRange": [
+      0,
+      255
+    ],
+    "corners": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "name": "corporateSponsor",
+    "mode": "RGBA",
+    "size": [
+      1254,
+      1254
+    ],
+    "alphaRange": [
+      0,
+      255
+    ],
+    "corners": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "name": "corporateMaxxer",
+    "mode": "RGBA",
+    "size": [
+      1254,
+      1254
+    ],
+    "alphaRange": [
+      0,
+      255
+    ],
+    "corners": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "name": "freeLegend",
+    "mode": "RGBA",
+    "size": [
+      1254,
+      1254
+    ],
+    "alphaRange": [
+      0,
+      255
+    ],
+    "corners": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "name": "pending",
+    "mode": "RGBA",
+    "size": [
+      1254,
+      1254
+    ],
+    "alphaRange": [
+      0,
+      255
+    ],
+    "corners": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "name": "cloudPreserver",
+    "mode": "RGBA",
+    "size": [
+      1254,
+      1254
+    ],
+    "alphaRange": [
+      0,
+      255
+    ],
+    "corners": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "name": "ghostSubscriber",
+    "mode": "RGBA",
+    "size": [
+      1254,
+      1254
+    ],
+    "alphaRange": [
+      0,
+      255
+    ],
+    "corners": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "name": "premiumPhilanthropist",
+    "mode": "RGBA",
+    "size": [
+      1254,
+      1254
+    ],
+    "alphaRange": [
+      0,
+      255
+    ],
+    "corners": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "name": "tokenTrasher",
+    "mode": "RGBA",
+    "size": [
+      1254,
+      1254
+    ],
+    "alphaRange": [
+      0,
+      255
+    ],
+    "corners": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "name": "ventureCapitalist",
+    "mode": "RGBA",
+    "size": [
+      1254,
+      1254
+    ],
+    "alphaRange": [
+      0,
+      255
+    ],
+    "corners": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "name": "benchwarmer",
+    "mode": "RGBA",
+    "size": [
+      1254,
+      1254
+    ],
+    "alphaRange": [
+      0,
+      255
+    ],
+    "corners": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "name": "fomoCollector",
+    "mode": "RGBA",
+    "size": [
+      1254,
+      1254
+    ],
+    "alphaRange": [
+      0,
+      255
+    ],
+    "corners": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "name": "backupHoarder",
+    "mode": "RGBA",
+    "size": [
+      1254,
+      1254
+    ],
+    "alphaRange": [
+      0,
+      255
+    ],
+    "corners": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "name": "rateLimitRegular",
+    "mode": "RGBA",
+    "size": [
+      1254,
+      1254
+    ],
+    "alphaRange": [
+      0,
+      255
+    ],
+    "corners": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "name": "quotaMenace",
+    "mode": "RGBA",
+    "size": [
+      1254,
+      1254
+    ],
+    "alphaRange": [
+      0,
+      255
+    ],
+    "corners": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "name": "emptySeat",
+    "mode": "RGBA",
+    "size": [
+      1254,
+      1254
+    ],
+    "alphaRange": [
+      0,
+      255
+    ],
+    "corners": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "name": "procurementPrank",
+    "mode": "RGBA",
+    "size": [
+      1254,
+      1254
+    ],
+    "alphaRange": [
+      0,
+      255
+    ],
+    "corners": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "name": "budgetBurner",
+    "mode": "RGBA",
+    "size": [
+      1254,
+      1254
+    ],
+    "alphaRange": [
+      0,
+      255
+    ],
+    "corners": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "name": "officePowerUser",
+    "mode": "RGBA",
+    "size": [
+      1254,
+      1254
+    ],
+    "alphaRange": [
+      0,
+      255
+    ],
+    "corners": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "name": "couponLegend",
+    "mode": "RGBA",
+    "size": [
+      1254,
+      1254
+    ],
+    "alphaRange": [
+      0,
+      255
+    ],
+    "corners": [
+      0,
+      0,
+      0,
+      0
+    ]
+  }
+]
