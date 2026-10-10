@@ -92,7 +92,7 @@
     ["", "-dark"].forEach(suffix => { const image = new Image(); image.src = `assets/${example.image}${suffix}.png`; });
   });
   setInterval(async () => {
-    if (document.hidden || document.getElementById("image-dialog").open) return;
+    if (document.hidden || document.querySelector("dialog[open]")) return;
     quotaIndex = (quotaIndex + 1) % quotaExamples.length;
     if (reducedMotion.matches) { renderQuota(); return; }
     const fold = quotaLabel.animate([{transform: "rotateX(0deg)"}, {transform: "rotateX(-90deg)"}], {duration: 130, easing: "ease-in", fill: "forwards"});
@@ -137,6 +137,22 @@
     return true;
   };
   if (activate("download-link", config.downloadUrl)) document.getElementById("release-status").textContent = config.releaseLabel || "Public beta";
-  if (activate("coffee-link", config.coffeeUrl)) document.getElementById("coffee-status").hidden = true;
+  const coffeeDialog = document.getElementById("coffee-dialog");
+  const coffeeTrigger = document.getElementById("coffee-link");
+  if (activate("coffee-destination", config.coffeeUrl)) {
+    coffeeTrigger.disabled = false;
+    document.getElementById("coffee-status").hidden = true;
+  }
+  coffeeTrigger.addEventListener("click", () => {
+    coffeeDialog.showModal();
+    document.body.classList.add("modal-open");
+  });
+  ["close-coffee", "skip-coffee"].forEach(id => document.getElementById(id).addEventListener("click", () => coffeeDialog.close()));
+  coffeeDialog.addEventListener("close", () => document.body.classList.remove("modal-open"));
+  coffeeDialog.addEventListener("click", event => {
+    if (event.target !== coffeeDialog) return;
+    const rect = coffeeDialog.getBoundingClientRect();
+    if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) coffeeDialog.close();
+  });
   activate("github-link", config.githubUrl);
 })();

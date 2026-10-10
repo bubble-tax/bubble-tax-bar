@@ -32,9 +32,9 @@
       document.documentElement.dataset.theme = theme === 'light' || theme === 'dark' ? theme : (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
     })();
   </script>
-  <link rel="stylesheet" href="styles.css?v=1ec278785266">
+  <link rel="stylesheet" href="styles.css?v=3c691fa6e643">
   <script src="config.js" defer></script>
-  <script src="app.js?v=13f1d9806dd3" defer></script>
+  <script src="app.js?v=d9e8697df3fd" defer></script>
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
@@ -106,9 +106,16 @@
     </section>
   </main>
   <footer class="footer wrap">
-    <div class="support"><p>Saved you a subscription?</p><a id="coffee-link" aria-disabled="true" role="link" tabindex="-1">Buy me a coffee.</a><span id="coffee-status" class="fine-print">Support link coming soon.</span></div>
+    <div class="support"><p>Saved you a subscription?</p><button id="coffee-link" class="coffee-trigger" disabled>Buy me a coffee.</button><span id="coffee-status" class="fine-print">Support link coming soon.</span></div>
     <div class="footer-links"><a id="github-link" aria-disabled="true" role="link" tabindex="-1">GitHub</a><span>Independent app. Not affiliated with AI providers.</span></div>
   </footer>
+  <dialog id="coffee-dialog" class="coffee-dialog" aria-labelledby="coffee-title" aria-describedby="coffee-message">
+    <button id="close-coffee" class="coffee-close" aria-label="Close support message" autofocus>Close</button>
+    <h2 id="coffee-title">Coffee?<br>In this AI economy?</h2>
+    <p id="coffee-message">Who has coffee money anymore? I've got AI subscriptions to renew.</p>
+    <p class="coffee-aside">Apparently, the bubble needs me more than caffeine does.</p>
+    <div class="coffee-actions"><a id="coffee-destination" class="button ink" target="_blank" rel="noopener noreferrer">Fine. One coffee.</a><button id="skip-coffee" class="coffee-skip">Back to funding the bubble.</button></div>
+  </dialog>
   <dialog id="image-dialog" aria-label="Original macOS screenshot"><div class="dialog-bar"><p id="image-caption"></p><button id="close-dialog" aria-label="Close screenshot">Close</button></div><div class="dialog-image"><img id="full-image" alt=""></div></dialog>
 </body>
 </html>

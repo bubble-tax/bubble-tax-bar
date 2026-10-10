@@ -57,7 +57,7 @@ h1{font-size:clamp(46px,4.8vw,64px);font-weight:750;line-height:1.05;letter-spac
 [aria-disabled=true]{opacity:.5;cursor:default}
 .footer{display:flex;justify-content:space-between;align-items:flex-start;gap:36px;padding-block:30px 45px;font-size:12px}
 .support{display:flex;flex-wrap:wrap;gap:0 6px;max-width:340px}
-.support>a{border-bottom:1px solid var(--muted)}
+.coffee-trigger{padding:0;border:0;border-bottom:1px solid var(--muted);background:transparent;font:inherit}.coffee-trigger:hover{text-decoration:underline}.coffee-trigger:disabled{opacity:.5;cursor:default}
 .support>.fine-print{width:100%;margin-top:5px}
 .footer-links{display:flex;flex-wrap:wrap;gap:7px;justify-content:flex-end;text-align:right;max-width:280px}
 .footer-links>span{font-size:10px;color:var(--muted);width:100%}
@@ -104,3 +104,13 @@ body.modal-open{overflow:hidden}
 @media(min-width:721px) and (max-width:1000px){.hero{grid-template-columns:minmax(0,1fr)}.hero-visual{width:620px;justify-self:center}.hero-copy{max-width:620px}.hero h1{font-size:56px}}
 
 .mac-quota{display:grid;perspective:180px}.mac-quota-label,.mac-quota-sizer{grid-area:1 / 1}.mac-quota-sizer{visibility:hidden;pointer-events:none}.mac-quota-label{transform-origin:center;backface-visibility:hidden}
+
+.coffee-dialog{width:min(440px,calc(100vw - 32px));padding:30px;border-radius:8px}
+.coffee-close{display:block;margin-left:auto;padding:0;border:0;background:transparent;color:var(--muted);font-size:12px}
+.coffee-dialog h2{margin-top:22px;font-size:32px;line-height:1.1;font-weight:650;letter-spacing:-1.2px}
+.coffee-dialog #coffee-message{margin-top:22px;color:var(--muted);font-size:16px;line-height:1.55}
+.coffee-aside{margin-top:18px;font-family:Georgia,'Times New Roman',serif;font-style:italic;font-size:16px;line-height:1.5}
+.coffee-actions{display:flex;flex-direction:column;align-items:stretch;gap:16px;margin-top:30px}
+.coffee-skip{border:0;background:transparent;padding:3px;color:var(--muted);font-size:12px}
+.coffee-skip:hover{color:var(--ink);text-decoration:underline}
+@media(max-width:420px){.coffee-dialog{padding:24px}.coffee-dialog h2{font-size:29px}}
