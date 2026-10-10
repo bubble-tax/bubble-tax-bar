@@ -25,6 +25,13 @@
   <link rel="canonical" href="https://subrip-ai-bubble.workromancer.chatgpt.site/">
   <title>Bubble Tax — Stop sponsoring the AI bubble.</title>
   <link rel="icon" href="assets/donationAngel.png" type="image/png">
+  <script>
+    (() => {
+      let theme;
+      try { theme = localStorage.getItem('bubble-tax-theme'); } catch {}
+      document.documentElement.dataset.theme = theme === 'light' || theme === 'dark' ? theme : (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    })();
+  </script>
   <link rel="stylesheet" href="styles.css">
   <script src="config.js" defer></script>
   <script src="app.js" defer></script>
@@ -33,9 +40,13 @@
   <a class="skip" href="#main">Skip to content</a>
   <header class="masthead wrap">
     <a class="brand" href="#" aria-label="Bubble Tax home">Bubble Tax</a>
-    <a class="header-link" href="#inside">A look inside</a>
+    <div class="header-controls"><a class="header-link" href="#inside">A look inside</a><button id="theme-toggle" class="theme-toggle" aria-label="Switch to dark mode">Dark</button></div>
   </header>
   <main id="main">
+    <figure class="menu-preview wrap">
+      <div class="menu-image"><img id="menu-image" src="assets/menubar-light.svg" data-light="assets/menubar-light.svg" data-dark="assets/menubar-dark.svg" alt="Mac menu-bar illustration: Claude weekly quota 88% left, beside Wi-Fi, battery and clock." width="1200" height="88"></div>
+      <figcaption>Paid plans rotate every 8 seconds. <span>Menu-bar illustration · sample quota.</span></figcaption>
+    </figure>
     <section class="hero wrap" aria-labelledby="hero-title">
       <div class="hero-copy">
         <h1 id="hero-title">Stop sponsoring<br>the AI bubble.</h1>
@@ -45,7 +56,7 @@
         <p class="hero-aside">Your auto-renewal has excellent attendance.</p>
       </div>
       <figure class="hero-visual">
-        <button class="image-button" data-image="assets/overview.png" data-caption="Overview — actual macOS app, sample data." aria-label="Enlarge the actual macOS overview screenshot"><img class="app-capture" src="assets/overview.png" alt="Bubble Tax on macOS showing current weekly quota left and multiple AI subscriptions." width="860" height="1204" fetchpriority="high"></button>
+        <button class="image-button" data-image="assets/overview.png" data-caption="Overview — actual macOS app, sample data." aria-label="Enlarge the actual macOS overview screenshot"><img class="app-capture" data-light="assets/overview.png" data-dark="assets/overview-dark.png" src="assets/overview.png" alt="Bubble Tax on macOS showing current weekly quota left and multiple AI subscriptions." width="860" height="1204" fetchpriority="high"></button>
         <img class="hero-character" src="assets/bubbleSponsor.png" alt="A cartoon coin inflating a bubble." width="1254" height="1254">
         <figcaption>Actual Mac app. Sample data.</figcaption>
       </figure>
@@ -71,7 +82,7 @@
           </div>
         </div>
         <figure class="tour-shot">
-          <button id="tour-image-button" class="image-button" data-image="assets/savings.png" data-caption="Savings — actual macOS app, sample data." aria-label="Enlarge the selected app screenshot"><img id="tour-image" class="app-capture" src="assets/savings.png" alt="Bubble Tax savings history on macOS, showing a lower monthly bill after recorded plan changes with sample data." width="910" height="1260"></button>
+          <button id="tour-image-button" class="image-button" data-image="assets/savings.png" data-caption="Savings — actual macOS app, sample data." aria-label="Enlarge the selected app screenshot"><img id="tour-image" class="app-capture" data-light="assets/savings.png" data-dark="assets/savings-dark.png" src="assets/savings.png" alt="Bubble Tax savings history on macOS, showing a lower monthly bill after recorded plan changes with sample data." width="910" height="1260"></button>
           <figcaption><span id="shot-label">Savings</span><span>Sample data · click for original</span></figcaption>
         </figure>
       </div>

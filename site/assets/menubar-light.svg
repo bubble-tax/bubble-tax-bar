@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="88" viewBox="0 0 1200 88">
+ <rect width="1200" height="88" fill="#f0efeb"/><rect width="1200" height="48" fill="#e9e8e4"/><path d="M0 48H1200" stroke="#cecdc8"/>
+ <g fill="#181818" font-family="-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif" font-size="17">
+ <text x="24" y="31" font-size="23"></text><text x="65" y="30" font-weight="700">Finder</text><text x="137" y="30">File</text><text x="184" y="30">Edit</text><text x="235" y="30">View</text><text x="295" y="30">Go</text><text x="337" y="30">Window</text><text x="420" y="30">Help</text>
+ <text x="555" y="30" font-size="16">† Claude · Weekly quota 88% left</text><text x="1000" y="30" font-size="15">Sat Oct 10</text><text x="1100" y="30" font-size="15">9:41 AM</text>
+ </g><g fill="none" stroke="#181818" stroke-width="1.8" stroke-linecap="round"><path d="M893 22q12-11 24 0M897 26q8-7 16 0M901 30q4-3 8 0"/><rect x="940" y="19" width="28" height="14" rx="3"/><path d="M971 24v4"/><path d="M944 22h19v8h-19z" fill="#181818" stroke="none"/></g>
+ </svg>

@@ -8,6 +8,33 @@
     connections: {title: "Use what's already signed in.", body: "Read available usage from existing service sessions. For Claude and Codex, connect the default log folder or choose your own.", note: "Missing data stays unknown.", label: "Connections"},
     enterprise: {title: "Your boss's budget.", body: "Work plans get a seat review. Record a released seat when you're done, without counting company costs as your personal savings.", note: "Some workspace quotas may be shared.", label: "Work accounts"},
   };
+  const root = document.documentElement;
+  const themeToggle = document.getElementById("theme-toggle");
+  let manualTheme = false;
+  try { manualTheme = ["light", "dark"].includes(localStorage.getItem("bubble-tax-theme")); } catch {}
+  const systemTheme = matchMedia("(prefers-color-scheme: dark)");
+  const themedSource = image => image.dataset[root.dataset.theme];
+  const applyTheme = theme => {
+    root.dataset.theme = theme;
+    themeToggle.textContent = theme === "dark" ? "Light" : "Dark";
+    themeToggle.setAttribute("aria-label", `Switch to ${theme === "dark" ? "light" : "dark"} mode`);
+    document.querySelector('meta[name="theme-color"]').content = theme === "dark" ? "#181818" : "#f7f6f2";
+    document.querySelectorAll("img[data-light][data-dark]").forEach(image => {
+      image.src = themedSource(image);
+      const button = image.closest("[data-image]");
+      if (button) button.dataset.image = image.getAttribute("src");
+    });
+    const modalImage = document.getElementById("full-image");
+    if (modalImage.dataset.light) modalImage.src = themedSource(modalImage);
+  };
+  themeToggle.addEventListener("click", () => {
+    const next = root.dataset.theme === "dark" ? "light" : "dark";
+    manualTheme = true;
+    try { localStorage.setItem("bubble-tax-theme", next); } catch {}
+    applyTheme(next);
+  });
+  systemTheme.addEventListener("change", event => { if (!manualTheme) applyTheme(event.matches ? "dark" : "light"); });
+  applyTheme(root.dataset.theme);
   const tourImage = document.getElementById("tour-image");
   const tourButton = document.getElementById("tour-image-button");
   document.querySelectorAll("[data-screen]").forEach(button => {
@@ -19,7 +46,9 @@
         item.classList.toggle("active", selected);
         item.setAttribute("aria-pressed", String(selected));
       });
-      tourImage.src = `assets/${key}.png`;
+      tourImage.dataset.light = `assets/${key === "enterprise" ? "enterprise-light" : key}.png`;
+      tourImage.dataset.dark = `assets/${key === "enterprise" ? "enterprise" : key + "-dark"}.png`;
+      tourImage.src = themedSource(tourImage);
       tourImage.alt = `${screen.label} — actual Bubble Tax macOS app with sample data.`;
       tourButton.dataset.image = tourImage.getAttribute("src");
       tourButton.dataset.caption = tourImage.alt;
@@ -33,7 +62,11 @@
   document.querySelectorAll("[data-image]").forEach(button => {
     button.addEventListener("click", () => {
       const caption = button.dataset.caption;
-      document.getElementById("full-image").src = button.dataset.image;
+      const fullImage = document.getElementById("full-image");
+      const thumbnail = button.querySelector("img");
+      fullImage.dataset.light = thumbnail.dataset.light;
+      fullImage.dataset.dark = thumbnail.dataset.dark;
+      fullImage.src = button.dataset.image;
       document.getElementById("full-image").alt = caption;
       document.getElementById("image-caption").textContent = caption;
       dialog.showModal();
