@@ -1,0 +1,73 @@
+# Bubble Tax usage & data guide
+
+[Back to the product overview](../README.md)
+
+## Connect and refresh
+
+Open Settings from the menu-bar popover. Sign in to supported services first, then enable the providers you want to track. Bubble Tax uses the bundled CodexBarCLI v0.73.0 for read-only provider-specific queries with existing authentication. This does not imply that every provider offers a public, supported usage API. Missing authentication or permissions remain unavailable.
+
+Local activity defaults:
+
+| Source | Default directory |
+| --- | --- |
+| Claude Code | `~/.claude/projects` |
+| Codex | `~/.codex/sessions` |
+| Pi coding agent | `~/.pi/agent/sessions` |
+
+Choose another folder in Connections if necessary. Connected sources show their selected path; reconnecting offers the default or a custom directory. Pi token counts are grouped by provider in Connections and matching service Details. They cannot establish which subscription, API key or extra-usage balance paid for a request. Pi credentials and conversation contents are not saved by Bubble Tax.
+
+Both the main Refresh button and the speech-bubble refresh query usage. The latter also changes the roast after collection finishes. Failures show unavailable readings rather than fabricated quota. Demo fixtures do not run collectors or write real state.
+
+## Menu bar and navigation
+
+The menu bar rotates enabled, detected paid-plan quotas every eight seconds. Each title names the service, quota period and percentage left. Rotation pauses while the popover is open; Reduce Motion skips the flip animation.
+
+In the popover, click a service card to switch subscriptions. The Quota left selector appears only when more than one enabled, detected plan is available. A single plan opens directly into its details.
+
+The top toolbar opens Unused history, Savings and Settings. Subpages put Back on the left. Launch-at-login setup is offered on first launch and can be changed in Settings. Right-click the menu-bar item to quit.
+
+Settings → General contains Cancellation candidates first. It prioritizes evidence-backed review candidates and preserves the selected service during refresh. Free, missing and unfinished readings are not promoted into cancellation verdicts.
+
+## Current left versus expired unused
+
+Current Left describes the active quota window. It is not expired waste. Weekly, session and monthly budgets are kept separate, including model-specific buckets of the same duration. Local transcript token totals have no subscription quota denominator and may omit web, mobile or other-device usage.
+
+The persona and its ring use fresh **weekly** readings. Services without weekly readings are excluded from that calculation, and coverage is shown. Without eligible weekly data, the persona stays pending. Public plan prices can weight eligible readings, but they are not invoices.
+
+Service review evidence uses the widest supported budget. A quiet session does not override an actively used weekly plan: 34% weekly left means 66% used. Incomplete coverage and insufficient history receive an early reading rather than a confident cancellation verdict.
+
+## Unused history
+
+Near-reset observations become local history after their windows expire. Only account-identified observations within 15 minutes of reset qualify; subsequent usage before reset is unknown. Missed periods and unsupported reset data are excluded. The app cannot recover unobserved past quota.
+
+Unused history offers All recorded and Last 30 days, separate charts per account and limit, and reset receipts. The main quota details show recent expired-window estimates. Short-window and weekly percentages are never added together.
+
+Account and workspace identities are hashed to partition records. Raw account emails and organization names are not saved. Verified identity or plan changes reset the relevant assessment baseline; anonymous local history is not assigned to a verified account.
+
+## Review a plan and record a change
+
+Plan actions → Compare downgrade compares cheaper tiers with known published prices. Week / Month / Year converts the monthly difference into illustrative spending ideas. A cheaper tier must still cover your work; a comparison does not guarantee that it will.
+
+Cancel options opens official provider instructions. Complete cancellation or downgrade with that provider first, then choose Record completed change in Bubble Tax. For a downgrade, select the actual new tier. Work plans can record a released seat without personal savings.
+
+Savings shows completed actions, dates and from/to tiers. Undo removes the latest local record in an account chain; it does not reverse the provider's billing change. Only the latest record in each chain contributes to the total, preventing downgrade-then-cancel double counting.
+
+Amounts are estimated monthly rate reductions at bundled public USD list prices. They are not actual invoices, refunds, accumulated cash saved or unused quota converted into money. Ambiguous prices are excluded. Previously observed paid tiers are retained so a subsequent Free or cheaper-tier reading does not erase the recording basis.
+
+## Personal and work plans
+
+Reported plan labels distinguish free, personal and organization-managed contexts. Enterprise, Business, Team and education plans use Review seat rather than personal cancellation instructions. Free plans have no cancellation action; unknown labels do not establish who pays.
+
+Work quotas may be pooled. Personal activity does not measure organization-wide utilization, and workplace plans are excluded from personal savings. No messages are sent to your employer and no billing changes are performed.
+
+## Renewal schedules
+
+Optional monthly or yearly renewal schedules can be set locally with an anchor date. They do not change provider quota resets or billing and do not replace actual invoice dates. No plan, price or renewal-date input is required to connect usage.
+
+## Storage and builds
+
+Local state is stored at `~/Library/Application Support/BubbleTaxBar/state.json`, with file permissions 0600. Existing service authentication is used for live queries; the app does not require users to paste passwords into its settings.
+
+Run `bash scripts/run.command` to test, build and open the app. The preview and bundled arm64 helper require macOS 14+, Apple silicon and Python 3.9+. Python must be available at `/usr/bin/python3`, `/opt/homebrew/bin/python3` or `/usr/local/bin/python3`. Apple's Command Line Tools can supply it through `xcode-select --install`.
+
+The build uses an ad-hoc signature. Developer ID signing and Apple notarization are separate distribution steps. See the [release notes](releases/v0.1.0.md), [price catalog](PRICE_CATALOG.md) and bundled helper [provenance](../vendor/codexbar/PROVENANCE.md).

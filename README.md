@@ -1,81 +1,92 @@
-# Bubble Tax †
+# Bubble Tax
 
-Pi coding-agent session activity is supported through Connections → Pi coding agent. Connect `~/.pi/agent/sessions` or choose a custom session directory. Recorded tokens appear by provider in Connections and the matching service's Details. They remain separate from provider-reported quota and cancellation evidence: a local model/provider label cannot prove whether an API key, subscription or extra-usage balance paid for a request. No Pi credentials or conversation contents are stored or transmitted.
+**Stop sponsoring the AI bubble.**
 
-Your AI subscriptions. Roasted.
+A Mac menu-bar app for AI subscriptions you pay for and barely use.
+See what is **left**, spot the plans worth reviewing, and keep a record when you cancel or downgrade.
 
-An English-only macOS menu bar app that helps people cancel or downgrade AI subscriptions that are oversized for their actual usage. Click **†** in the menu bar. There is no launch dashboard and no Dock icon.
+[Download the Mac app](https://github.com/bubble-tax/bubble-tax.github.io/releases/download/v0.1.0/Bubble-Tax-0.1.0-macOS-arm64.zip) · [Website](https://bubble-tax.github.io/) · [Release notes](https://github.com/bubble-tax/bubble-tax.github.io/releases/tag/v0.1.0)
 
-## What it does
+![Bubble Tax — Stop sponsoring the AI bubble. Unused quota. Smaller plans. Less money burned.](site/assets/bubble-tax-og.png)
 
-The static English landing page lives in [site/](site/README.md), with native macOS demo captures, monochrome persona artwork, a seven-screen feature tour, light/dark themes and configurable download/support links. Preview with `python3 -m http.server 8765 --directory site --bind 127.0.0.1`. GitHub Pages deployment is prepared in `.github/workflows/pages.yml`; destinations in `site/config.js` must be filled before publication.
+## Your quota is chilling. Your subscription money isn't.
 
-- Compares ChatGPT/Codex, Claude, Cursor, GitHub Copilot and Antigravity in compact service pages.
-- Puts **Left** first and shows short-window and weekly limits together without adding them up.
-- Records near-reset balances to identify headroom repeatedly left unused in expired windows.
-- Uses existing service authentication for usage queries, with local Claude/Codex logs as a fallback.
-- Pairs public monthly list-price estimates with usage receipts, English roast bubbles and subscription review links.
-- Treats free, personal and organization-managed plans separately. Missing, stale or incomplete evidence gets no cancellation verdict.
+One compact menu for **Claude, ChatGPT / Codex, Cursor, GitHub Copilot and Antigravity**.
+Paid-plan quotas rotate in the menu bar every eight seconds. Open it to see each service's remaining limits, weekly-quota persona and a roast that follows the evidence.
 
-The goal is to spend less on unnecessary subscriptions, not to consume extra tokens to justify a bill. An open window's remaining quota is not expired waste. Frequent use is evidence of activity, not proof that a paid tier is worth its price. Server plan labels and public list prices are not actual invoices; local logs may omit web, mobile and other-device usage. No plan, price or renewal-date input is required. The “send me the money” line is a joke, with no payment flow.
+<table>
+  <tr>
+    <td align="center"><strong>What you still haven't used</strong></td>
+    <td align="center"><strong>What you stopped paying for</strong></td>
+  </tr>
+  <tr>
+    <td valign="top">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="site/assets/overview-dark.png">
+  <source media="(prefers-color-scheme: light)" srcset="site/assets/overview.png">
+  <img src="site/assets/overview.png" alt="Bubble Tax overview: five AI subscriptions, weekly quota left and a contextual roast" width="380">
+</picture>
+    </td>
+    <td valign="top">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="site/assets/savings-dark.png">
+  <source media="(prefers-color-scheme: light)" srcset="site/assets/savings.png">
+  <img src="site/assets/savings.png" alt="Savings: recorded cancellations and downgrades, with estimated monthly price reductions" width="380">
+</picture>
+    </td>
+  </tr>
+</table>
 
-## Run on macOS
+Actual macOS captures with illustrative sample data. Images follow your GitHub light or dark theme; click to view at full size.
 
-Requires macOS 14+, Swift 5.9+ and Python 3.9+. The bundled arm64 usage helper requires macOS 14. No external packages.
+## Left today. Unused when the window expires.
+
+A quiet afternoon isn't a reason to cancel a plan. Bubble Tax keeps weekly and session limits separate, and records balances observed near reset so you can see repeated unused headroom over time.
+
+<p align="center">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="site/assets/unused-history-dark.png">
+  <source media="(prefers-color-scheme: light)" srcset="site/assets/unused-history.png">
+  <img src="site/assets/unused-history.png" alt="Unused history: separate charts for weekly and session balances observed near reset" width="480">
+</picture>
+</p>
+
+Compare smaller plans, review the provider's cancellation options, then record the change **after you complete it**. Savings shows estimated monthly list-price reductions. Work plans use seat reviews and stay outside personal savings.
+
+The point is to spend less, not burn more tokens to justify the bill.
+
+## Try the preview
+
+**v0.1.0 · Apple silicon · macOS 14+ · Python 3.9+**
+
+1. [Download the ZIP](https://github.com/bubble-tax/bubble-tax.github.io/releases/download/v0.1.0/Bubble-Tax-0.1.0-macOS-arm64.zip), extract it and move **Bubble Tax.app** to Applications.
+2. Open the app, then click **†** in the menu bar. There is no Dock window.
+3. Open Settings to connect existing provider sessions or choose local log folders, then refresh.
+
+This preview is **ad-hoc signed and not notarized**. If macOS blocks first launch, follow [Apple's instructions for opening an app from an unknown developer](https://support.apple.com/guide/mac-help/open-a-mac-app-from-an-unknown-developer-mh40616/mac). Installation details and checksums are on the [release page](https://github.com/bubble-tax/bubble-tax.github.io/releases/tag/v0.1.0). No Intel build is included.
+
+## What the numbers mean
+
+- Quotas come from available provider sessions. Local Claude / Codex logs and Pi coding-agent sessions add activity; token counts alone cannot establish subscription quota or who paid.
+- ChatGPT's displayed quota is **Codex quota**, not every ChatGPT feature. Availability depends on the provider and authentication; missing readings stay unknown.
+- History and completed-change records stay on your Mac. USD list prices are estimates, not your invoices, refunds or accumulated cash saved.
+- Bubble Tax opens provider instructions. It does not cancel subscriptions or change billing on your behalf.
+
+## Build it locally
+
+Requires Swift 5.9+, Python 3.9+ and an Apple silicon Mac running macOS 14 or later.
 
 ```bash
 bash scripts/run.command
 ```
 
-Builds and tests the app, then opens `dist/Bubble Tax.app`. Click **†** in your menu bar; gear opens Connections. You can also reopen the app to reveal the popover.
+The script runs the collector and core tests, builds the app and opens `dist/Bubble Tax.app`.
+The read-only provider helper is bundled; it is not installed globally.
 
-Default folder locations:
+[Usage & data guide](docs/APP_GUIDE.md) · [Price sources](docs/PRICE_CATALOG.md) · [Landing-page source](site/) · [v0.1.0 notes](docs/releases/v0.1.0.md)
 
-- Claude Code: `~/.claude/projects`
-- Codex: `~/.codex/sessions`
+Includes the MIT-licensed [CodexBarCLI](vendor/codexbar/PROVENANCE.md) by Peter Steinberger. Its [license](vendor/codexbar/LICENSE) ships with the app.
 
-The build uses a local ad-hoc signature, not Developer ID distribution signing or notarization.
+---
 
-## Local data
-
-`~/Library/Application Support/BubbleTaxBar/state.json`, permissions 0600. Existing subscription records remain compatible with the storage model; the menu focuses on remaining quota, observed unused history and renewal value. The original cost/renewal assessment engine remains in BubbleTaxBarCore.
-
-## Verification
-
-The build script runs Python collector and Swift core tests. Coverage includes quota windows, missing/stale receipts, pricing, personas, roast evidence and old-state decoding. Check the menu bar popover and Connections on a Mac after building.
-
-Original conversation and local work history: [LOCAL_HANDOFF.md](docs/LOCAL_HANDOFF.md).
-
-## Quota expiry
-
-Live provider queries and supported local rate-limit snapshots supply used percentages, durations and reset timestamps. The menu shows current **Left** and the average last observed unused balance of eligible windows that expired in the past 30 days. Only account-identified observations within 15 minutes of reset qualify for expired-window estimates; usage after that observation is unknown. Missing periods are excluded. Short-window, weekly and monthly limits stay separate.
-
-Repeated unused headroom supports a cancellation or downgrade review, surfaced as **Review** on the service strip. Work plans use **Review seat**. Both the persona and service roast use the widest reported budget; missing weekly history cannot inherit short-window history. **Early read** means incomplete coverage or fewer than three eligible windows for any represented plan. A quiet short window does not override an actively used weekly budget: 34% weekly remaining means 66% used, not a token-wasting verdict. Local transcript token counts have no subscription quota denominator.
-
-**Details** provides activity and receipts. **Cancel options…** opens the provider's official cancellation instructions; billing changes are completed by the user with the provider. A connected CLI does not establish that a paid subscription exists. Public price sources and caveats are in [PRICE_CATALOG.md](docs/PRICE_CATALOG.md).
-
-## Live subscriptions and work plans
-
-Supported collector IDs: ChatGPT/Codex, Claude, Cursor, GitHub Copilot and Antigravity. Google service usage is shown through Antigravity; the separate Gemini collector is no longer enabled. The bundled MIT-licensed CodexBarCLI v0.73.0 performs provider-specific read-only usage queries with existing service authentication; this is not a claim that every provider has a public, supported API. Provider toggles are in Connections. Sign in to each service before refreshing. Missing authentication/permissions remain unavailable; no quota is fabricated.
-
-Server-supplied plan labels classify personal, free and organization-managed contexts. Enterprise, Business, Team and education labels use “Your boss is gonna love this.” and “Review seat…” instead of personal cancellation instructions. A free plan has no cancellation action. Unknown plan labels do not establish who pays. Workplace quotas may be pooled and personal activity is not organization-wide utilization. No company messages or billing changes are sent.
-
-Raw account email and organization names are not saved: account/workspace identity is hashed to partition quota history. When a verified account or reported plan changes, its previous baseline is discarded. Anonymous transcript history isn't assigned to a verified account; live expiry estimates start with the recorded server snapshots. Model/budget buckets with the same duration stay separate. Unsupported cadence or reset data remains unavailable instead of fabricating expiry. Existing local Claude/Codex token history stays available under Details.
-
-The current vendored helper is macOS arm64. See vendor/codexbar/PROVENANCE.md and LICENSE. It is bundled inside Bubble Tax; nothing is installed globally.
-
-## Completed changes and savings
-
-**Cancellation candidates first** is enabled by default and can be toggled in Settings → General. Evidence-backed review candidates come first; the selected service stays selected on refresh. Completed records are removed from the review queue. Missing, free and unfinished-window readings are not promoted into cancellation verdicts.
-
-**Plan actions → Compare downgrade…** compares cheaper published tiers. A Week / Month / Year picker converts the monthly price difference into illustrative real-world budget ideas, from coffee and meals to concerts and travel. These ideas also appear in completed-change previews and Savings history. Exact tier prices are required; the comparison is conditional on the cheaper tier covering your work. Enterprise plans show a sarcastic stock joke and remain excluded from personal savings.
-
-Open **Plan actions → Record completed change…** after completing cancellation or downgrade with the provider. Select the actual new tier for a downgrade, confirm completion and save. Work plans can record a released seat without personal savings. The banknote button opens **Savings**, with completed actions, dates, from/to tiers and an undo for the latest record in each account chain. Undo removes a local record; it does not change the provider subscription.
-
-Amounts show estimated monthly rate reductions at the bundled public USD list prices. They are not invoices, refunds, accumulated cash saved or unused-quota percentages converted into money. Ambiguous/missing prices are excluded from the estimate. Only the latest record in each account chain contributes to the total, preventing downgrade-then-cancel double counting. Account hashes partition records. Previously observed paid tiers are retained so a provider reporting Free or a cheaper tier does not erase the recording basis.
-
-The footer **Refresh** and the speech-bubble refresh icon both query current usage. The speech-bubble button also rotates the copy after the collector returns; both show/disable during collection. Failures surface as unavailable rather than inventing a fresh quota. Demo fixtures do not run collectors or write real state.
-
-## Compact visuals
-
-The main menu pairs current Left with a small expired-window history chart for each quota. The persona ring represents current weekly quota left; it is not an expired-quota or cash-waste estimate. Service cells show thin remaining-balance bars. Roast headlines stay visible; the info button reveals context and receipts. Long pricing, identity and work-plan explanations are available as tooltips in Details. Savings uses Before/After bars with a shared USD scale and keeps the monthly list-price estimate label visible. No observation or classification rules change with this presentation.
+Coffee money? In this AI economy? [If you insist.](https://buymeacoffee.com/workromancer)
