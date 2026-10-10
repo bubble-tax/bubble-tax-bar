@@ -43,10 +43,6 @@
     <div class="header-controls"><a class="header-link" href="#inside">A look inside</a><button id="theme-toggle" class="theme-toggle" aria-label="Switch to dark mode">Dark</button></div>
   </header>
   <main id="main">
-    <figure class="menu-preview wrap">
-      <div class="menu-image"><img id="menu-image" src="assets/menubar-light.svg" data-light="assets/menubar-light.svg" data-dark="assets/menubar-dark.svg" alt="Mac menu-bar illustration: Claude weekly quota 88% left, beside Wi-Fi, battery and clock." width="1200" height="88"></div>
-      <figcaption>Paid plans rotate every 8 seconds. <span>Menu-bar illustration · sample quota.</span></figcaption>
-    </figure>
     <section class="hero wrap" aria-labelledby="hero-title">
       <div class="hero-copy">
         <h1 id="hero-title">Stop sponsoring<br>the AI bubble.</h1>
@@ -56,9 +52,25 @@
         <p class="hero-aside">Your auto-renewal has excellent attendance.</p>
       </div>
       <figure class="hero-visual">
-        <button class="image-button" data-image="assets/overview.png" data-caption="Overview — actual macOS app, sample data." aria-label="Enlarge the actual macOS overview screenshot"><img class="app-capture" data-light="assets/overview.png" data-dark="assets/overview-dark.png" src="assets/overview.png" alt="Bubble Tax on macOS showing current weekly quota left and multiple AI subscriptions." width="860" height="1204" fetchpriority="high"></button>
-        <img class="hero-character" src="assets/bubbleSponsor.png" alt="A cartoon coin inflating a bubble." width="1254" height="1254">
-        <figcaption>Actual Mac app. Sample data.</figcaption>
+        <div class="mac-desktop" aria-label="Mac desktop illustration with the actual Bubble Tax app open">
+          <div class="mac-menubar">
+            <div class="mac-app-menu" aria-hidden="true">
+              <svg class="mac-apple" viewBox="0 0 24 24"><path fill="currentColor" d="M16.1 1.5c.2 1.6-.5 3-1.4 4-.9 1-2.1 1.6-3.4 1.5-.2-1.4.5-2.9 1.4-3.9.9-1 2.2-1.6 3.4-1.6ZM19 12.2c0-2.4 2-3.6 2.1-3.6-1.1-1.7-2.8-1.9-3.4-1.9-1.5-.2-3 1-3.8 1-.8 0-2-1-3.3-.9-1.8 0-3.4 1-4.3 2.6-1.9 3.2-.5 8 1.3 10.5.8 1.2 1.8 2.5 3.1 2.4 1.3 0 1.8-.8 3.4-.8 1.5 0 2 .8 3.4.8 1.4 0 2.2-1.2 3-2.4.9-1.4 1.3-2.8 1.3-2.8-.1 0-2.8-1.1-2.8-4.9Z"/></svg>
+              <span class="finder-label">Finder</span><span class="mac-menu-word">File</span><span class="mac-menu-word">Edit</span><span class="mac-menu-word">View</span>
+            </div>
+            <div class="mac-status-menu">
+              <button id="mac-quota-toggle" class="mac-quota" aria-label="Close Bubble Tax preview" aria-expanded="true" aria-controls="mac-popover">† Claude · Weekly quota 88% left</button>
+              <svg class="mac-status-icon" aria-hidden="true" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 7.5q8-7 16 0M5 10.5q5-4.5 10 0M8 13.5q2-2 4 0"/></g><circle cx="10" cy="16" r="1" fill="currentColor"/></svg>
+              <svg class="mac-status-icon mac-control" aria-hidden="true" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.3"><rect x="2" y="3" width="16" height="6" rx="3"/><rect x="2" y="11" width="16" height="6" rx="3"/></g><circle cx="6" cy="6" r="2" fill="currentColor"/><circle cx="14" cy="14" r="2" fill="currentColor"/></svg>
+              <span class="mac-clock" aria-hidden="true">Sat 9:41 AM</span>
+            </div>
+          </div>
+          <div class="mac-wallpaper" aria-hidden="true"></div>
+          <div id="mac-popover" class="mac-popover">
+            <button class="image-button" data-image="assets/overview.png" data-caption="Overview — actual macOS app, sample data." aria-label="Enlarge the actual macOS overview screenshot"><img class="app-capture" data-light="assets/overview.png" data-dark="assets/overview-dark.png" src="assets/overview.png" alt="Bubble Tax on macOS showing current weekly quota left and multiple AI subscriptions." width="860" height="1204" fetchpriority="high"></button>
+          </div>
+        </div>
+        <figcaption>Actual app capture. Sample data. <span>Click the menu-bar quota to open or close.</span></figcaption>
       </figure>
     </section>
     <p class="services wrap">Works with ChatGPT / Codex, Claude, Cursor, GitHub Copilot and Antigravity. Available data depends on your account.</p>

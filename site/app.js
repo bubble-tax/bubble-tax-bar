@@ -58,6 +58,13 @@
       document.getElementById("tour-note").textContent = screen.note;
     });
   });
+  const quotaToggle = document.getElementById("mac-quota-toggle");
+  quotaToggle.addEventListener("click", () => {
+    const expanded = quotaToggle.getAttribute("aria-expanded") !== "true";
+    quotaToggle.setAttribute("aria-expanded", String(expanded));
+    quotaToggle.setAttribute("aria-label", `${expanded ? "Close" : "Open"} Bubble Tax preview`);
+    document.getElementById("mac-popover").hidden = !expanded;
+  });
   const dialog = document.getElementById("image-dialog");
   document.querySelectorAll("[data-image]").forEach(button => {
     button.addEventListener("click", () => {
