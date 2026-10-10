@@ -5,7 +5,7 @@
 A Mac menu-bar app for AI subscriptions you pay for and barely use.
 See what is **left**, spot the plans worth reviewing, and keep a record when you cancel or downgrade.
 
-[Download the Mac app](https://github.com/bubble-tax/bubble-tax.github.io/releases/download/v0.1.0/Bubble-Tax-0.1.0-macOS-arm64.zip) · [Website](https://bubble-tax.github.io/) · [Release notes](https://github.com/bubble-tax/bubble-tax.github.io/releases/tag/v0.1.0)
+[Download the Mac app](https://github.com/bubble-tax/bubble-tax-bar/releases/download/v0.1.0-build.5/Bubble-Tax-0.1.0-macOS-arm64.zip) · [Website](https://bubble-tax.github.io/) · [Release notes](https://github.com/bubble-tax/bubble-tax-bar/releases/tag/v0.1.0-build.5)
 
 ![Bubble Tax — Stop sponsoring the AI bubble. Unused quota. Smaller plans. Less money burned.](site/assets/bubble-tax-og.png)
 
@@ -65,13 +65,13 @@ The point is to spend less, not burn more tokens to justify the bill.
 
 **v0.1.0 · Build 5 · Apple silicon · macOS 14+**
 
-1. [Download the ZIP](https://github.com/bubble-tax/bubble-tax.github.io/releases/download/v0.1.0/Bubble-Tax-0.1.0-macOS-arm64.zip), extract it and move **Bubble Tax.app** to Applications.
+1. [Download the ZIP](https://github.com/bubble-tax/bubble-tax-bar/releases/download/v0.1.0-build.5/Bubble-Tax-0.1.0-macOS-arm64.zip), extract it and move **Bubble Tax.app** to Applications.
 2. Open the app, then click **†** in the menu bar. There is no Dock window.
 3. Open Settings to connect existing provider sessions or choose local log folders, then refresh.
 
 Provider quotas, local log activity and the Claude statusline bridge work without installing Python or developer tools. Both collectors ship inside the app. Move it to Applications before connecting the Claude bridge; reconnect if you move it later.
 
-This preview is **ad-hoc signed and not notarized**. If macOS blocks first launch, follow [Apple's instructions for opening an app from an unknown developer](https://support.apple.com/guide/mac-help/open-a-mac-app-from-an-unknown-developer-mh40616/mac). Installation details and checksums are on the [release page](https://github.com/bubble-tax/bubble-tax.github.io/releases/tag/v0.1.0). No Intel build is included.
+This preview is **ad-hoc signed and not notarized**. If macOS blocks first launch, follow [Apple's instructions for opening an app from an unknown developer](https://support.apple.com/guide/mac-help/open-a-mac-app-from-an-unknown-developer-mh40616/mac). Installation details and checksums are on the [release page](https://github.com/bubble-tax/bubble-tax-bar/releases/tag/v0.1.0-build.5). No Intel build is included.
 
 ## What the numbers mean
 
@@ -88,12 +88,20 @@ Requires Swift 5.9+, python.org Python 3.12 (for bundling the collector) and an 
 bash scripts/run.command
 ```
 
-The script runs the collector and core tests, builds the app and opens `dist/Bubble Tax.app`.
+The script runs the tests, builds the app and opens `dist/Bubble Tax.app`.
+PyInstaller and its build dependencies are installed into a project-local virtual environment. To select a Python 3.12 executable, set `BUBBLE_TAX_BUILD_PYTHON=/path/to/python3.12`.
+
+```bash
+bash scripts/package-release.sh 0.1.0
+```
+
+This produces the signed preview ZIP and `SHA256SUMS.txt` in `dist/releases/0.1.0/`.
+The app is ad-hoc signed; building locally does not notarize it.
 The read-only provider helper is bundled; it is not installed globally.
 
 [Usage & data guide](docs/APP_GUIDE.md) · [Price sources](docs/PRICE_CATALOG.md) · [Landing-page source](site/) · [v0.1.0 notes](docs/releases/v0.1.0.md)
 
-Includes the MIT-licensed [CodexBarCLI](vendor/codexbar/PROVENANCE.md) by Peter Steinberger. Its [license](vendor/codexbar/LICENSE) ships with the app.
+Includes the MIT-licensed [CodexBarCLI](vendor/codexbar/PROVENANCE.md) by Peter Steinberger. Its [license](vendor/codexbar/LICENSE) ships with the app. The packaged local collector also includes Python and the PyInstaller bootloader; their license notices are included in `Contents/Resources/Collector-LICENSES.txt`.
 
 ---
 
