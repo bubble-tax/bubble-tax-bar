@@ -40,7 +40,7 @@ Service review evidence uses the widest supported budget. A quiet session does n
 
 Near-reset observations become local history after their windows expire. Only account-identified observations within 15 minutes of reset qualify; subsequent usage before reset is unknown. Missed periods and unsupported reset data are excluded. The app cannot recover unobserved past quota.
 
-Unused history offers All recorded and Last 30 days, separate charts per account and limit, and reset receipts. The main quota details show recent expired-window estimates. Short-window and weekly percentages are never added together.
+Unused history offers All recorded and Last 30 days, separate charts per account and limit, and reset receipts. Each bar shows the unused fraction against a faint full-quota track at the actual reset time. A dashed line marks the selected period’s average; hover for a reset’s date and remaining percentage. Charts show up to the latest 30 resets, while the average and receipts cover the selected period. The main quota details show recent expired-window estimates. Short-window and weekly percentages are never added together.
 
 Account and workspace identities are hashed to partition records. Raw account emails and organization names are not saved. Verified identity or plan changes reset the relevant assessment baseline; anonymous local history is not assigned to a verified account.
 

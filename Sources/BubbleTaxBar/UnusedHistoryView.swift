@@ -25,7 +25,7 @@ struct UnusedHistoryView: View {
                             .font(.callout).foregroundStyle(.secondary)
                     }.padding(.vertical, 16)
                 } else {
-                    Text("\(groups.reduce(0) { $0 + $1.windows.count }) recorded resets")
+                    Text("\(groups.reduce(0) { $0 + $1.windows.count }) recorded \(groups.reduce(0) { $0 + $1.windows.count } == 1 ? "reset" : "resets")")
                         .font(.callout.weight(.medium))
                     ForEach(groups) { group in
                         UnusedHistoryGroup(group: group,
@@ -44,6 +44,11 @@ struct UnusedHistoryView: View {
 private struct UnusedHistoryGroup: View {
     let group: UnusedQuotaGroup
     let previousAccount: Bool
+    private var subtitle: String {
+        let parts = group.title.components(separatedBy: " · ")
+        if parts.count == 2, parts[0].localizedCaseInsensitiveContains(parts[1]) || (group.windowMinutes == 300 && parts[1] == "Session") { return parts[0] }
+        return group.title
+    }
     var body: some View {
         GroupBox {
             VStack(alignment: .leading, spacing: 10) {
@@ -52,24 +57,13 @@ private struct UnusedHistoryGroup: View {
                         .font(.title2.weight(.semibold)).monospacedDigit()
                     Text("avg. unused").font(.caption).foregroundStyle(.secondary)
                     Spacer()
-                    Text("\(group.windows.count) resets").font(.caption).foregroundStyle(.secondary)
+                    Text("\(group.windows.count) \(group.windows.count == 1 ? "reset" : "resets")").font(.caption).foregroundStyle(.secondary)
                 }
-                Text("≈ \(group.fullWindowEquivalent.formatted(.number.precision(.fractionLength(1)))) full windows left")
-                    .font(.caption).foregroundStyle(.secondary)
-                    .help("Sum of the remaining fractions for this exact account and limit. Not a token count or a cash amount; quota capacity may change between resets.")
-                let samples = Array(group.windows.suffix(30))
-                Chart(samples, id: \.resetsAt) { reading in
-                    BarMark(x: .value("Reset", reading.resetDate), y: .value("Unused", reading.remainingPercent))
-                        .foregroundStyle(Color.orange.opacity(0.8))
-                }.chartYScale(domain: 0...100)
-                    .chartYAxis { AxisMarks(values: [0, 50, 100]) { axis in
-                        AxisGridLine()
-                        AxisValueLabel { if let value = axis.as(Int.self) { Text("\(value)%") } }
-                    } }
-                    .chartXAxis { AxisMarks(values: .automatic(desiredCount: 3)) }
-                    .frame(height: 100)
-                    .help("Last \(samples.count) recorded resets shown")
+                UnusedResetChart(windows: group.windows, average: group.averageUnused)
                 DisclosureGroup("Reset receipts") {
+                    Text("≈ \(group.fullWindowEquivalent.formatted(.number.precision(.fractionLength(1)))) full windows left across these resets")
+                        .font(.caption2).foregroundStyle(.secondary)
+                        .help("Sum of remaining fractions for this exact account and limit. Not tokens or money; quota capacity may change between resets.")
                     ForEach(group.windows.reversed(), id: \.resetsAt) { reading in
                         HStack(spacing: 10) {
                             Text(reading.resetDate, format: .dateTime.year().month(.abbreviated).day().hour().minute())
@@ -86,9 +80,136 @@ private struct UnusedHistoryGroup: View {
         } label: {
             VStack(alignment: .leading, spacing: 2) {
                 Text(group.provider.serviceName).font(.callout.weight(.semibold))
-                Text(group.title + (previousAccount ? " · Previous account" : ""))
+                Text(subtitle + (previousAccount ? " · Previous account" : ""))
                     .font(.caption).foregroundStyle(.secondary)
             }
+        }
+    }
+}
+
+/// Each bar is one observed reset, placed at its actual time. The faint track
+/// represents the full limit; only the colored portion was left near reset.
+private struct UnusedResetChart: View {
+    let windows: [QuotaWindow]
+    let average: Double
+    @State private var hoveredReset: Date?
+
+    private var samples: [QuotaWindow] { Array(windows.suffix(30)) }
+    private var selected: QuotaWindow? {
+        guard let hoveredReset else { return nil }
+        return samples.min { abs($0.resetDate.timeIntervalSince(hoveredReset)) < abs($1.resetDate.timeIntervalSince(hoveredReset)) }
+    }
+    private var domain: ClosedRange<Date> {
+        let first = samples.first!.resetDate
+        let last = samples.last!.resetDate
+        let padding = max(1800, last.timeIntervalSince(first) * 0.06)
+        return first.addingTimeInterval(-padding)...last.addingTimeInterval(padding)
+    }
+    private var axisDates: [Date] {
+        guard let first = samples.first, let last = samples.last else { return [] }
+        if samples.count == 1 { return [first.resetDate] }
+        if samples.count < 5 { return [first.resetDate, last.resetDate] }
+        return [first.resetDate, samples[samples.count / 2].resetDate, last.resetDate]
+    }
+    private var dateFormat: Date.FormatStyle {
+        if let first = samples.first, let last = samples.last,
+           last.resetDate.timeIntervalSince(first.resetDate) < 86400 {
+            return .dateTime.hour().minute().locale(Locale(identifier: "en_US"))
+        }
+        return .dateTime.month(.abbreviated).day().locale(Locale(identifier: "en_US"))
+    }
+
+    var body: some View {
+        if !samples.isEmpty {
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(spacing: 5) {
+                    if let selected {
+                        Text(selected.resetDate, format: .dateTime.month(.abbreviated).day().hour().minute())
+                        Spacer()
+                        Text("\(Int(selected.remainingPercent.rounded()))% left at reset")
+                            .foregroundStyle(.primary).fontWeight(.medium)
+                    } else {
+                        HStack(spacing: 4) {
+                            Path { path in
+                                path.move(to: .zero)
+                                path.addLine(to: CGPoint(x: 12, y: 0))
+                            }.stroke(Color.secondary.opacity(0.6), style: StrokeStyle(lineWidth: 1, dash: [3, 3]))
+                                .frame(width: 12, height: 1)
+                            Text("Period average")
+                        }
+                        Spacer()
+                        Text(samples.count < windows.count ? "Latest \(samples.count) of \(windows.count) resets" : "Each bar is a reset")
+                    }
+                }
+                .font(.caption2).foregroundStyle(.secondary)
+                .monospacedDigit().frame(height: 14)
+
+                GeometryReader { geometry in
+                    let barWidth = max(4, min(22, (geometry.size.width - 32) / CGFloat(samples.count) * 0.6))
+                    Chart {
+                        ForEach(samples, id: \.resetsAt) { reading in
+                            BarMark(x: .value("Reset", reading.resetDate),
+                                    yStart: .value("Baseline", 0), yEnd: .value("Full quota", 100), width: .fixed(barWidth))
+                                .foregroundStyle(Color.primary.opacity(0.045))
+                                .cornerRadius(3)
+                                .accessibilityHidden(true)
+                            BarMark(x: .value("Reset", reading.resetDate),
+                                    yStart: .value("Baseline", 0), yEnd: .value("Left near reset", reading.remainingPercent), width: .fixed(barWidth))
+                                .foregroundStyle(Color.orange.opacity(selected == nil || selected?.resetsAt == reading.resetsAt ? 0.8 : 0.3))
+                                .cornerRadius(3)
+                                .accessibilityLabel(reading.resetDate.formatted(.dateTime.month().day().hour().minute()))
+                                .accessibilityValue("\(Int(reading.remainingPercent.rounded())) percent left near reset")
+                        }
+                        RuleMark(y: .value("Period average", average))
+                            .foregroundStyle(Color.secondary.opacity(0.55))
+                            .lineStyle(StrokeStyle(lineWidth: 1, dash: [3, 3]))
+                        if let selected {
+                            RuleMark(x: .value("Selected reset", selected.resetDate))
+                                .foregroundStyle(Color.secondary.opacity(0.3))
+                                .lineStyle(StrokeStyle(lineWidth: 1, dash: [2, 3]))
+                        }
+                    }
+                    .chartXScale(domain: domain)
+                    .chartYScale(domain: 0...100)
+                    .chartYAxis {
+                        AxisMarks(position: .leading, values: [0, 50, 100]) { axis in
+                            AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5, dash: [2, 4]))
+                                .foregroundStyle(Color.secondary.opacity(0.18))
+                            AxisValueLabel {
+                                if let value = axis.as(Int.self) {
+                                    Text("\(value)%").font(.system(size: 9)).foregroundStyle(.secondary)
+                                }
+                            }
+                        }
+                    }
+                    .chartXAxis {
+                        AxisMarks(values: axisDates) { axis in
+                            if let date = axis.as(Date.self) {
+                                AxisValueLabel(anchor: samples.count == 1 ? .top : date == samples.last?.resetDate ? .topTrailing : date == samples.first?.resetDate ? .topLeading : .top) {
+                                    Text(date, format: dateFormat)
+                                        .font(.caption2).foregroundStyle(.secondary).fixedSize()
+                                }
+                            }
+                        }
+                    }
+                    .chartOverlay { proxy in
+                        GeometryReader { overlay in
+                            Rectangle().fill(.clear).contentShape(Rectangle())
+                                .onContinuousHover { phase in
+                                    switch phase {
+                                    case .active(let location):
+                                        guard let frame = proxy.plotFrame else { hoveredReset = nil; return }
+                                        let plot = overlay[frame]
+                                        guard plot.contains(location) else { hoveredReset = nil; return }
+                                        hoveredReset = proxy.value(atX: location.x - plot.minX, as: Date.self)
+                                    case .ended: hoveredReset = nil
+                                    }
+                                }
+                        }
+                    }
+                }.frame(height: 116)
+            }
+            .onChange(of: windows.map(\.resetsAt)) { _, _ in hoveredReset = nil }
         }
     }
 }
