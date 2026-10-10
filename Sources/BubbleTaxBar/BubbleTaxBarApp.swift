@@ -136,27 +136,38 @@ struct MenuPanel: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            HStack {
-                Text(settings ? "Settings" : savings ? "Savings" : unusedHistory ? "Unused history" : "Bubble Tax").font(.headline)
+            HStack(spacing: 10) {
+                if settings || savings || unusedHistory {
+                    PanelToolbarButton(symbol: "chevron.left", label: "Back to overview") {
+                        settings = false
+                        savings = false
+                        unusedHistory = false
+                    }.keyboardShortcut(.cancelAction)
+                }
+                Text(settings ? "Settings" : savings ? "Savings" : unusedHistory ? "Unused history" : "Bubble Tax")
+                    .font(.headline).lineLimit(1)
                 if store.demoMode && !CommandLine.arguments.contains("--hide-demo-badge") {
                     Text("DEMO").font(.caption2.weight(.semibold)).foregroundStyle(.orange)
                         .help("Sample data for screenshots. Your real records are untouched.")
                 }
-                Spacer()
+                Spacer(minLength: 12)
                 if !settings && !savings && !unusedHistory {
-                    Button { unusedHistory = true } label: { Image(systemName: "clock.arrow.circlepath") }
-                        .help("Unused quota from past resets").accessibilityLabel("Unused quota history")
-                    Button { savings = true } label: { Image(systemName: "banknote") }
-                        .help("Recorded changes and estimated savings").accessibilityLabel("Savings history")
+                    HStack(spacing: 8) {
+                        PanelToolbarButton(symbol: "clock.arrow.circlepath", label: "Unused quota history") {
+                            unusedHistory = true
+                        }
+                        PanelToolbarButton(symbol: "banknote", label: "Savings history") {
+                            savings = true
+                        }
+                        PanelToolbarButton(symbol: "gearshape", label: "Settings") {
+                            settings = true
+                        }.disabled(store.demoMode)
+                    }
                 }
-                Button {
-                    if unusedHistory { unusedHistory = false } else if savings { savings = false } else { settings.toggle() }
-                } label: {
-                    Image(systemName: settings || savings || unusedHistory ? "chevron.left" : "gearshape")
-                }.help(settings || savings || unusedHistory ? "Back" : "Settings")
-                    .accessibilityLabel(settings || savings || unusedHistory ? "Back" : "Settings")
-                    .disabled(store.demoMode && !savings && !unusedHistory)
-            }.padding(16)
+            }
+            .frame(height: 28)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 10)
             Divider()
             if settings {
                 Connections()
@@ -501,5 +512,24 @@ private struct SubscriptionOverview: View {
         case .antigravity: return URL(string: "https://antigravity.google")!
         case .other: return URL(string: "https://www.google.com")!
         }
+    }
+}
+
+/// Equal label bounds keep native button bezels consistent across SF Symbols.
+private struct PanelToolbarButton: View {
+    let symbol: String
+    let label: String
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Image(systemName: symbol)
+                .font(.system(size: 13, weight: .medium))
+                .frame(width: 18, height: 18)
+        }
+        .buttonStyle(.bordered)
+        .controlSize(.regular)
+        .help(label)
+        .accessibilityLabel(label)
     }
 }
