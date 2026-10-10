@@ -1,0 +1,11 @@
+name: Validate
+on: [push, pull_request]
+jobs:
+  macos:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - name: Collector tests
+        run: python3 -m unittest discover -s tests -v
+      - name: Native tests and build
+        run: bash scripts/build-app.sh
