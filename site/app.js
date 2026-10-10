@@ -65,6 +65,42 @@
     quotaToggle.setAttribute("aria-label", `${expanded ? "Close" : "Open"} Bubble Tax preview`);
     document.getElementById("mac-popover").hidden = !expanded;
   });
+  // Mirror the native 8-second cadence and 130ms fold / 170ms unfold.
+  const quotaLabel = document.getElementById("mac-quota-label");
+  const heroImage = document.querySelector(".mac-popover img");
+  const quotaExamples = [
+    {name: "Claude", period: "Weekly", left: 88, image: "overview"},
+    {name: "Codex", period: "Weekly", left: 72, image: "overview-openai"},
+    {name: "Cursor", period: "Monthly", left: 82, image: "overview-cursor"},
+    {name: "Copilot", period: "Monthly", left: 77, image: "overview-copilot"},
+    {name: "Antigravity", period: "Weekly", left: 93, image: "overview-antigravity"},
+  ];
+  const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+  let quotaIndex = 0;
+  const renderQuota = () => {
+    const example = quotaExamples[quotaIndex];
+    quotaLabel.textContent = `† ${example.name} · ${example.period} quota ${example.left}% left`;
+    heroImage.dataset.light = `assets/${example.image}.png`;
+    heroImage.dataset.dark = `assets/${example.image}-dark.png`;
+    heroImage.src = themedSource(heroImage);
+    heroImage.alt = `Bubble Tax on macOS showing ${example.name} quota left with sample data.`;
+    heroImage.closest("[data-image]").dataset.image = heroImage.getAttribute("src");
+    heroImage.closest("[data-image]").dataset.caption = `${example.name} overview — actual macOS app, sample data.`;
+  };
+  // Warm both appearances so changing services or themes doesn't flash a blank image.
+  quotaExamples.slice(1).forEach(example => {
+    ["", "-dark"].forEach(suffix => { const image = new Image(); image.src = `assets/${example.image}${suffix}.png`; });
+  });
+  setInterval(async () => {
+    if (document.hidden || document.getElementById("image-dialog").open) return;
+    quotaIndex = (quotaIndex + 1) % quotaExamples.length;
+    if (reducedMotion.matches) { renderQuota(); return; }
+    const fold = quotaLabel.animate([{transform: "rotateX(0deg)"}, {transform: "rotateX(-90deg)"}], {duration: 130, easing: "ease-in", fill: "forwards"});
+    await fold.finished;
+    renderQuota();
+    fold.cancel();
+    await quotaLabel.animate([{transform: "rotateX(90deg)"}, {transform: "rotateX(0deg)"}], {duration: 170, easing: "ease-out"}).finished;
+  }, 8000);
   const dialog = document.getElementById("image-dialog");
   document.querySelectorAll("[data-image]").forEach(button => {
     button.addEventListener("click", () => {
