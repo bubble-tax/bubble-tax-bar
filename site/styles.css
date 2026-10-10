@@ -114,3 +114,5 @@ body.modal-open{overflow:hidden}
 .coffee-skip{border:0;background:transparent;padding:3px;color:var(--muted);font-size:12px}
 .coffee-skip:hover{color:var(--ink);text-decoration:underline}
 @media(max-width:420px){.coffee-dialog{padding:24px}.coffee-dialog h2{font-size:29px}}
+
+.release-notes-link{text-decoration:underline;text-underline-offset:3px}
