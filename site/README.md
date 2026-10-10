@@ -16,7 +16,7 @@ Open http://127.0.0.1:8765. Use any available port if occupied.
 
 Edit `site/config.js`: set `downloadUrl` to the actual Release asset, `githubUrl` to the public repository, and `coffeeUrl` to your Buy Me a Coffee page. `releaseLabel` should describe the actual version, architecture and signing status. Missing or invalid destinations stay disabled; there are no invented release or payment links.
 
-The current app/helper build targets Apple silicon. Provider quota refresh runs natively; Python 3.9+ is optional for local log activity and the Claude statusline bridge. Validate prerequisites on a clean Mac before release; update download/install details accordingly. Signing/notarization or an explicit unsigned-beta installation guide must accompany the released artifact.
+The current app/helper build targets Apple silicon. Provider quota refresh runs natively; local logs and the Claude bridge use a bundled runtime. End users need neither Python nor developer tools. Validate prerequisites on a clean Mac before release; update download/install details accordingly. Signing/notarization or an explicit unsigned-beta installation guide must accompany the released artifact.
 
 ## GitHub Pages
 

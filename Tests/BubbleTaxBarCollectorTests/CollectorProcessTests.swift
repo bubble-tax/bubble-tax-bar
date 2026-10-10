@@ -3,7 +3,6 @@ import XCTest
 
 final class CollectorProcessTests: XCTestCase {
     func testNoPythonDoesNotPreventProviderCollection() async throws {
-        XCTAssertNil(CollectorProcess.python(candidates: []))
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         defer { try? FileManager.default.removeItem(at: directory) }

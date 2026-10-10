@@ -75,3 +75,30 @@ class ClaudeStatuslineTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 hook.configure("install", home)
             self.assertEqual(settings.read_text(), "broken json")
+
+    def test_frozen_bridge_migrates_legacy_without_interpreter_and_restores_original(self):
+        with tempfile.TemporaryDirectory() as directory:
+            home = Path(directory)
+            settings, folder = hook.paths(home)
+            original = {"type": "command", "command": "printf original"}
+            hook.atomic_json(folder / "configuration.json", {"original": original})
+            hook.atomic_json(settings, {"statusLine": {"type": "command", "command": hook.shlex.join(["/missing/python3", str(folder / "bridge.py"), "capture"])}})
+            binary = "/Applications/Bubble Tax.app/Contents/Helpers/BubbleTaxCollector/BubbleTaxCollector"
+            self.assertFalse(hook.configure("status", home, executable=binary))
+            self.assertTrue(hook.configure("install", home, executable=binary))
+            self.assertTrue(hook.configure("status", home, executable=binary))
+            self.assertFalse((folder / "bridge.py").exists())
+            hook.configure("remove", home, executable="/moved/collector")
+            self.assertEqual(json.loads(settings.read_text())["statusLine"], original)
+
+    def test_frozen_bridge_refuses_to_overwrite_user_replacement(self):
+        with tempfile.TemporaryDirectory() as directory:
+            home = Path(directory)
+            hook.configure("install", home, executable="/bundled/collector")
+            settings, _ = hook.paths(home)
+            changed = {"statusLine": {"type": "command", "command": "printf user"}}
+            hook.atomic_json(settings, changed)
+            with self.assertRaises(ValueError):
+                hook.configure("install", home, executable="/updated/collector")
+            hook.configure("remove", home, executable="/updated/collector")
+            self.assertEqual(json.loads(settings.read_text()), changed)

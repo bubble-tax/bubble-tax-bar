@@ -131,23 +131,13 @@ final class Store: ObservableObject {
         guard !demoMode, ready, !configuringStatusline else { return }
         configuringStatusline = true
         defer { configuringStatusline = false }
-        guard let script = Bundle.main.url(forResource: "claude_statusline", withExtension: "py") ?? Bundle.module.url(forResource: "claude_statusline", withExtension: "py") else { return }
         do {
             let enabled = try await Task.detached(priority: .utility) {
-                let process = Process()
-                guard let python = CollectorProcess.python() else {
+                guard let helper = CollectorProcess.localHelper() else {
                     if action == "status" { return false }
-                    throw NSError(domain: "BubbleTaxBar", code: 1, userInfo: [NSLocalizedDescriptionKey: "Python 3.9+ is needed only for the Claude statusline bridge. Provider quota refresh works without it."])
+                    throw NSError(domain: "BubbleTaxBar", code: 1, userInfo: [NSLocalizedDescriptionKey: "The bundled local collector is missing. Reinstall Bubble Tax."])
                 }
-                process.executableURL = URL(fileURLWithPath: python)
-                process.arguments = [script.path, action]
-                let pipe = Pipe(); process.standardOutput = pipe; process.standardError = FileHandle.nullDevice
-                try process.run()
-                let output = pipe.fileHandleForReading.readDataToEndOfFile()
-                process.waitUntilExit()
-                guard process.terminationStatus == 0 else {
-                    throw NSError(domain: "BubbleTaxBar", code: 3, userInfo: [NSLocalizedDescriptionKey: "Could not update Claude statusline. Check your Claude settings file."])
-                }
+                let output = try CollectorProcess.run(helper, arguments: ["statusline", action], timeout: 15)
                 return (try JSONSerialization.jsonObject(with: output) as? [String: Bool])?["enabled"] ?? false
             }.value
             claudeStatuslineEnabled = enabled
@@ -316,7 +306,6 @@ final class Store: ObservableObject {
         guard !demoMode, ready, !scanning, !providers.isEmpty || data.piFolder != nil else { return }
         scanning = true
         defer { scanning = false }
-        let script = Bundle.main.url(forResource: "collector", withExtension: "py") ?? Bundle.module.url(forResource: "collector", withExtension: "py")
         let claude = providers.contains(.claude) ? data.claudeFolder : nil
         let codex = providers.contains(.openai) ? data.codexFolder : nil
         let pi = data.piFolder
@@ -332,20 +321,19 @@ final class Store: ObservableObject {
         let local = await Task.detached(priority: .utility) { () -> (CollectorSnapshot, String?) in
             var snapshot = try! JSONDecoder().decode(CollectorSnapshot.self, from: Data("{\"days\":[],\"sources\":[],\"quotaWindows\":[]}".utf8))
             guard claude != nil || codex != nil || pi != nil else { return (snapshot, nil) }
-            guard let script else { return (snapshot, "The local log collector is missing. Provider quotas are collected separately.") }
-            guard let python = CollectorProcess.python() else {
-                return (snapshot, "Local log activity needs Python 3.9+. Install Python or disconnect local logs in Settings.")
+            guard let helper = CollectorProcess.localHelper() else {
+                return (snapshot, "The bundled local collector is missing. Reinstall Bubble Tax.")
             }
-            var arguments = [script.path, "--timezone", TimeZone.current.identifier]
+            var arguments = ["collect", "--timezone", TimeZone.current.identifier]
             if let claude { arguments += ["--claude-folder", claude] }
             if let codex { arguments += ["--codex-folder", codex] }
             if let pi { arguments += ["--pi-folder", pi] }
             do {
-                let bytes = try CollectorProcess.run(python, arguments: arguments, timeout: 30)
+                let bytes = try CollectorProcess.run(helper, arguments: arguments, timeout: 30)
                 snapshot = try JSONDecoder().decode(CollectorSnapshot.self, from: bytes)
                 return (snapshot, nil)
             } catch {
-                return (snapshot, "Local log collection failed; check the selected folders and your Python installation.")
+                return (snapshot, "Local log collection failed; check the selected folders and their access permissions.")
             }
         }.value
         var output = local.0

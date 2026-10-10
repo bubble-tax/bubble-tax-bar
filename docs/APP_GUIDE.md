@@ -68,8 +68,8 @@ Optional monthly or yearly renewal schedules can be set locally with an anchor d
 
 Local state is stored at `~/Library/Application Support/BubbleTaxBar/state.json`, with file permissions 0600. Existing service authentication is used for live queries; the app does not require users to paste passwords into its settings.
 
-The installed app requires macOS 14+ and Apple silicon. Provider quota refresh calls the bundled native helper directly, without Python or Command Line Tools. Python 3.9+ is optional for local Claude/Codex/Pi log activity and installing or removing the Claude statusline bridge. Missing or broken Python affects only those local features; provider readings are still refreshed. Real Python installations are validated before use; Apple's `/usr/bin/python3` installer stub is not launched.
+The installed app requires macOS 14+ and Apple silicon. Provider quota refresh calls the bundled native helper directly. Local Claude/Codex/Pi activity and the optional Claude statusline bridge use a bundled collector with its own Python runtime. Users do not need Python, Command Line Tools or a local server. Move the app to Applications before connecting the bridge; reconnect it in Settings if the app moves. Existing Python bridges are safely migrated when reconnected; user-edited statuslines are preserved.
 
-To build from source, run `bash scripts/run.command`. Development still requires Swift 5.9+ and Python 3.9+ for the parser tests. Native provider requests are bounded by time and response size; unverified or failed data stays unavailable.
+To build from source, run `bash scripts/run.command`. Development requires Swift 5.9+ and python.org Python 3.12 for bundling the collector; PyInstaller is installed only into a project-local build environment. Native provider requests are bounded by time and response size; unverified or failed data stays unavailable.
 
 The build uses an ad-hoc signature. Developer ID signing and Apple notarization are separate distribution steps. See the [release notes](releases/v0.1.0.md), [price catalog](PRICE_CATALOG.md) and bundled helper [provenance](../vendor/codexbar/PROVENANCE.md).

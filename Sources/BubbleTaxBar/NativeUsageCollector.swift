@@ -62,6 +62,13 @@ enum NativeUsageCollector {
 }
 
 enum CollectorProcess {
+    static func localHelper() -> String? {
+        let bundled = Bundle.main.bundleURL.appendingPathComponent("Contents/Helpers/BubbleTaxCollector.app/Contents/MacOS/BubbleTaxCollector").path
+        let developer = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
+            .deletingLastPathComponent().appendingPathComponent("dist/collector/BubbleTaxCollector.app/Contents/MacOS/BubbleTaxCollector").path
+        return [bundled, developer].first { FileManager.default.isExecutableFile(atPath: $0) }
+    }
+
     enum Failure: LocalizedError {
         case failed, timedOut, oversized
         var errorDescription: String? {
@@ -116,13 +123,4 @@ enum CollectorProcess {
         return buffer.data
     }
 
-    /// /usr/bin/python3 may be Apple's installer stub on a clean Mac.
-    static func python(candidates: [String] = ["/opt/homebrew/bin/python3", "/usr/local/bin/python3",
-            "/Library/Developer/CommandLineTools/usr/bin/python3",
-            "/Applications/Xcode.app/Contents/Developer/usr/bin/python3"]) -> String? {
-        return candidates.first {
-            FileManager.default.isExecutableFile(atPath: $0) &&
-            (try? run($0, arguments: ["-c", "import sys, zoneinfo; assert sys.version_info >= (3, 9)"], timeout: 5)) != nil
-        }
-    }
 }

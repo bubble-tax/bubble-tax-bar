@@ -32,46 +32,59 @@ def paths(home):
     return (home / ".claude/settings.json", folder)
 
 
-def configure(action, home, script=None):
+def configure(action, home, script=None, executable=None):
     settings, folder = paths(home)
     document = json.loads(settings.read_text()) if settings.exists() else {}
     if not isinstance(document, dict):
         raise ValueError("Settings must be an object")
     saved = folder / "configuration.json"
-    command = shlex.join([sys.executable, str(folder / "bridge.py"), "capture"])
+    configuration = json.loads(saved.read_text()) if saved.exists() else None
+    if configuration is not None and not isinstance(configuration, dict):
+        raise ValueError("Bridge configuration must be an object")
+    command = shlex.join([executable, "statusline", "capture"]) if executable else shlex.join([sys.executable, str(folder / "bridge.py"), "capture"])
+    statusline = document.get("statusLine")
+    current = statusline.get("command") if isinstance(statusline, dict) else None
+    owned = configuration is not None and current == configuration.get("command", command)
+    # Migrate the old Python bridge even if that interpreter is no longer installed.
+    if configuration is not None and "command" not in configuration and isinstance(current, str):
+        parts = shlex.split(current)
+        owned = len(parts) == 3 and parts[1:] == [str(folder / "bridge.py"), "capture"]
     if action == "status":
-        return document.get("statusLine", {}).get("command") == command if isinstance(document.get("statusLine"), dict) else False
+        return owned and current == command
     if action == "install":
-        if saved.exists():
-            if document.get("statusLine", {}).get("command") == command:
-                return True
+        if configuration is not None and not owned:
             raise ValueError("Settings changed since installation; remove the old bridge first")
-        original = document.get("statusLine")
+        if owned and current == command:
+            return True
+        original = configuration["original"] if configuration is not None else statusline
         if original is not None and (not isinstance(original, dict) or original.get("type") != "command" or not isinstance(original.get("command"), str)):
             raise ValueError("Unsupported existing statusline")
-        atomic_json(folder / "settings-backup.json", document)
-        (folder / "bridge.py").write_text(Path(script or __file__).read_text())
-        (folder / "bridge.py").chmod(0o600)
-        atomic_json(saved, {"original": original})
-        document["statusLine"] = dict(original or {}, type="command", command=command)
+        if configuration is None:
+            atomic_json(folder / "settings-backup.json", document)
+        if not executable:
+            (folder / "bridge.py").write_text(Path(script or __file__).read_text())
+            (folder / "bridge.py").chmod(0o600)
+        updated = dict(document, statusLine=dict(original or {}, type="command", command=command))
+        atomic_json(saved, {"original": original, "command": command})
         try:
-            atomic_json(settings, document)
+            atomic_json(settings, updated)
         except OSError:
-            saved.unlink(missing_ok=True)
+            if configuration is None:
+                saved.unlink(missing_ok=True)
+            else:
+                atomic_json(saved, configuration)
             raise
         return True
-    if action == "remove" and saved.exists():
-        original = json.loads(saved.read_text())["original"]
+    if action == "remove" and configuration is not None:
         # Never overwrite a statusline changed by the user after installation.
-        if isinstance(document.get("statusLine"), dict) and document["statusLine"].get("command") == command:
-            if original is None:
+        if owned:
+            if configuration["original"] is None:
                 document.pop("statusLine", None)
             else:
-                document["statusLine"] = original
+                document["statusLine"] = configuration["original"]
             atomic_json(settings, document)
         saved.unlink()
         (folder / "quota.json").unlink(missing_ok=True)
-        return False
     return False
 
 
