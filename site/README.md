@@ -20,7 +20,7 @@ The current app/helper build targets Apple silicon. Provider quota refresh runs 
 
 ## GitHub Pages
 
-Push the repository to GitHub, use `main` (or update the workflow branch), and choose Settings → Pages → Source → GitHub Actions. `.github/workflows/pages.yml` deploys only `site/`. It runs on relevant pushes to main or manually from Actions. Deployment has not been performed locally. All asset paths are relative to support project Pages under `/repository-name/`.
+The landing page is deployed from the separate `bubble-tax/bubble-tax.github.io` repository at https://bubble-tax.github.io/. This app repository keeps the landing-page source in `site/` but does not run a Pages deployment workflow. Publish landing-page updates through the website repository.
 
 `assets/` contains seven native app captures and six existing persona illustrations. Capture source: `../../screenshots/landing-clean/`. No user account information is published. Keep demo captions when replacing screenshots with other demo captures.
 
