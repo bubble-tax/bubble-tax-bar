@@ -99,7 +99,7 @@ This produces the signed preview ZIP and `SHA256SUMS.txt` in `dist/releases/0.1.
 The app is ad-hoc signed; building locally does not notarize it.
 The read-only provider helper is bundled; it is not installed globally.
 
-[Usage & data guide](docs/APP_GUIDE.md) · [Price sources](docs/PRICE_CATALOG.md) · [Landing-page source](site/) · [v0.1.0 notes](docs/releases/v0.1.0.md)
+[Usage & data guide](docs/APP_GUIDE.md) · [Signing & notarization](docs/SIGNING.md) · [Price sources](docs/PRICE_CATALOG.md) · [Landing-page source](site/) · [v0.1.0 notes](docs/releases/v0.1.0.md)
 
 Includes the MIT-licensed [CodexBarCLI](vendor/codexbar/PROVENANCE.md) by Peter Steinberger. Its [license](vendor/codexbar/LICENSE) ships with the app. The packaged local collector also includes Python and the PyInstaller bootloader; their license notices are included in `Contents/Resources/Collector-LICENSES.txt`.
 

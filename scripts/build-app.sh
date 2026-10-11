@@ -43,7 +43,7 @@ if [[ -x "$project_dir/vendor/codexbar/CodexBarCLI" ]]; then
     cp -R "$project_dir/vendor/codexbar/CodexBar_CodexBarCore.bundle" "$app_dir/Contents/Helpers/"
     cp "$project_dir/vendor/codexbar/LICENSE" "$app_dir/Contents/Resources/CodexBar-LICENSE.txt"
 fi
-# collector.py is loaded directly from Contents/Resources by Store.scan().
+# The local collector and its runtime ship as a nested helper app.
 # Preserve legacy output outside the app before signing; SwiftPM resource
 # directories without Info.plist cannot be nested under Contents/MacOS.
 legacy_bundle="$app_dir/Contents/MacOS/BubbleTaxBar_BubbleTaxBar.bundle"
@@ -61,7 +61,7 @@ cat > "$app_dir/Contents/Info.plist" <<'PLIST'
 <key>CFBundleExecutable</key><string>BubbleTaxBar</string>
 <key>CFBundlePackageType</key><string>APPL</string>
 <key>CFBundleShortVersionString</key><string>0.1.0</string>
-<key>CFBundleVersion</key><string>5</string>
+<key>CFBundleVersion</key><string>6</string>
 <key>CFBundleIconFile</key><string>AppIcon.icns</string>
 <key>LSMinimumSystemVersion</key><string>14.0</string>
 <key>LSUIElement</key><true/>
@@ -69,6 +69,6 @@ cat > "$app_dir/Contents/Info.plist" <<'PLIST'
 </dict></plist>
 PLIST
 python3 scripts/verify-bundled-collector.py "$app_dir/Contents/Helpers/BubbleTaxCollector.app"
-codesign --force --deep --sign - "$app_dir"
+python3 scripts/sign-app.py "$app_dir"
 echo "Built: $app_dir"
 echo "Launch: open \"$app_dir\""

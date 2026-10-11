@@ -15,6 +15,14 @@ if [[ "$bundle_version" != "$release_version" ]]; then
     exit 1
 fi
 codesign --verify --deep --strict --verbose=2 "$app_dir"
+signing_status="This preview is ad-hoc signed and is not notarized by Apple."
+if codesign -dvv "$app_dir" 2>&1 | grep -q 'Authority=Developer ID Application:'; then
+    signing_status="This preview is Developer ID signed. Apple notarization has not been completed."
+fi
+if [[ -n "${NOTARY_PROFILE:-}" ]]; then
+    bash scripts/notarize-app.sh "$app_dir"
+    signing_status="This preview is Developer ID signed and notarized by Apple."
+fi
 release_root="$project_dir/dist/releases/$release_version"
 staging="$release_root/Bubble Tax $release_version"
 mkdir -p "$staging"
@@ -28,9 +36,9 @@ All collectors and their runtime are included. No Python, developer tools or ser
 Move Bubble Tax.app to Applications and open it. Look for † in your menu bar.
 Sign in to supported AI tools, then open Settings to connect usage and logs.
 If you move the app later, reconnect the Claude statusline bridge in Settings.
-This preview is ad-hoc signed and is not notarized by Apple.
 See RELEASE-NOTES.md for installation, first-launch and data details.
 INSTALL
+echo "$signing_status" >> "$staging/INSTALL.txt"
 asset="Bubble-Tax-$release_version-macOS-arm64.zip"
 ditto -c -k --sequesterRsrc --keepParent "$staging" "$release_root/$asset"
 (cd "$release_root" && shasum -a 256 "$asset" > SHA256SUMS.txt)
