@@ -16,7 +16,8 @@ if [[ "$bundle_version" != "$release_version" ]]; then
 fi
 codesign --verify --deep --strict --verbose=2 "$app_dir"
 signing_status="This preview is ad-hoc signed and is not notarized by Apple."
-if codesign -dvv "$app_dir" 2>&1 | grep -q 'Authority=Developer ID Application:'; then
+signature_metadata="$(codesign -dvv "$app_dir" 2>&1)"
+if [[ "$signature_metadata" == *"Authority=Developer ID Application:"* ]]; then
     signing_status="This preview is Developer ID signed. Apple notarization has not been completed."
 fi
 if [[ -n "${NOTARY_PROFILE:-}" ]]; then

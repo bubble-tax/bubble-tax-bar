@@ -4,7 +4,8 @@ project_dir="$(cd "$(dirname "$0")/.." && pwd)"
 app_dir="${1:-$project_dir/dist/Bubble Tax.app}"
 profile="${NOTARY_PROFILE:?Set NOTARY_PROFILE to a notarytool Keychain profile}"
 codesign --verify --deep --strict "$app_dir"
-if ! codesign -dvv "$app_dir" 2>&1 | grep -q 'Authority=Developer ID Application:'; then
+signature_metadata="$(codesign -dvv "$app_dir" 2>&1)"
+if [[ "$signature_metadata" != *"Authority=Developer ID Application:"* ]]; then
     echo "Developer ID signing is required before notarization." >&2
     exit 1
 fi
