@@ -59,7 +59,7 @@ final class Store: ObservableObject {
             save()
         }
         timer = Timer.scheduledTimer(withTimeInterval: 300, repeats: true) { [weak self] _ in
-            Task { @MainActor in await self?.scan() }
+            Task { @MainActor [weak self] in await self?.scan() }
         }
         let recentlyRefreshed = data.snapshot?.connections != nil &&
             (data.scannedAt.map { Date().timeIntervalSince($0) < 120 } ?? false)

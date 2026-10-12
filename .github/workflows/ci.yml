@@ -8,4 +8,8 @@ jobs:
       - name: Collector tests
         run: python3 -m unittest discover -s Tests -v
       - name: Native tests and build
-        run: bash scripts/build-app.sh
+        # Release packaging needs the developer's Python framework and signing Keychain.
+        # CI validates the collectors, native tests and release executable.
+        run: |
+          swift test
+          swift build -c release

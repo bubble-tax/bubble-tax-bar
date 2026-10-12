@@ -52,7 +52,7 @@ final class MenuBarDelegate: NSObject, NSApplicationDelegate {
         if CommandLine.arguments.contains("--show-popover") { togglePopover() }
         store.$data.sink { [weak self] data in self?.updateStatus(data) }.store(in: &subscriptions)
         statusTimer = Timer.scheduledTimer(withTimeInterval: 8, repeats: true) { [weak self] _ in
-            Task { @MainActor in
+            Task { @MainActor [weak self] in
                 guard let self, let store = self.store else { return }
                 self.updateStatus(store.data, advance: !self.popover.isShown)
             }
