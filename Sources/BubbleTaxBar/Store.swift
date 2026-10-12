@@ -54,6 +54,7 @@ final class Store: ObservableObject {
             data.snapshot?.quotaWindows?.removeAll { $0.provider == .windsurf || $0.provider == .gemini }
             data.unusedQuotaArchive = UnusedQuotaHistory.eligibleWindows(
                 (data.unusedQuotaArchive ?? []) + (data.snapshot?.quotaWindows ?? []))
+            data.claudeQuotaSamples = ClaudeWindowHistory.record(data.claudeQuotaSamples ?? [], windows: [], connection: nil)
             rememberPaidPlans(data.snapshot?.connections ?? [])
             save()
         }
@@ -344,6 +345,8 @@ final class Store: ObservableObject {
         // Retain observed expired quota beyond the rolling 30-day snapshot.
         data.unusedQuotaArchive = UnusedQuotaHistory.eligibleWindows(
             (data.unusedQuotaArchive ?? []) + (data.snapshot?.quotaWindows ?? []) + (output.quotaWindows ?? []))
+        data.claudeQuotaSamples = ClaudeWindowHistory.record(data.claudeQuotaSamples ?? [],
+            windows: live.1, connection: live.0.first { $0.provider == .claude })
         var snapshot = output
         var previous = data.snapshot?.quotaWindows ?? []
         for connection in output.connections ?? [] where connection.status == "connected" {

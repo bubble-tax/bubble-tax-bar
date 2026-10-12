@@ -148,7 +148,7 @@ struct MenuPanel: View {
                         unusedHistory = false
                     }.keyboardShortcut(.cancelAction)
                 }
-                Text(settings ? "Settings" : savings ? "Savings" : unusedHistory ? "Unused history" : "Bubble Tax")
+                Text(settings ? "Settings" : savings ? "Savings" : unusedHistory ? "Quota history" : "Bubble Tax")
                     .font(.headline).lineLimit(1)
                 if store.demoMode && !CommandLine.arguments.contains("--hide-demo-badge") {
                     Text("DEMO").font(.caption2.weight(.semibold)).foregroundStyle(.orange)
@@ -157,7 +157,7 @@ struct MenuPanel: View {
                 Spacer(minLength: 12)
                 if !settings && !savings && !unusedHistory {
                     HStack(spacing: 8) {
-                        PanelToolbarButton(symbol: "clock.arrow.circlepath", label: "Unused quota history") {
+                        PanelToolbarButton(symbol: "clock.arrow.circlepath", label: "Quota history") {
                             unusedHistory = true
                         }
                         PanelToolbarButton(symbol: "banknote", label: "Savings history") {

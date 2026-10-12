@@ -31,6 +31,8 @@ To notarize an already signed app without rebuilding:
 NOTARY_PROFILE=bubble-tax bash scripts/notarize-app.sh
 ```
 
+If the credentials were saved in a specific Keychain, set `NOTARY_KEYCHAIN` to that Keychain path when running either script.
+
 The script requires an Accepted result, staples and validates the ticket, and checks Gatekeeper before returning success. Submission receipts remain in ignored `dist/notarization.*` directories. Recreate the release ZIP after stapling; publish only the verified artifact and matching checksum. A Developer ID signature alone is not Apple notarization.
 
 References: [Apple notarization workflow](https://developer.apple.com/documentation/security/customizing-the-notarization-workflow), [Developer ID](https://developer.apple.com/developer-id/).

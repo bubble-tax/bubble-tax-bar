@@ -24,7 +24,7 @@ The menu bar rotates enabled, detected paid-plan quotas every eight seconds. Eac
 
 In the popover, click a service card to switch subscriptions. The Quota left selector appears only when more than one enabled, detected plan is available. A single plan opens directly into its details.
 
-The top toolbar opens Unused history, Savings and Settings. Subpages put Back on the left. Launch-at-login setup is offered on first launch and can be changed in Settings. Right-click the menu-bar item to quit.
+The top toolbar opens Quota history, Savings and Settings. Subpages put Back on the left. Launch-at-login setup is offered on first launch and can be changed in Settings. Right-click the menu-bar item to quit.
 
 Settings → General contains Cancellation candidates first. It prioritizes evidence-backed review candidates and preserves the selected service during refresh. Free, missing and unfinished readings are not promoted into cancellation verdicts.
 
@@ -73,3 +73,9 @@ The installed app requires macOS 14+ and Apple silicon. Provider quota refresh c
 To build from source, run `bash scripts/run.command`. Development requires Swift 5.9+ and python.org Python 3.12 for bundling the collector; PyInstaller is installed only into a project-local build environment. Native provider requests are bounded by time and response size; unverified or failed data stays unavailable.
 
 The build uses an ad-hoc signature. Developer ID signing and Apple notarization are separate distribution steps. See the [release notes](releases/v0.1.0.md), [price catalog](PRICE_CATALOG.md) and bundled helper [provenance](../vendor/codexbar/PROVENANCE.md).
+
+## Claude window comparisons
+
+Quota history → Claude windows records paired server readings of the 5-hour and weekly meters at each refresh (every five minutes while running). For each observed segment, it shows the 5-hour percentage-point change alongside the weekly percentage-point change, an expandable timeline, and a scatter plot comparing segments. The normalized rate is weekly percentage points per 100 session percentage points; it is an observation, not a guaranteed conversion rule.
+
+Accounts, plans and weekly meters stay separate. A session/weekly reset, a meter decrease or a plan change starts a new segment. Gaps over 15 minutes and changes under 10 session percentage points are excluded from rate comparisons. Readings cover only the observed interval; they cannot reconstruct old windows, determine the model responsible, or isolate Claude Code from other Claude account activity. Rounded meters and reporting delays can affect ratios. Paired records are saved locally for 180 days, and the view shows the latest 30 segments for the selected account/plan/meter. Existing saved data remains compatible.

@@ -5,8 +5,19 @@ import BubbleTaxBarCore
 struct UnusedHistoryView: View {
     @EnvironmentObject var store: Store
     @State private var last30Days = false
+    @State private var claudeWindows = CommandLine.arguments.contains("--show-claude-windows")
 
     var body: some View {
+        VStack(spacing: 0) {
+            Picker("History", selection: $claudeWindows) {
+                Text("Unused quota").tag(false)
+                Text("Claude windows").tag(true)
+            }.pickerStyle(.segmented).padding(.horizontal, 16).padding(.top, 8)
+            if claudeWindows { ClaudeWindowHistoryView() } else { unusedHistory }
+        }
+    }
+
+    @ViewBuilder private var unusedHistory: some View {
         let now = Date()
         let windows = (store.data.unusedQuotaArchive ?? []) + (store.data.snapshot?.quotaWindows ?? [])
         let groups = UnusedQuotaHistory.groups(windows,

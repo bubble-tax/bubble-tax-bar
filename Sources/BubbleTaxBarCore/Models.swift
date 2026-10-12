@@ -110,6 +110,7 @@ public struct AppData: Codable {
     public var recordingPlans: [ProviderConnection]?
     public var billingSchedules: [BillingSchedule]?
     public var unusedQuotaArchive: [QuotaWindow]?
+    public var claudeQuotaSamples: [ClaudeQuotaSample]?
     public init() {}
 }
 

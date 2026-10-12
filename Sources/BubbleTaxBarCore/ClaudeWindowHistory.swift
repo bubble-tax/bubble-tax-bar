@@ -1,0 +1,98 @@
+import Foundation
+
+/// Paired server meters, never transcript estimates. Keep the original observations;
+/// compacted reset receipts cannot reconstruct within-window changes.
+public struct ClaudeQuotaSample: Codable, Equatable {
+    public let accountKey: String
+    public let planLabel: String?
+    public let session: QuotaWindow
+    public let weekly: QuotaWindow
+    public var observedAt: Double { max(session.observedAt, weekly.observedAt) }
+}
+
+public struct ClaudeWindowComparison: Identifiable {
+    public let id: String
+    public let samples: [ClaudeQuotaSample]
+    public let hasGap: Bool
+    public var first: ClaudeQuotaSample { samples.first! }
+    public var last: ClaudeQuotaSample { samples.last! }
+    public var sessionDelta: Double { last.session.usedPercent - first.session.usedPercent }
+    public var weeklyDelta: Double { last.weekly.usedPercent - first.weekly.usedPercent }
+    /// Weekly percentage points consumed per 100 session percentage points.
+    /// At tiny deltas, rounded server percentages make ratios misleading.
+    public var weeklyPerFullSession: Double? {
+        samples.count >= 2 && !hasGap && sessionDelta >= 10 ? weeklyDelta / sessionDelta * 100 : nil
+    }
+}
+
+public enum ClaudeWindowHistory {
+    public static let retentionDays = 180
+    public static let maximumGap: Double = 900
+
+    public static func record(_ existing: [ClaudeQuotaSample], windows: [QuotaWindow],
+                              connection: ProviderConnection?, now: Date = Date()) -> [ClaudeQuotaSample] {
+        let time = now.timeIntervalSince1970
+        var result = existing.filter { valid($0, time: time) && $0.observedAt >= time - Double(retentionDays) * 86400 }
+        if let connection, connection.provider == .claude, connection.status == "connected",
+           let account = connection.accountKey, !account.isEmpty {
+            let fresh = windows.filter {
+                $0.provider == .claude && $0.accountKey == account &&
+                $0.observedAt <= time && time - $0.observedAt <= maximumGap &&
+                $0.resetsAt > time && $0.interrupted != true
+            }
+            // Only the server's primary 5-hour meter; never a model-specific one.
+            if let session = fresh.filter({ $0.limitID == "claude:primary" && $0.windowMinutes == 300 })
+                .max(by: { $0.observedAt < $1.observedAt }) {
+                for weekly in fresh where weekly.windowMinutes == 10080 && abs(weekly.observedAt - session.observedAt) <= 60 {
+                    let value = ClaudeQuotaSample(accountKey: account, planLabel: connection.planLabel, session: session, weekly: weekly)
+                    guard valid(value, time: time), !result.contains(value) else { continue }
+                    result.append(value)
+                }
+            }
+        }
+        return result.sorted { $0.observedAt < $1.observedAt }
+    }
+
+    private static func valid(_ sample: ClaudeQuotaSample, time: Double) -> Bool {
+        guard !sample.accountKey.isEmpty, sample.session.limitID == "claude:primary",
+              sample.session.windowMinutes == 300, sample.weekly.windowMinutes == 10080,
+              abs(sample.session.observedAt - sample.weekly.observedAt) <= 60 else { return false }
+        for window in [sample.session, sample.weekly] {
+            guard window.provider == .claude, window.accountKey == sample.accountKey,
+                  window.interrupted != true else { return false }
+            guard window.usedPercent.isFinite, (0.0...100.0).contains(window.usedPercent) else { return false }
+            guard window.observedAt.isFinite, window.resetsAt.isFinite,
+                  window.observedAt <= time, window.resetsAt > window.observedAt else { return false }
+        }
+        return true
+    }
+
+    public static func comparisons(_ samples: [ClaudeQuotaSample], now: Date = Date()) -> [ClaudeWindowComparison] {
+        let groups = Dictionary(grouping: samples.filter { valid($0, time: now.timeIntervalSince1970) }) {
+            "\($0.accountKey)|\($0.weekly.limitID)|\($0.weekly.windowLabel ?? "")"
+        }
+        var result: [ClaudeWindowComparison] = []
+        for (key, values) in groups {
+            var segment: [ClaudeQuotaSample] = []
+            func finish() {
+                guard let first = segment.first else { return }
+                let gap = zip(segment, segment.dropFirst()).contains { $1.observedAt - $0.observedAt > maximumGap }
+                result.append(ClaudeWindowComparison(id: "\(key)|\(first.observedAt)", samples: segment, hasGap: gap))
+            }
+            for sample in values.sorted(by: { $0.observedAt < $1.observedAt }) {
+                if let previous = segment.last {
+                    let changed = sample.planLabel != previous.planLabel || abs(sample.session.resetsAt - previous.session.resetsAt) > 60 ||
+                        abs(sample.weekly.resetsAt - previous.weekly.resetsAt) > 60 ||
+                        sample.session.usedPercent < previous.session.usedPercent ||
+                        sample.weekly.usedPercent < previous.weekly.usedPercent ||
+                        sample.observedAt >= previous.session.resetsAt || sample.observedAt >= previous.weekly.resetsAt
+                    if changed { finish(); segment = [] }
+                    if sample == previous { continue }
+                }
+                segment.append(sample)
+            }
+            finish()
+        }
+        return result.sorted { $0.first.observedAt < $1.first.observedAt }
+    }
+}
