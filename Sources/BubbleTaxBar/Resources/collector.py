@@ -7,6 +7,8 @@ Python 3.9+, standard library only. No network, credentials, or writes.
 import argparse
 import json
 import math
+import hashlib
+import re
 from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
@@ -102,7 +104,20 @@ def compact_quotas(readings):
     return sorted(result, key=lambda r: (r["resetsAt"], r["windowMinutes"], r["limitID"]))
 
 
-def collect(provider, folder, tz, quotas=None):
+def safe_model(value):
+    if isinstance(value, str) and len(value) <= 100 and re.fullmatch(r"(?:claude-|gpt-|o[1-9](?:-|$))[A-Za-z0-9_.:-]*", value):
+        return value
+    return None
+
+
+def model_event(provider, key, date, model, counts, total=None, breakdown=True):
+    return dict(id=hashlib.sha256((provider + "|" + key).encode()).hexdigest()[:24],
+                provider=provider, timestamp=date.timestamp(), model=model,
+                input=counts[0], output=counts[1], cacheRead=counts[2], cacheWrite=counts[3],
+                tokens=sum(counts) if total is None else total, breakdownKnown=breakdown)
+
+
+def collect(provider, folder, tz, quotas=None, model_usage=None):
     stats = dict(provider=provider, status="not_configured", files=0,
                  malformed=0, unreadable=0, unsupported=0)
     days = defaultdict(lambda: dict(tokens=0, requests=0))
@@ -119,10 +134,12 @@ def collect(provider, folder, tz, quotas=None):
         return [], stats
     stats["files"] = len(paths)
     messages = {}
+    model_conflicts = set()
     sessions = defaultdict(list)
     recognized = 0
     for path in paths:
         session = str(path.relative_to(root))
+        current_model = None
         for row in rows(path, stats):
             try:
                 if provider == "claude":
@@ -141,12 +158,20 @@ def collect(provider, folder, tz, quotas=None):
                     counts = tuple(number(usage.get(k, 0)) for k in (
                         "input_tokens", "output_tokens", "cache_creation_input_tokens", "cache_read_input_tokens"))
                     if key in messages:
-                        old_date, old_counts = messages[key]
-                        messages[key] = (min(date, old_date), tuple(max(a, b) for a, b in zip(counts, old_counts)))
+                        old_date, old_counts, old_model, old_latest = messages[key]
+                        new_model = safe_model(message.get("model"))
+                        model = new_model or old_model
+                        if old_model and new_model and old_model != new_model:
+                            model_conflicts.add(key)
+                        if key in model_conflicts:
+                            model = None
+                        messages[key] = (min(date, old_date), tuple(max(a, b) for a, b in zip(counts, old_counts)), model, max(date, old_latest))
                     else:
-                        messages[key] = (date, counts)
+                        messages[key] = (date, counts, safe_model(message.get("model")), date)
                     recognized += 1
                 else:
+                    if row.get("type") == "turn_context":
+                        current_model = safe_model(row.get("payload", {}).get("model"))
                     if row.get("type") == "session_meta":
                         session = str(row.get("payload", {}).get("id") or session)
                     if row.get("type") != "event_msg" or row.get("payload", {}).get("type") != "token_count":
@@ -163,21 +188,34 @@ def collect(provider, folder, tz, quotas=None):
                         continue
                     total = number(usage["total_tokens"]) if "total_tokens" in usage else number(usage["input_tokens"]) + number(usage["output_tokens"])
                     date = timestamp(row.get("timestamp"), tz)
-                    sessions[session].append((date, total))
+                    # Codex input includes cached input; reasoning output is already
+                    # part of output. Keep counter components to derive deltas.
+                    raw_counts = tuple(number(usage.get(k, 0)) for k in (
+                        "input_tokens", "output_tokens", "cached_input_tokens", "cache_write_input_tokens"))
+                    last = info.get("last_token_usage") or {}
+                    last_total = last.get("total_tokens") if isinstance(last, dict) else None
+                    if isinstance(last_total, bool) or not isinstance(last_total, int):
+                        last_total = None
+                    sessions[session].append((date, total, current_model, raw_counts, last_total))
                     recognized += 1
             except (ValueError, TypeError, KeyError, AttributeError, OverflowError):
                 stats["malformed"] += 1
     if provider == "claude":
-        for date, counts in messages.values():
+        for key, (date, counts, model, latest) in messages.items():
             total = sum(counts)
             if total > 0:
                 days[date.strftime("%Y-%m-%d")]["tokens"] += total
                 days[date.strftime("%Y-%m-%d")]["requests"] += 1
+                if model_usage is not None:
+                    # Claude input excludes cache reads/writes.
+                    normalized = (counts[0], counts[1], counts[3], counts[2])
+                    model_usage.append(model_event(provider, key, latest, model, normalized))
     else:
-        for events in sessions.values():
+        for session_id, events in sessions.items():
             previous = 0
+            previous_counts = (0, 0, 0, 0)
             seen = set()
-            for date, total in sorted(events):
+            for date, total, model, counts, last_total in sorted(events, key=lambda e: (e[0], e[1])):
                 identity = (date, total)
                 if identity in seen:
                     continue
@@ -187,11 +225,23 @@ def collect(provider, folder, tz, quotas=None):
                     stats["unsupported"] += 1
                     continue
                 delta = total - previous
+                old_counts = previous_counts
                 previous = total
+                previous_counts = counts
                 if delta > 0:
                     day = days[date.strftime("%Y-%m-%d")]
                     day["tokens"] += delta
                     day["requests"] += 1
+                    if model_usage is not None:
+                        components = tuple(max(0, a-b) for a,b in zip(counts, old_counts))
+                        # Do not double-count cached or reasoning tokens.
+                        normalized = (max(0, components[0]-components[2]-components[3]), components[1], components[2], components[3])
+                        key = session_id + "|" + date.isoformat() + "|" + str(total)
+                        # A cumulative jump can cover several turns/models. Only
+                        # attach a model when this increment matches the last turn.
+                        event_model = model if last_total == delta else None
+                        breakdown = sum(normalized) == delta and all(a >= b for a,b in zip(counts, old_counts))
+                        model_usage.append(model_event(provider, key, date, event_model, normalized, delta, breakdown))
     stats["status"] = ("partial" if any(stats[k] for k in ("malformed", "unreadable", "unsupported"))
                        else "ok" if recognized else "no_usage")
     return [dict(provider=provider, day=day, **value) for day, value in sorted(days.items())], stats
@@ -274,11 +324,15 @@ def main():
     parser.add_argument("--timezone", help="IANA timezone; defaults to local system timezone")
     args = parser.parse_args()
     tz = ZoneInfo(args.timezone) if args.timezone else datetime.now().astimezone().tzinfo
-    result = dict(days=[], sources=[], quotaWindows=[])
+    result = dict(days=[], sources=[], quotaWindows=[], modelUsage=[], modelUsageTruncated=[])
     if args.pi_folder:
         result["piUsage"] = collect_pi(args.pi_folder, tz)
     for provider, folder in (("claude", args.claude_folder), ("openai", args.codex_folder)):
-        days, status = collect(provider, folder, tz, result["quotaWindows"])
+        model_usage = []
+        days, status = collect(provider, folder, tz, result["quotaWindows"], model_usage)
+        if len(model_usage) > 2000:
+            result["modelUsageTruncated"].append(provider)
+        result["modelUsage"].extend(sorted(model_usage, key=lambda e: e["timestamp"])[-2000:])
         result["days"].extend(days)
         result["sources"].append(status)
     if args.live_binary:

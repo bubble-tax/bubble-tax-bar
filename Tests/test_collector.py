@@ -77,6 +77,53 @@ class CollectorTests(unittest.TestCase):
         self.assertEqual(collector.collect_pi(None, ZoneInfo("Asia/Seoul"))["status"], "not_configured")
         self.assertEqual(collector.collect_pi(str(self.root / "missing"), ZoneInfo("Asia/Seoul"))["status"], "missing")
 
+    def test_claude_model_metadata_streams_and_copies_do_not_double_count(self):
+        first = self.claude(usage=dict(input_tokens=10, output_tokens=2, cache_read_input_tokens=30, cache_creation_input_tokens=5))
+        first["message"]["model"] = "claude-opus-4-6"
+        final = self.claude(usage=dict(input_tokens=10, output_tokens=6, cache_read_input_tokens=30, cache_creation_input_tokens=5))
+        final["message"]["model"] = "claude-opus-4-6"
+        other = self.claude(ident="sonnet", usage=dict(input_tokens=20, output_tokens=5))
+        other["message"]["model"] = "claude-sonnet-4-6"
+        self.write("one.jsonl", [first, final, other])
+        self.write("copy.jsonl", [final])
+        events = []
+        collector.collect("claude", str(self.root), ZoneInfo("UTC"), model_usage=events)
+        self.assertEqual(len(events), 2)
+        opus = next(e for e in events if e["model"] == "claude-opus-4-6")
+        self.assertEqual((opus["tokens"], opus["input"], opus["output"], opus["cacheRead"], opus["cacheWrite"]), (51, 10, 6, 30, 5))
+        self.assertNotIn("PRIVATE", json.dumps(events))
+        self.assertNotIn("msg1", json.dumps(events))
+
+    def test_codex_model_switches_use_deltas_without_double_counting_cache(self):
+        def usage(total, input_tokens, output, cache, last):
+            row = self.codex(total)
+            row["payload"]["info"] = dict(total_token_usage=dict(total_tokens=total, input_tokens=input_tokens, output_tokens=output, cached_input_tokens=cache, reasoning_output_tokens=output), last_token_usage=dict(total_tokens=last))
+            return row
+        a = usage(100, 80, 20, 50, 100)
+        b = usage(160, 120, 40, 70, 60); b["timestamp"] = "2026-10-01T16:05:00Z"
+        meta = dict(type="session_meta", payload=dict(id="session"))
+        context = lambda m: dict(type="turn_context", payload=dict(model=m, summary="PRIVATE"))
+        records = [meta, context("gpt-5.4"), a, context("gpt-5.4-mini"), b]
+        self.write("one.jsonl", records); self.write("copy.jsonl", records)
+        events = []
+        collector.collect("openai", str(self.root), ZoneInfo("UTC"), model_usage=events)
+        self.assertEqual([(e["model"], e["tokens"]) for e in events], [("gpt-5.4", 100), ("gpt-5.4-mini", 60)])
+        self.assertEqual((events[0]["input"], events[0]["output"], events[0]["cacheRead"]), (30, 20, 50))
+        self.assertEqual((events[1]["input"], events[1]["output"], events[1]["cacheRead"]), (20, 20, 20))
+        self.assertNotIn("PRIVATE", json.dumps(events))
+
+    def test_missing_models_and_multi_turn_jumps_remain_unknown(self):
+        a = self.claude(); a["message"]["model"] = "PRIVATE PROMPT"
+        self.write("claude.jsonl", [a])
+        events = []
+        collector.collect("claude", str(self.root), ZoneInfo("UTC"), model_usage=events)
+        self.assertIsNone(events[0]["model"])
+        self.write("codex.jsonl", [dict(type="turn_context", payload=dict(model="gpt-5.4")), self.codex(500)])
+        events = []
+        collector.collect("openai", str(self.root), ZoneInfo("UTC"), model_usage=events)
+        self.assertIsNone(events[0]["model"])
+        self.assertFalse(events[0]["breakdownKnown"])
+
     def test_codex_cumulative_counts_not_summed(self):
         self.write("one.jsonl", [self.codex(100), self.codex(100), self.codex(150, "2026-10-02T16:00:00Z")])
         days, status = self.collect("openai")

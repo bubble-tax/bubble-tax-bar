@@ -78,6 +78,8 @@ public struct CollectorSnapshot: Codable {
     public var quotaWindows: [QuotaWindow]?
     public var connections: [ProviderConnection]?
     public var piUsage: PiUsageSnapshot?
+    public var modelUsage: [ModelUsageEvent]?
+    public var modelUsageTruncated: [Provider]?
 }
 
 public struct PiUsageDay: Codable {
@@ -111,6 +113,8 @@ public struct AppData: Codable {
     public var billingSchedules: [BillingSchedule]?
     public var unusedQuotaArchive: [QuotaWindow]?
     public var claudeQuotaSamples: [ClaudeQuotaSample]?
+    public var codexQuotaSamples: [WindowQuotaSample]?
+    public var modelUsageArchive: [ModelUsageEvent]?
     public init() {}
 }
 

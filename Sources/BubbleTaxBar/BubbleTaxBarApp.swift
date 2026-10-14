@@ -434,6 +434,9 @@ private struct SubscriptionOverview: View {
                 NSPasteboard.general.setString(text, forType: .string)
                 copied = true
             })
+            if provider == .claude || provider == .openai {
+                WeeklyUsagePatternView(provider: provider)
+            }
             if !quotas.isEmpty {
                 VStack(alignment: .leading, spacing: 8) {
                     ForEach(quotas) { quota in QuotaOverviewRow(quota: quota) }

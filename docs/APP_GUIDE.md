@@ -79,3 +79,11 @@ The build uses an ad-hoc signature. Developer ID signing and Apple notarization 
 Quota history → Claude windows records paired server readings of the 5-hour and weekly meters at each refresh (every five minutes while running). For each observed segment, it shows the 5-hour percentage-point change alongside the weekly percentage-point change, an expandable timeline, and a scatter plot comparing segments. The normalized rate is weekly percentage points per 100 session percentage points; it is an observation, not a guaranteed conversion rule.
 
 Accounts, plans and weekly meters stay separate. A session/weekly reset, a meter decrease or a plan change starts a new segment. Gaps over 15 minutes and changes under 10 session percentage points are excluded from rate comparisons. Readings cover only the observed interval; they cannot reconstruct old windows, determine the model responsible, or isolate Claude Code from other Claude account activity. Rounded meters and reporting delays can affect ratios. Paired records are saved locally for 180 days, and the view shows the latest 30 segments for the selected account/plan/meter. Existing saved data remains compatible.
+
+## Model context and Codex windows
+
+Quota history now includes Claude and Codex window comparisons. Connect local code logs in Settings to see each observed interval’s model mix and input/output/cache tokens. The model picker includes intervals containing that model, including mixed-model intervals. Local token shares provide context; they do not allocate account-wide quota to models. Missing model metadata remains unknown.
+
+## This week’s usage pattern
+
+The main screen estimates the daily time and 5-hour quota equivalents needed to use the remaining weekly balance at your recent observed pace. It distinguishes insufficient records, an exhausted weekly limit, a pace too slow for the deadline, and insufficient 5-hour capacity at observed conversion rates. Estimates follow the current account, plan and weekly cycle; changing models or work patterns can change the outcome.

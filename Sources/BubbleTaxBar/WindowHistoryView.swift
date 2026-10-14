@@ -2,33 +2,39 @@ import SwiftUI
 import Charts
 import BubbleTaxBarCore
 
-struct ClaudeWindowHistoryView: View {
+struct WindowHistoryView: View {
+    let provider: Provider
     @EnvironmentObject var store: Store
     @State private var selectedLimit = ""
+    @State private var selectedModel = ""
 
-    private func key(_ value: ClaudeWindowComparison) -> String {
-        "\(value.first.accountKey)|\(value.first.planLabel ?? "unknown")|\(value.first.weekly.limitID)"
+    private func key(_ value: WindowComparison) -> String {
+        "\(value.first.accountKey)|\(value.first.planLabel ?? "unknown")|\(value.first.weekly.limitID)|\(value.first.weekly.windowLabel ?? "")"
     }
-    private func title(_ value: ClaudeWindowComparison) -> String {
+    private func title(_ value: WindowComparison) -> String {
         let weekly = value.first.weekly
         let label = weekly.windowLabel ?? (weekly.limitID == "claude:secondary" ? "All models" : "Model-specific")
-        let previous = store.connection(.claude)?.accountKey != value.first.accountKey
+        let previous = store.connection(provider)?.accountKey != value.first.accountKey
         return "\(label) · \(value.first.planLabel ?? "Unknown plan")" + (previous ? " · Previous account" : "")
     }
 
     var body: some View {
-        let all = ClaudeWindowHistory.comparisons(store.data.claudeQuotaSamples ?? [])
-        let choices = all.reduce(into: [ClaudeWindowComparison]()) { result, value in
+        let all = WindowQuotaHistory.comparisons((provider == .claude ? store.data.claudeQuotaSamples : store.data.codexQuotaSamples) ?? [])
+        let choices = all.reduce(into: [WindowComparison]()) { result, value in
             if !result.contains(where: { key($0) == key(value) }) { result.append(value) }
         }.reversed()
         let active = choices.contains(where: { key($0) == selectedLimit }) ? selectedLimit : choices.first.map(key) ?? ""
-        let rows = Array(all.filter { key($0) == active }.suffix(30))
+        let candidates = Array(all.filter { key($0) == active }.suffix(30))
+        let events = store.data.modelUsageArchive ?? []
+        let models = Set(candidates.flatMap { WindowModelActivity.summaries(events, window: $0).compactMap(\.model) }).sorted()
+        let activeModel = models.contains(selectedModel) ? selectedModel : ""
+        let rows = candidates.filter { activeModel.isEmpty || WindowModelActivity.summaries(events, window: $0).contains { $0.model == activeModel } }
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                Text("5-hour → weekly").font(.headline)
+                Text("\(provider == .claude ? "Claude" : "Codex") · 5-hour → weekly").font(.headline)
                 if rows.isEmpty {
                     Label("Waiting for paired readings", systemImage: "clock").font(.callout.weight(.medium))
-                    Text("Connect Claude and keep Bubble Tax running. Each refresh records the 5-hour and weekly meters together; earlier windows can't be reconstructed.")
+                    Text("Connect \(provider == .claude ? "Claude" : "Codex") and keep Bubble Tax running. Each refresh records the 5-hour and weekly meters together; earlier windows can't be reconstructed.")
                         .font(.callout).foregroundStyle(.secondary)
                 } else {
                     if choices.count > 1 {
@@ -38,14 +44,23 @@ struct ClaudeWindowHistoryView: View {
                     } else if let value = rows.first {
                         Text(title(value)).font(.caption).foregroundStyle(.secondary)
                     }
+                    if !models.isEmpty {
+                        Picker("Local model", selection: Binding(get: { activeModel }, set: { selectedModel = $0 })) {
+                            Text("All local mixes").tag("")
+                            ForEach(models, id: \.self) { Text($0).tag($0) }
+                        }.help("Includes windows where local logs contain this model, including mixed-model windows.")
+                    }
                     let comparable = rows.filter { $0.weeklyPerFullSession != nil }
                     if !comparable.isEmpty {
                         GroupBox {
                             VStack(alignment: .leading, spacing: 8) {
                                 Text("Observed weekly cost").font(.callout.weight(.medium))
                                 let rates = comparable.compactMap(\.weeklyPerFullSession)
-                                Text("\(rates.min()!.formatted(.number.precision(.fractionLength(1))))–\(rates.max()!.formatted(.number.precision(.fractionLength(1)))) weekly pp / full 5-hour quota")
+                                let low = rates.min()!.formatted(.number.precision(.fractionLength(1)))
+                                let high = rates.max()!.formatted(.number.precision(.fractionLength(1)))
+                                Text("\(low == high ? low : low + "–" + high) weekly pp / full 5-hour quota")
                                     .font(.caption).monospacedDigit()
+                                if comparable.count > 1 {
                                 Chart(comparable) { row in
                                     PointMark(x: .value("5-hour used (pp)", row.sessionDelta),
                                               y: .value("Weekly used (pp)", row.weeklyDelta))
@@ -56,27 +71,33 @@ struct ClaudeWindowHistoryView: View {
                                 .chartXScale(domain: 0...100)
                                 .chartYAxisLabel("Weekly pp")
                                 .chartXAxisLabel("5-hour pp · one dot per observed window segment")
-                                .frame(height: 150)
+                                .frame(height: 116)
                                 Text("Different slopes mean different observed cost. This is not a fixed conversion rule.")
                                     .font(.caption2).foregroundStyle(.secondary)
+                                }
                             }.frame(maxWidth: .infinity, alignment: .leading)
                         }
                     }
                     ForEach(rows.reversed()) { row in
-                        ClaudeWindowReceipt(row: row)
+                        WindowReceipt(row: row, models: WindowModelActivity.summaries(events, window: row), logsConnected: store.logFolder(provider) != nil)
                     }
                 }
-                Text("Local history · last 180 days · latest 30 segments shown. Refreshes every 5 minutes while running. pp = percentage points.")
+                Text("Local model activity adds context; quota changes are account-wide.")
                     .font(.caption2).foregroundStyle(.secondary)
-                Text("Changes cover the observed interval, not an entire window. Reset, meter decrease and plan changes start a new segment. Gaps over 15 minutes and changes under 10 session pp are excluded from rate comparisons. Rounded meters and reporting delays affect ratios. Claude-wide usage is included; models and unobserved activity aren't inferred.")
-                    .font(.caption2).foregroundStyle(.secondary)
+                DisclosureGroup("About these records") {
+                    Text("Latest 30 segments · 180 days · refresh every 5 minutes. pp = percentage points. Resets and plan changes start new segments. Gaps and small changes are excluded from rate comparisons. Local logs may be incomplete and their account ownership isn't verified. Token mix isn't quota share.")
+                        .font(.caption2).foregroundStyle(.secondary)
+                }.font(.caption)
+
             }.padding(16)
         }.frame(height: 490)
     }
 }
 
-private struct ClaudeWindowReceipt: View {
-    let row: ClaudeWindowComparison
+private struct WindowReceipt: View {
+    let row: WindowComparison
+    let models: [ModelUsageSummary]
+    let logsConnected: Bool
     private func number(_ value: Double) -> String { value.formatted(.number.precision(.fractionLength(1))) }
     var body: some View {
         GroupBox {
@@ -106,6 +127,7 @@ private struct ClaudeWindowReceipt: View {
                         Text(row.hasGap ? "Collection gap · rate unavailable" : "Too little observed usage to compare rates")
                             .font(.caption).foregroundStyle(.secondary)
                     }
+                    ModelMixView(models: models, logsConnected: logsConnected)
                     DisclosureGroup("Observed interval") {
                         Text("\(Date(timeIntervalSince1970: row.first.observedAt).formatted(.dateTime.month(.abbreviated).day().hour().minute().locale(Locale(identifier: "en_US")))) → \(Date(timeIntervalSince1970: row.last.observedAt).formatted(.dateTime.month(.abbreviated).day().hour().minute().locale(Locale(identifier: "en_US"))))")
                             .font(.caption2).foregroundStyle(.secondary)
@@ -136,6 +158,64 @@ private struct ClaudeWindowReceipt: View {
                     }.font(.caption)
                 }
             }.frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+}
+
+private struct ModelMixView: View {
+    let models: [ModelUsageSummary]
+    let logsConnected: Bool
+    private var total: Int { models.reduce(0) { $0 + $1.tokens } }
+    private func color(_ model: ModelUsageSummary) -> Color {
+        guard let name = model.model else { return .secondary }
+        if name.contains("opus") { return .orange }
+        if name.contains("sonnet") { return .blue }
+        if name.contains("haiku") { return .green }
+        let index = name.utf8.reduce(0) { ($0 &* 31 &+ Int($1)) & 0x7fffffff }
+        return [Color.blue, .orange, .purple, .green][index % 4]
+    }
+    var body: some View {
+        if models.isEmpty {
+            Text(logsConnected ? "No local model records in this interval" : "Connect code logs in Settings for model context")
+                .font(.caption2).foregroundStyle(.secondary)
+        } else {
+            VStack(alignment: .leading, spacing: 5) {
+                Text("Local model mix").font(.caption.weight(.medium))
+                GeometryReader { geometry in
+                    HStack(spacing: 1) {
+                        ForEach(models) { model in
+                            Rectangle().fill(color(model))
+                                .frame(width: max(0, (geometry.size.width - CGFloat(models.count - 1)) * Double(model.tokens) / Double(total)))
+                                .help("\(model.title): \(model.tokens.formatted()) local tokens")
+                        }
+                    }.clipShape(RoundedRectangle(cornerRadius: 3))
+                }.frame(height: 7).accessibilityLabel("Local token mix")
+                ForEach(models) { model in
+                    HStack(spacing: 5) {
+                        Circle().fill(color(model)).frame(width: 5, height: 5)
+                        Text(model.title).lineLimit(1).truncationMode(.middle).help(model.title)
+                        Spacer(minLength: 3)
+                        Text("\(Int((100 * Double(model.tokens) / Double(total)).rounded()))% · \(model.tokens.formatted(.number.notation(.compactName).locale(Locale(identifier: "en_US"))))")
+                            .monospacedDigit()
+                    }.font(.caption2)
+                }
+                DisclosureGroup("Token details") {
+                    ForEach(models) { model in
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text("\(model.title) · \(model.requests) \(model.requests == 1 ? "record" : "records")")
+                                .font(.caption2.weight(.medium))
+                            if model.breakdownKnown {
+                                Text("Input \(model.input.formatted()) · Output \(model.output.formatted())\nCache read \(model.cacheRead.formatted()) · Cache write \(model.cacheWrite.formatted())")
+                                    .font(.caption2).foregroundStyle(.secondary)
+                            } else {
+                                Text("Token breakdown unavailable").font(.caption2).foregroundStyle(.secondary)
+                            }
+                        }.frame(maxWidth: .infinity, alignment: .leading).padding(.vertical, 3)
+                    }
+                    Text("Local code logs only · token share, not quota share")
+                        .font(.caption2).foregroundStyle(.secondary)
+                }.font(.caption2)
+            }.padding(.vertical, 4)
         }
     }
 }

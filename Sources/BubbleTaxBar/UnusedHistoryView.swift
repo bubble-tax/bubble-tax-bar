@@ -5,15 +5,16 @@ import BubbleTaxBarCore
 struct UnusedHistoryView: View {
     @EnvironmentObject var store: Store
     @State private var last30Days = false
-    @State private var claudeWindows = CommandLine.arguments.contains("--show-claude-windows")
+    @State private var windowPage = CommandLine.arguments.contains("--show-codex-windows") ? 2 : CommandLine.arguments.contains("--show-claude-windows") ? 1 : 0
 
     var body: some View {
         VStack(spacing: 0) {
-            Picker("History", selection: $claudeWindows) {
-                Text("Unused quota").tag(false)
-                Text("Claude windows").tag(true)
+            Picker("History", selection: $windowPage) {
+                Text("Unused quota").tag(0)
+                Text("Claude").tag(1)
+                Text("Codex").tag(2)
             }.pickerStyle(.segmented).padding(.horizontal, 16).padding(.top, 8)
-            if claudeWindows { ClaudeWindowHistoryView() } else { unusedHistory }
+            if windowPage == 0 { unusedHistory } else { WindowHistoryView(provider: windowPage == 1 ? .claude : .openai).id(windowPage) }
         }
     }
 

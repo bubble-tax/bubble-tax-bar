@@ -55,6 +55,8 @@ final class Store: ObservableObject {
             data.unusedQuotaArchive = UnusedQuotaHistory.eligibleWindows(
                 (data.unusedQuotaArchive ?? []) + (data.snapshot?.quotaWindows ?? []))
             data.claudeQuotaSamples = ClaudeWindowHistory.record(data.claudeQuotaSamples ?? [], windows: [], connection: nil)
+            data.codexQuotaSamples = WindowQuotaHistory.record(data.codexQuotaSamples ?? [], windows: [], connection: nil, provider: .openai)
+            data.modelUsageArchive = WindowModelActivity.archive(data.modelUsageArchive ?? [], incoming: [])
             rememberPaidPlans(data.snapshot?.connections ?? [])
             save()
         }
@@ -347,6 +349,9 @@ final class Store: ObservableObject {
             (data.unusedQuotaArchive ?? []) + (data.snapshot?.quotaWindows ?? []) + (output.quotaWindows ?? []))
         data.claudeQuotaSamples = ClaudeWindowHistory.record(data.claudeQuotaSamples ?? [],
             windows: live.1, connection: live.0.first { $0.provider == .claude })
+        data.codexQuotaSamples = WindowQuotaHistory.record(data.codexQuotaSamples ?? [],
+            windows: live.1, connection: live.0.first { $0.provider == .openai }, provider: .openai)
+        data.modelUsageArchive = WindowModelActivity.archive(data.modelUsageArchive ?? [], incoming: local.0.modelUsage ?? [])
         var snapshot = output
         var previous = data.snapshot?.quotaWindows ?? []
         for connection in output.connections ?? [] where connection.status == "connected" {
