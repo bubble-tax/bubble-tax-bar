@@ -34,7 +34,7 @@
   </script>
   <link rel="stylesheet" href="styles.css?v=f3dad65fe42a">
   <script src="config.js?v=0102d97d03a5" defer></script>
-  <script src="app.js?v=d9e8697df3fd" defer></script>
+  <script src="app.js?v=5114969814cf" defer></script>
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
@@ -67,7 +67,7 @@
           </div>
           <div class="mac-wallpaper" aria-hidden="true"></div>
           <div id="mac-popover" class="mac-popover">
-            <button class="image-button" data-image="assets/overview.png" data-caption="Overview — actual macOS app, sample data." aria-label="Enlarge the actual macOS overview screenshot"><img class="app-capture" data-light="assets/overview.png" data-dark="assets/overview-dark.png" src="assets/overview.png" alt="Bubble Tax on macOS showing current weekly quota left and multiple AI subscriptions." width="860" height="1204" fetchpriority="high"></button>
+            <button class="image-button" data-image="assets/overview.png" data-caption="Overview — actual macOS app, sample data." aria-label="Enlarge the actual macOS overview screenshot"><img class="app-capture" data-light="assets/overview.png" data-dark="assets/overview-dark.png" src="assets/overview.png" alt="Bubble Tax on macOS showing current weekly quota left and multiple AI subscriptions." width="860" height="1188" fetchpriority="high"></button>
           </div>
         </div>
         <figcaption>Actual app capture. Sample data. <span>Paid plans flip every 8 seconds. Click to open or close.</span></figcaption>
@@ -77,25 +77,26 @@
     <section id="inside" class="inside wrap" aria-labelledby="inside-title">
       <h2 id="inside-title">A look inside</h2>
       <div class="tour-tabs" role="group" aria-label="Choose an app screenshot">
-        <button class="tour-tab active" data-screen="savings" aria-pressed="true">Savings</button>
-        <button class="tour-tab" data-screen="downgrade" aria-pressed="false">Smaller plans</button>
-        <button class="tour-tab" data-screen="overview" aria-pressed="false">Overview</button>
+        <button class="tour-tab active" data-screen="weekly-pattern" aria-pressed="true">Weekly pattern</button>
+        <button class="tour-tab" data-screen="model-windows" aria-pressed="false">Codex windows</button>
+        <button class="tour-tab" data-screen="claude-windows" aria-pressed="false">Claude windows</button>
         <button class="tour-tab" data-screen="unused-history" aria-pressed="false">Unused history</button>
-        <button class="tour-tab" data-screen="details" aria-pressed="false">Past resets</button>
+        <button class="tour-tab" data-screen="downgrade" aria-pressed="false">Smaller plans</button>
+        <button class="tour-tab" data-screen="savings" aria-pressed="false">Savings</button>
         <button class="tour-tab" data-screen="connections" aria-pressed="false">Connections</button>
         <button class="tour-tab" data-screen="enterprise" aria-pressed="false">Work accounts</button>
       </div>
       <div class="app-tour">
         <div class="tour-copy">
           <div class="tour-description" aria-live="polite" aria-atomic="true">
-            <h3 id="tour-title">A smaller monthly bill.</h3>
-            <p id="tour-body">Record your completed cancellations and downgrades. Before-and-after prices show the monthly difference.</p>
-            <p id="tour-note" class="tour-note">Projected list-price reduction, not cash already recovered.</p>
+            <h3 id="tour-title">Your subscription needs a second job.</h3>
+            <p id="tour-body">See the daily pace needed to finish your remaining weekly quota. If keeping up sounds like work, the smaller plan might be enough.</p>
+            <p id="tour-note" class="tour-note">Claude and Codex · an estimate from observed use, including idle time. Too little data stays unknown.</p>
           </div>
         </div>
         <figure class="tour-shot">
-          <button id="tour-image-button" class="image-button" data-image="assets/savings.png" data-caption="Savings — actual macOS app, sample data." aria-label="Enlarge the selected app screenshot"><img id="tour-image" class="app-capture" data-light="assets/savings.png" data-dark="assets/savings-dark.png" src="assets/savings.png" alt="Bubble Tax savings history on macOS, showing a lower monthly bill after recorded plan changes with sample data." width="910" height="1260"></button>
-          <figcaption><span id="shot-label">Savings</span><span>Sample data · click for original</span></figcaption>
+          <button id="tour-image-button" class="image-button" data-image="assets/weekly-pattern.png" data-caption="Weekly pattern — actual macOS app, sample data." aria-label="Enlarge the selected app screenshot"><img id="tour-image" class="app-capture" data-light="assets/weekly-pattern.png" data-dark="assets/weekly-pattern-dark.png" src="assets/weekly-pattern.png" alt="Bubble Tax on macOS estimating 7.2 hours per day to finish the weekly Codex quota, with sample data." width="860" height="1188"></button>
+          <figcaption><span id="shot-label">Weekly pattern</span><span>Sample data · click for original</span></figcaption>
         </figure>
       </div>
       <details class="data-note"><summary>About the data</summary><p>The app reads available usage through your signed-in provider sessions, with local Claude / Codex records as fallback. Claude and Codex window history adds local model context. The main screen estimates the daily pattern needed to finish your weekly quota. Usage history and completed-change records stay on your Mac. Missing readings stay unknown; Codex quota doesn't represent every ChatGPT feature.</p><p>Prices are published US monthly list prices, not your invoice. Savings are projected rate reductions. You cancel or downgrade with the provider, then record the change here. Work budgets stay out of personal savings.</p></details>
