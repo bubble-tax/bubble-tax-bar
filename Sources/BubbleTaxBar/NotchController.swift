@@ -25,9 +25,9 @@ final class NotchController {
         self.store = store
         self.login = login
         observers.append(NotificationCenter.default.addObserver(forName: NSApplication.didChangeScreenParametersNotification,
-            object: nil, queue: .main) { [weak self] _ in Task { @MainActor in self?.reconfigure() } })
+            object: nil, queue: .main) { [weak self] _ in Task { @MainActor [weak self] in self?.reconfigure() } })
         observers.append(NotificationCenter.default.addObserver(forName: UserDefaults.didChangeNotification,
-            object: nil, queue: .main) { [weak self] _ in Task { @MainActor in self?.reconfigure() } })
+            object: nil, queue: .main) { [weak self] _ in Task { @MainActor [weak self] in self?.reconfigure() } })
         reconfigure()
     }
 
@@ -101,7 +101,7 @@ final class NotchController {
         NSApp.activate(ignoringOtherApps: true)
         // Only mouse events are observed; no input-monitoring permission is needed.
         outsideClick = NSEvent.addGlobalMonitorForEvents(matching: [.leftMouseDown, .rightMouseDown]) { [weak self] _ in
-            Task { @MainActor in self?.close() }
+            Task { @MainActor [weak self] in self?.close() }
         }
         escapeKey = NSEvent.addLocalMonitorForEvents(matching: [.keyDown]) { [weak self] event in
             if event.keyCode == 53, self?.expanded?.attachedSheet == nil { self?.close(); return nil }
