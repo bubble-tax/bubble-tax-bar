@@ -32,9 +32,9 @@
       document.documentElement.dataset.theme = theme === 'light' || theme === 'dark' ? theme : (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
     })();
   </script>
-  <link rel="stylesheet" href="styles.css?v=f3dad65fe42a">
+  <link rel="stylesheet" href="styles.css?v=bc57fe7d9cbe">
   <script src="config.js?v=b2d70c06b20d" defer></script>
-  <script src="app.js?v=5114969814cf" defer></script>
+  <script src="app.js?v=650d760d89d9" defer></script>
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
@@ -52,7 +52,11 @@
         <p class="hero-aside">Your auto-renewal has excellent attendance.</p>
       </div>
       <figure class="hero-visual">
-        <div class="mac-desktop" aria-label="Mac desktop illustration with the actual Bubble Tax app open">
+        <div class="preview-modes" role="group" aria-label="App placement">
+          <button data-preview="notch" aria-pressed="true">MacBook notch</button>
+          <button data-preview="menu" aria-pressed="false">Menu bar</button>
+        </div>
+        <div class="mac-desktop" data-preview="notch" aria-label="Mac desktop illustration with a simulated notch and actual Bubble Tax app capture">
           <div class="mac-menubar">
             <div class="mac-app-menu" aria-hidden="true">
               <svg class="mac-apple" viewBox="0 0 24 24"><path fill="currentColor" d="M16.1 1.5c.2 1.6-.5 3-1.4 4-.9 1-2.1 1.6-3.4 1.5-.2-1.4.5-2.9 1.4-3.9.9-1 2.2-1.6 3.4-1.6ZM19 12.2c0-2.4 2-3.6 2.1-3.6-1.1-1.7-2.8-1.9-3.4-1.9-1.5-.2-3 1-3.8 1-.8 0-2-1-3.3-.9-1.8 0-3.4 1-4.3 2.6-1.9 3.2-.5 8 1.3 10.5.8 1.2 1.8 2.5 3.1 2.4 1.3 0 1.8-.8 3.4-.8 1.5 0 2 .8 3.4.8 1.4 0 2.2-1.2 3-2.4.9-1.4 1.3-2.8 1.3-2.8-.1 0-2.8-1.1-2.8-4.9Z"/></svg>
@@ -65,12 +69,15 @@
               <span class="mac-clock" aria-hidden="true">Sat 9:41 AM</span>
             </div>
           </div>
+          <button id="notch-quota-toggle" class="notch-quota" aria-expanded="true" aria-controls="mac-popover" aria-label="Close notch preview">
+            <span id="notch-service">Claude</span><span class="notch-camera" aria-hidden="true"></span><span id="notch-quota-label">Weekly 88% left</span>
+          </button>
           <div class="mac-wallpaper" aria-hidden="true"></div>
           <div id="mac-popover" class="mac-popover">
-            <button class="image-button" data-image="assets/overview.png" data-caption="Overview — actual macOS app, sample data." aria-label="Enlarge the actual macOS overview screenshot"><img class="app-capture" data-light="assets/overview.png" data-dark="assets/overview-dark.png" src="assets/overview.png" alt="Bubble Tax on macOS showing current weekly quota left and multiple AI subscriptions." width="860" height="1188" fetchpriority="high"></button>
+            <button class="image-button" data-image="assets/notch-claude.png" data-caption="Notch preview — native macOS app capture, sample data." aria-label="Enlarge the actual macOS overview screenshot"><img class="app-capture" data-light="assets/notch-claude.png" data-dark="assets/notch-claude-dark.png" src="assets/notch-claude.png" alt="Bubble Tax notch preview showing Claude weekly quota with sample data." width="860" height="1240" fetchpriority="high"></button>
           </div>
         </div>
-        <figcaption>Actual app capture. Sample data. <span>Paid plans flip every 8 seconds. Click to open or close.</span></figcaption>
+        <figcaption><span id="preview-caption">Notch preview · native app capture · sample data.</span><span>Paid plans flip every 8 seconds. Click the quota to open or close.</span></figcaption>
       </figure>
     </section>
     <p class="services wrap">Works with ChatGPT / Codex, Claude, Cursor, GitHub Copilot and Antigravity. Available data depends on your account. Click-to-expand MacBook notch support; menu bar on other displays.</p>

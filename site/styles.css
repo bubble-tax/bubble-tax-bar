@@ -116,3 +116,16 @@ body.modal-open{overflow:hidden}
 @media(max-width:420px){.coffee-dialog{padding:24px}.coffee-dialog h2{font-size:29px}}
 
 .release-notes-link{text-decoration:underline;text-underline-offset:3px}
+
+.preview-modes{display:flex;justify-content:flex-end;gap:18px;margin-bottom:12px;font-size:12px}
+.preview-modes button{border:0;border-bottom:1px solid transparent;background:transparent;padding:5px 0;color:var(--muted)}
+.preview-modes button[aria-pressed=true]{border-bottom-color:var(--ink);color:var(--ink)}
+.notch-quota{display:none}
+.mac-desktop[data-preview=notch] .mac-menubar{height:30px}
+.mac-desktop[data-preview=notch] .mac-menu-word,.mac-desktop[data-preview=notch] .finder-label,.mac-desktop[data-preview=notch] .mac-quota,.mac-desktop[data-preview=notch] .mac-clock,.mac-desktop[data-preview=notch] .mac-control{display:none}
+.mac-desktop[data-preview=notch] .mac-wallpaper{inset-block-start:30px}
+.mac-desktop[data-preview=notch] .notch-quota{display:grid;grid-template-columns:1fr 39% 1fr;align-items:center;position:absolute;z-index:3;top:0;left:50%;transform:translateX(-50%);width:min(420px,calc(100% - 60px));height:30px;padding:0 6px;border:0;border-radius:0 0 13px 13px;background:#000;color:#fff;font-size:10.5px;line-height:1;white-space:nowrap}
+.notch-quota #notch-service{font-weight:600;overflow:hidden;text-overflow:ellipsis}
+#notch-quota-label{font-family:ui-monospace,SFMono-Regular,monospace;font-size:10px;backface-visibility:hidden}
+.mac-desktop[data-preview=notch] .mac-popover{left:50%;right:auto;transform:translateX(-50%);top:37px}
+@media(max-width:420px){.notch-quota #notch-quota-label{font-size:8.5px}.notch-quota #notch-service{font-size:9px}.preview-modes{justify-content:center}}
