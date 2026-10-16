@@ -19,6 +19,7 @@ final class MenuBarDelegate: NSObject, NSApplicationDelegate {
     private var subscriptions: Set<AnyCancellable> = []
     private var statusTimer: Timer?
     private var statusProvider: Provider?
+    private var notch: NotchController?
     private var flipGeneration = 0
 
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -49,12 +50,17 @@ final class MenuBarDelegate: NSObject, NSApplicationDelegate {
         let controller = NSViewController()
         controller.view = FirstClickHostingView(rootView: panel)
         popover.contentViewController = controller
+        notch = NotchController(store: store, login: login)
+        notch?.availabilityChanged = { [weak self] in
+            guard let self, let store = self.store else { return }
+            self.updateStatus(store.data)
+        }
         if CommandLine.arguments.contains("--show-popover") { togglePopover() }
         store.$data.sink { [weak self] data in self?.updateStatus(data) }.store(in: &subscriptions)
         statusTimer = Timer.scheduledTimer(withTimeInterval: 8, repeats: true) { [weak self] _ in
             Task { @MainActor [weak self] in
                 guard let self, let store = self.store else { return }
-                self.updateStatus(store.data, advance: !self.popover.isShown)
+                self.updateStatus(store.data, advance: !self.popover.isShown && self.notch?.isExpanded != true)
             }
         }
         DispatchQueue.main.async { [weak self] in self?.login.askOnFirstLaunch() }
@@ -66,20 +72,22 @@ final class MenuBarDelegate: NSObject, NSApplicationDelegate {
         let index = entries.firstIndex { $0.provider == statusProvider } ?? 0
         let next = entries.isEmpty ? MenuBarQuota.empty : entries[(index + (advance && entries.count > 1 ? 1 : 0)) % entries.count]
         statusProvider = next.provider
+        notch?.update(next)
+        let title = notch?.isAvailable == true ? "†" : next.title
         // Reserve the widest title so neighboring menu-bar icons do not move each tick.
         let font = button.font ?? NSFont.systemFont(ofSize: 12)
         statusItem?.length = ceil((entries.isEmpty ? [next] : entries).map {
-            ($0.title as NSString).size(withAttributes: [.font: font]).width
+            ((notch?.isAvailable == true ? "†" : $0.title) as NSString).size(withAttributes: [.font: font]).width
         }.max() ?? 16) + 20
         button.toolTip = next.detail + (entries.count > 1 ? "\nCycles through paid plans every 8 seconds." : "")
         button.setAccessibilityLabel(next.detail)
-        guard button.title != next.title else { return }
+        guard button.title != title else { return }
         flipGeneration += 1
         let generation = flipGeneration
         button.wantsLayer = true
         button.layer?.removeAnimation(forKey: "quotaFlip")
         guard advance, entries.count > 1, !NSWorkspace.shared.accessibilityDisplayShouldReduceMotion,
-              let layer = button.layer else { button.title = next.title; return }
+              let layer = button.layer else { button.title = title; return }
         let fold = CABasicAnimation(keyPath: "transform.rotation.x")
         fold.fromValue = 0; fold.toValue = -Double.pi / 2; fold.duration = 0.13
         fold.timingFunction = CAMediaTimingFunction(name: .easeIn)
@@ -87,7 +95,7 @@ final class MenuBarDelegate: NSObject, NSApplicationDelegate {
         layer.add(fold, forKey: "quotaFlip")
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.13) { [weak self, weak button] in
             guard let self, self.flipGeneration == generation, let button else { return }
-            button.title = next.title
+            button.title = title
             let unfold = CABasicAnimation(keyPath: "transform.rotation.x")
             unfold.fromValue = Double.pi / 2; unfold.toValue = 0; unfold.duration = 0.17
             unfold.timingFunction = CAMediaTimingFunction(name: .easeOut)
@@ -108,6 +116,11 @@ final class MenuBarDelegate: NSObject, NSApplicationDelegate {
             NSMenu.popUpContextMenu(menu, with: NSApp.currentEvent!, for: button)
             return
         }
+        if notch?.isAvailable == true {
+            popover.performClose(nil)
+            notch?.toggle()
+            return
+        }
         if popover.isShown { popover.performClose(nil) }
         else {
             popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
@@ -121,6 +134,7 @@ private final class FirstClickHostingView<Content: View>: NSHostingView<Content>
 }
 
 struct MenuPanel: View {
+    var collapseNotch: (() -> Void)?
     @EnvironmentObject var store: Store
     @State private var settings = CommandLine.arguments.contains("--show-connections")
     @State private var unusedHistory = CommandLine.arguments.contains("--show-unused-history")
@@ -130,7 +144,12 @@ struct MenuPanel: View {
     @State private var expandedProviders: Set<Provider> = []
     @State private var selectedProvider: Provider = .openai
 
-    init() {
+    init(provider: Provider? = nil, collapseNotch: (() -> Void)? = nil) {
+        self.collapseNotch = collapseNotch
+        if let provider {
+            _selectedProvider = State(initialValue: provider)
+            _userSelectedPage = State(initialValue: true)
+        }
         let args = CommandLine.arguments
         if let index = args.firstIndex(of: "--demo-provider"), index + 1 < args.count,
            let provider = Provider(rawValue: args[index + 1]) {
@@ -167,6 +186,9 @@ struct MenuPanel: View {
                             settings = true
                         }.disabled(store.demoMode)
                     }
+                }
+                if let collapseNotch {
+                    PanelToolbarButton(symbol: "chevron.up", label: "Collapse to notch", action: collapseNotch)
                 }
             }
             .frame(height: 28)

@@ -28,6 +28,12 @@ The top toolbar opens Quota history, Savings and Settings. Subpages put Back on 
 
 Settings → General contains Cancellation candidates first. It prioritizes evidence-backed review candidates and preserves the selected service during refresh. Free, missing and unfinished readings are not promoted into cancellation verdicts.
 
+## MacBook notch
+
+On a display with a camera notch, Bubble Tax shows the paid service on the left and the quota period and percentage left on the right. Click to open that service's details below the notch. Click again, use the collapse button, press Escape, or click another app to close it. Paid plans rotate every eight seconds while collapsed.
+
+Settings → General → Use MacBook notch switches back to the menu bar. Displays without a notch keep the regular menu-bar interface. Screen connections and resolution changes update the placement automatically.
+
 ## Current left versus expired unused
 
 Current Left describes the active quota window. It is not expired waste. Weekly, session and monthly budgets are kept separate, including model-specific buckets of the same duration. Local transcript token totals have no subscription quota denominator and may omit web, mobile or other-device usage.

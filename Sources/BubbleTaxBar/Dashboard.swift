@@ -5,6 +5,7 @@ import ServiceManagement
 struct Connections: View {
     @EnvironmentObject var store: Store
     @EnvironmentObject var login: LoginAtLaunch
+    @AppStorage(NotchController.preference) private var notchEnabled = true
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 14) {
@@ -13,6 +14,9 @@ struct Connections: View {
                     get: { store.reviewFirst }, set: { store.setReviewFirst($0) }))
                     .toggleStyle(.checkbox).disabled(store.demoMode)
                     .help("Show services with evidence supporting a plan review first. Your selected service stays open.")
+                Toggle("Use MacBook notch", isOn: $notchEnabled)
+                    .toggleStyle(.checkbox).disabled(store.demoMode)
+                    .help("Click the quota beside the notch to expand. Displays without a notch use the menu bar.")
                 Toggle("Open at Login", isOn: Binding(get: { login.enabled }, set: { login.setEnabled($0) }))
                     .disabled(store.demoMode)
                 if login.needsApproval {
