@@ -5,14 +5,14 @@
 A Mac menu-bar app for AI subscriptions you pay for and barely use.
 See what is **left**, spot the plans worth reviewing, and keep a record when you cancel or downgrade.
 
-[Download the Mac app](https://github.com/bubble-tax/bubble-tax-bar/releases/download/v0.1.0-build.8/Bubble-Tax-0.1.0-macOS-arm64.zip) · [Website](https://bubble-tax.github.io/) · [Release notes](https://github.com/bubble-tax/bubble-tax-bar/releases/tag/v0.1.0-build.8)
+[Download the Mac app](https://github.com/bubble-tax/bubble-tax-bar/releases/download/v0.1.0-build.9/Bubble-Tax-0.1.0-macOS-arm64.zip) · [Website](https://bubble-tax.github.io/) · [Release notes](https://github.com/bubble-tax/bubble-tax-bar/releases/tag/v0.1.0-build.9)
 
 ![Bubble Tax — Stop sponsoring the AI bubble. Unused quota. Smaller plans. Less money burned.](site/assets/bubble-tax-og.png)
 
 ## Your quota is chilling. Your subscription money isn't.
 
 One compact menu for **Claude, ChatGPT / Codex, Cursor, GitHub Copilot and Antigravity**.
-Paid-plan quotas rotate in the menu bar every eight seconds. Open it to see each service's remaining limits, weekly-quota persona and a roast that follows the evidence.
+On a MacBook with a notch, click the quota beside the camera to expand the app. Other displays use the menu bar. Paid-plan quotas rotate every eight seconds while collapsed. Open it to see each service's remaining limits, weekly-quota persona and a roast that follows the evidence.
 
 <table>
   <tr>
@@ -65,15 +65,15 @@ The point is to spend less, not burn more tokens to justify the bill.
 
 ## Try the preview
 
-**v0.1.0 · Build 8 · Apple silicon · macOS 14+**
+**v0.1.0 · Build 9 · Apple silicon · macOS 14+**
 
-1. [Download the ZIP](https://github.com/bubble-tax/bubble-tax-bar/releases/download/v0.1.0-build.8/Bubble-Tax-0.1.0-macOS-arm64.zip), extract it and move **Bubble Tax.app** to Applications.
+1. [Download the ZIP](https://github.com/bubble-tax/bubble-tax-bar/releases/download/v0.1.0-build.9/Bubble-Tax-0.1.0-macOS-arm64.zip), extract it and move **Bubble Tax.app** to Applications.
 2. Open the app, then click **†** in the menu bar. There is no Dock window.
 3. Open Settings to connect existing provider sessions or choose local log folders, then refresh.
 
 Provider quotas, local log activity and the Claude statusline bridge work without installing Python or developer tools. Both collectors ship inside the app. Move it to Applications before connecting the Claude bridge; reconnect if you move it later.
 
-This preview is **Developer ID signed; Apple notarization is not complete**. If macOS blocks first launch, follow [Apple's instructions for opening an app from an unknown developer](https://support.apple.com/guide/mac-help/open-a-mac-app-from-an-unknown-developer-mh40616/mac). Installation details and checksums are on the [release page](https://github.com/bubble-tax/bubble-tax-bar/releases/tag/v0.1.0-build.8). No Intel build is included.
+This preview is **Developer ID signed; Apple notarization is not complete**. If macOS blocks first launch, follow [Apple's instructions for opening an app from an unknown developer](https://support.apple.com/guide/mac-help/open-a-mac-app-from-an-unknown-developer-mh40616/mac). Installation details and checksums are on the [release page](https://github.com/bubble-tax/bubble-tax-bar/releases/tag/v0.1.0-build.9). No Intel build is included.
 
 ## What the numbers mean
 
