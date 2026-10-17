@@ -34,6 +34,18 @@ On a display with a camera notch, Bubble Tax shows the paid service on the left 
 
 Settings → General → Use MacBook notch switches back to the menu bar. Displays without a notch keep the regular menu-bar interface. Screen connections and resolution changes update the placement automatically.
 
+## Allocate work and protect headroom
+
+Open Allocation from the main screen or the branch icon in the toolbar.
+
+- **Use next** suggests Claude or Codex from fresh overall weekly and 5-hour meters. Choose a work type and separate Personal / Work budgets. Configure eligible services for each task in Settings → Task routing. Suggestions describe headroom, not equivalent token capacity or model quality. View quota opens the suggested service in the overview.
+- **Reserve** records named weekly-quota targets with deadlines before the current reset. Targets are tied to the reported account, plan and reset. The app won't create targets exceeding unallocated quota. Mark done or remove a target to release it. This is local planning; provider quota is never locked or transferred.
+- **Forecast** combines measured paired-window changes with an editable daily time plan (initially 2h/day). It shows expected headroom at reset or planned usage before hitting a protected target. Observed hours include idle time; early estimates and missing data are labeled. Model changes, other devices and short-window limits can alter the outcome. No background work is started to consume quota.
+- **Patterns** summarizes seven days of local metadata: repeated new inputs of at least 32K tokens, cache-read share and local model mix. Local logs may cover several accounts. These numbers don't establish task quality, retries, waste, billing savings or account-wide quota attribution.
+- **Plans** compares capacity needs with current use and near-reset history. Pending reservations and recent 95%-used short windows take priority over downgrade reviews. At least three eligible resets spanning roughly two quota periods are needed to suggest comparing a smaller tier; consistently unused headroom doesn't guarantee a cheaper tier has the required features. Work seats stay separate from personal costs.
+
+Preferences and reservation targets stay in the existing local state file. Expired, completed, previous-account and previous-reset targets don't reserve the current quota. The old weekly quota-exhaustion target has been replaced by Weekly runway.
+
 ## Current left versus expired unused
 
 Current Left describes the active quota window. It is not expired waste. Weekly, session and monthly budgets are kept separate, including model-specific buckets of the same duration. Local transcript token totals have no subscription quota denominator and may omit web, mobile or other-device usage.

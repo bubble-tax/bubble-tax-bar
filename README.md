@@ -79,7 +79,7 @@ This preview is **Developer ID signed; Apple notarization is not complete**. If 
 
 - Quotas come from available provider sessions. Local Claude / Codex logs and Pi coding-agent sessions add activity; token counts alone cannot establish subscription quota or who paid.
 - ChatGPT's displayed quota is **Codex quota**, not every ChatGPT feature. Availability depends on the provider and authentication; missing readings stay unknown.
-- Claude and Codex window history shows local model activity alongside quota changes. The main screen estimates the daily pattern needed to finish the weekly quota.
+- Claude and Codex window history shows local model activity alongside quota changes. Allocation adds service suggestions, protected-work targets, weekly runway forecasts, local usage patterns and evidence-based plan reviews.
 - History and completed-change records stay on your Mac. USD list prices are estimates, not your invoices, refunds or accumulated cash saved.
 - Bubble Tax opens provider instructions. It does not cancel subscriptions or change billing on your behalf.
 

@@ -25,6 +25,8 @@ struct Connections: View {
                 }
                 if let error = login.error { Text(error).font(.caption).foregroundStyle(.secondary) }
                 Divider()
+                RoutingPreferencesView()
+                Divider()
                 Text("Connections").font(.headline)
                 Text("Use existing signed-in sessions to read quota and plan metadata. No plan form.")
                     .font(.caption).foregroundStyle(.secondary)

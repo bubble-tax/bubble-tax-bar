@@ -115,6 +115,8 @@ public struct AppData: Codable {
     public var claudeQuotaSamples: [ClaudeQuotaSample]?
     public var codexQuotaSamples: [WindowQuotaSample]?
     public var modelUsageArchive: [ModelUsageEvent]?
+    public var allocationPreferences: AllocationPreferences?
+    public var quotaReservations: [QuotaReservation]?
     public init() {}
 }
 

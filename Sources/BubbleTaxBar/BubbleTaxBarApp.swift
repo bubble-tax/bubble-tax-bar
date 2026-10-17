@@ -138,6 +138,7 @@ struct MenuPanel: View {
     @EnvironmentObject var store: Store
     @State private var settings = CommandLine.arguments.contains("--show-connections")
     @State private var unusedHistory = CommandLine.arguments.contains("--show-unused-history")
+    @State private var allocation = CommandLine.arguments.contains("--show-allocation")
     @State private var savings = CommandLine.arguments.contains("--show-savings")
     @State private var pageOrder: [Provider] = []
     @State private var userSelectedPage = CommandLine.arguments.contains("--demo-provider")
@@ -160,22 +161,24 @@ struct MenuPanel: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(spacing: 10) {
-                if settings || savings || unusedHistory {
+                if settings || savings || unusedHistory || allocation {
                     PanelToolbarButton(symbol: "chevron.left", label: "Back to overview") {
+                        allocation = false
                         settings = false
                         savings = false
                         unusedHistory = false
                     }.keyboardShortcut(.cancelAction)
                 }
-                Text(settings ? "Settings" : savings ? "Savings" : unusedHistory ? "Quota history" : "Bubble Tax")
+                Text(allocation ? "Allocation" : settings ? "Settings" : savings ? "Savings" : unusedHistory ? "Quota history" : "Bubble Tax")
                     .font(.headline).lineLimit(1)
                 if store.demoMode && !CommandLine.arguments.contains("--hide-demo-badge") {
                     Text("DEMO").font(.caption2.weight(.semibold)).foregroundStyle(.orange)
                         .help("Sample data for screenshots. Your real records are untouched.")
                 }
                 Spacer(minLength: 12)
-                if !settings && !savings && !unusedHistory {
+                if !settings && !savings && !unusedHistory && !allocation {
                     HStack(spacing: 8) {
+                        PanelToolbarButton(symbol: "arrow.triangle.branch", label: "Allocation planner") { allocation = true }
                         PanelToolbarButton(symbol: "clock.arrow.circlepath", label: "Quota history") {
                             unusedHistory = true
                         }
@@ -187,6 +190,9 @@ struct MenuPanel: View {
                         }.disabled(store.demoMode)
                     }
                 }
+                if allocation {
+                    PanelToolbarButton(symbol: "gearshape", label: "Settings") { allocation = false; settings = true }.disabled(store.demoMode)
+                }
                 if let collapseNotch {
                     PanelToolbarButton(symbol: "chevron.up", label: "Collapse to notch", action: collapseNotch)
                 }
@@ -195,7 +201,11 @@ struct MenuPanel: View {
             .padding(.horizontal, 16)
             .padding(.vertical, 10)
             Divider()
-            if settings {
+            if allocation {
+                AllocationView(selectProvider: { provider in
+                    selectedProvider = provider; userSelectedPage = true; allocation = false
+                })
+            } else if settings {
                 Connections()
             } else if savings {
                 SavingsHistory()
@@ -206,6 +216,7 @@ struct MenuPanel: View {
                     ScrollView {
                         VStack(alignment: .leading, spacing: 6) {
                             let fresh = store.data.scannedAt.map { Date().timeIntervalSince($0) < 900 } ?? false
+                            AllocationSummary { allocation = true }
                             PersonaHeader(assessment: PersonaAssessment.make(snapshot: store.data.snapshot,
                                 providers: store.personaProviders, fresh: fresh), pendingChanges: store.pendingRecordedChanges)
                             if !store.changes.isEmpty { SavingsSummary { savings = true } }

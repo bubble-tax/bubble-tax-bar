@@ -89,6 +89,33 @@ final class Store: ObservableObject {
     var orderedProviders: [Provider] {
         reviewFirst ? ReviewPriority.ordered(providers, snapshot: data.snapshot, fresh: fresh, changes: changes) : providers
     }
+    func reserveQuota(_ reservation: QuotaReservation) -> String? {
+        guard ready, !demoMode, fresh, let connection = connection(reservation.provider),
+              let window = data.snapshot?.quotaWindows?.filter({
+                  $0.provider == reservation.provider && $0.limitID == reservation.limitID &&
+                  $0.accountKey == reservation.accountKey && abs($0.resetsAt - reservation.resetsAt) <= 60
+              }).max(by: { $0.observedAt < $1.observedAt }) else { return "Refresh usage before reserving quota." }
+        if let issue = ReservationValidation.issue(reservation, current: window, connection: connection,
+                                                  existing: data.quotaReservations ?? []) { return issue }
+        let old = data.quotaReservations
+        var records = old ?? []; records.removeAll { $0.id == reservation.id }; records.append(reservation)
+        data.quotaReservations = records
+        if !save() { data.quotaReservations = old; return "Could not save the reservation." }
+        return nil
+    }
+    func finishReservation(_ id: UUID, remove: Bool = false) {
+        guard ready, !demoMode else { return }
+        let old = data.quotaReservations
+        if remove { data.quotaReservations?.removeAll { $0.id == id } }
+        else if let i = data.quotaReservations?.firstIndex(where: { $0.id == id }) { data.quotaReservations?[i].completedAt = Date() }
+        if !save() { data.quotaReservations = old }
+    }
+    func setAllocationPreferences(_ preferences: AllocationPreferences) {
+        guard ready, !demoMode else { return }
+        let old = data.allocationPreferences
+        data.allocationPreferences = preferences
+        if !save() { data.allocationPreferences = old }
+    }
     func setReviewFirst(_ enabled: Bool) { data.reviewFirst = enabled; save() }
     func latestChange(_ provider: Provider) -> SubscriptionChange? {
         SavingsLedger.latest(changes, provider: provider, accountKey: connection(provider)?.accountKey)
