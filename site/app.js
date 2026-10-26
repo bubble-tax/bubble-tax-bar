@@ -168,6 +168,22 @@
     return true;
   };
   if (activate("download-link", config.downloadUrl)) document.getElementById("release-status").textContent = config.releaseLabel || "Public beta";
+  const copyBrew = document.getElementById("copy-brew");
+  copyBrew.addEventListener("click", async () => {
+    const command = document.getElementById("brew-command");
+    const status = document.getElementById("brew-copy-status");
+    try {
+      await navigator.clipboard.writeText(command.textContent.trim());
+      copyBrew.textContent = "Copied";
+      status.textContent = "Homebrew installation command copied.";
+    } catch {
+      const selection = window.getSelection();
+      const range = document.createRange();
+      range.selectNodeContents(command);
+      selection.removeAllRanges(); selection.addRange(range);
+      status.textContent = "Command selected. Press Command C to copy.";
+    }
+  });
   const coffeeDialog = document.getElementById("coffee-dialog");
   const coffeeTrigger = document.getElementById("coffee-link");
   if (activate("coffee-destination", config.coffeeUrl)) {
