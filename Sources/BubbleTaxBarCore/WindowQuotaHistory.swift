@@ -8,6 +8,7 @@ public struct WindowQuotaSample: Codable, Equatable {
     public let session: QuotaWindow
     public let weekly: QuotaWindow
     public var observedAt: Double { max(session.observedAt, weekly.observedAt) }
+    public var isLocalStream: Bool { accountKey.hasPrefix("local-session:") }
 }
 
 public struct WindowComparison: Identifiable {

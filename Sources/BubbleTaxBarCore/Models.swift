@@ -113,6 +113,8 @@ public struct AppData: Codable {
     public var billingSchedules: [BillingSchedule]?
     public var unusedQuotaArchive: [QuotaWindow]?
     public var claudeQuotaSamples: [ClaudeQuotaSample]?
+    /// Statusline session streams; never attributed to a verified subscription account.
+    public var claudeLocalQuotaSamples: [WindowQuotaSample]?
     public var codexQuotaSamples: [WindowQuotaSample]?
     public var modelUsageArchive: [ModelUsageEvent]?
     public var allocationPreferences: AllocationPreferences?

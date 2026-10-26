@@ -23,6 +23,40 @@ class ClaudeStatuslineTests(unittest.TestCase):
             self.assertIsNone(hook.cached(home, 1100)[0]["accountKey"])
             self.assertEqual(hook.cached(home, 1200), [])
 
+    def test_journal_keeps_offline_pairs_by_hashed_session_and_bounds_buckets(self):
+        with tempfile.TemporaryDirectory() as directory:
+            home = Path(directory)
+            def capture(session, used, now):
+                payload = dict(session_id=session, cwd="SECRET", rate_limits=dict(
+                    five_hour=dict(used_percentage=used, resets_at=3000),
+                    seven_day=dict(used_percentage=used / 10, resets_at=9000)))
+                with patch.object(hook.time, "time", return_value=now):
+                    hook.capture(home, json.dumps(payload).encode())
+            capture("PRIVATE-A", 10, 1000)
+            capture("PRIVATE-A", 20, 1100)
+            capture("PRIVATE-A", 40, 1300)
+            capture("PRIVATE-B", 50, 1310)
+            _, folder = hook.paths(home)
+            text = (folder / "history.json").read_text()
+            self.assertNotIn("PRIVATE", text)
+            self.assertNotIn("SECRET", text)
+            history = json.loads(text)
+            self.assertEqual(len(history), 3)
+            self.assertEqual(history[0]["windows"][0]["usedPercent"], 20)
+            self.assertEqual(history[0]["streamID"], history[1]["streamID"])
+            self.assertNotEqual(history[1]["streamID"], history[2]["streamID"])
+            self.assertEqual(len(history[0]["streamID"]), 64)
+            self.assertIsNone(history[0]["windows"][0]["accountKey"])
+
+    def test_anonymous_or_unpaired_readings_never_enter_journal(self):
+        with tempfile.TemporaryDirectory() as directory:
+            home = Path(directory)
+            with patch.object(hook.time, "time", return_value=1000):
+                hook.capture(home, b'{"session_id":"session","rate_limits":{"five_hour":{"used_percentage":10,"resets_at":3000}}}')
+                hook.capture(home, b'{"rate_limits":{"five_hour":{"used_percentage":10,"resets_at":3000},"seven_day":{"used_percentage":1,"resets_at":9000}}}')
+            _, folder = hook.paths(home)
+            self.assertFalse((folder / "history.json").exists())
+
     def test_bridge_installed_before_rename_keeps_its_folder(self):
         with tempfile.TemporaryDirectory() as directory:
             home = Path(directory)

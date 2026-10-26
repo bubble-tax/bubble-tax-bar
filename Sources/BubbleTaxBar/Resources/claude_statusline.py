@@ -1,5 +1,7 @@
 """Optional Claude statusline bridge. Persist only sanitized quota readings."""
 import argparse
+import fcntl
+import hashlib
 import json
 import math
 import os
@@ -110,9 +112,15 @@ def readings(document, now):
 def capture(home, raw):
     _, folder = paths(home)
     try:
-        value = readings(json.loads(raw), time.time())
+        document = json.loads(raw)
+        now = time.time()
+        value = readings(document, now)
+        session = document.get("session_id") if isinstance(document, dict) else None
+        stream = hashlib.sha256(session.encode()).hexdigest() if isinstance(session, str) and 0 < len(session) <= 256 else None
         # Absence is unknown. Remove the old observation instead of relabeling it fresh.
-        atomic_json(folder / "quota.json", {"windows": value})
+        atomic_json(folder / "quota.json", {"windows": value, "streamID": stream})
+        if stream and len(value) == 2:
+            record_history(folder, dict(windows=value, streamID=stream), now)
     except (ValueError, OSError, TypeError):
         pass
     try:
@@ -123,6 +131,32 @@ def capture(home, raw):
                            stderr=subprocess.DEVNULL)
     except (ValueError, OSError, subprocess.TimeoutExpired):
         pass
+
+
+def record_history(folder, entry, now):
+    """One sanitized pair per session per five-minute bucket, even while the app is closed."""
+    folder.mkdir(parents=True, exist_ok=True, mode=0o700)
+    with (folder / "history.lock").open("a") as lock:
+        os.chmod(folder / "history.lock", 0o600)
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        path = folder / "history.json"
+        try:
+            history = json.loads(path.read_text()) if path.stat().st_size <= 16 * 1024 * 1024 else []
+        except (OSError, ValueError):
+            history = []
+        if not isinstance(history, list):
+            history = []
+        def observed(item):
+            try:
+                stamp = item["windows"][0]["observedAt"]
+                return stamp if isinstance(stamp, (int, float)) and not isinstance(stamp, bool) and math.isfinite(stamp) else 0
+            except (KeyError, IndexError, TypeError):
+                return 0
+        bucket = int(now // 300)
+        history = [item for item in history if isinstance(item, dict) and now - 180 * 86400 <= observed(item) <= now and
+                   not (item.get("streamID") == entry["streamID"] and int(observed(item) // 300) == bucket)]
+        history.append(entry)
+        atomic_json(path, sorted(history, key=observed)[-10000:])
 
 
 def cached(home, now=None):

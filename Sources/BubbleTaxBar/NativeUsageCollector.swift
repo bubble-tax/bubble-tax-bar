@@ -19,17 +19,34 @@ enum NativeUsageCollector {
     private static func fetch(binary: String, provider: Provider) -> (ProviderConnection, [QuotaWindow]) {
         var result = try! LiveUsageNormalizer.normalize(Data("{}".utf8), provider: provider)
         guard let id = LiveUsageNormalizer.helperID(provider) else { return result }
-        let sources = provider == .openai ? ["oauth", "cli"] : provider == .claude ? ["oauth", "auto"] : ["auto"]
+        let sources = provider == .openai ? ["oauth", "cli"] : provider == .claude ? ["oauth", "cli", "auto"] : ["auto"]
         for source in sources {
             if let bytes = try? CollectorProcess.run(binary, arguments: ["usage", "--provider", id, "--source", source,
                     "--format", "json", "--no-credits"], timeout: 25),
-               let candidate = try? LiveUsageNormalizer.normalize(bytes, provider: provider) {
-                if !candidate.1.isEmpty { return candidate }
-                if candidate.0.status == "connected" { result = candidate }
+               var candidate = try? LiveUsageNormalizer.normalize(bytes, provider: provider) {
+                if provider == .claude, source == "cli" { candidate.0.source = "Claude CLI" }
+                if !candidate.1.isEmpty {
+                    if provider != .claude || candidate.0.accountKey != nil { return candidate }
+                    // Usage can arrive without identity. Keep it, but still try
+                    // Claude's own authenticated CLI before giving up ownership.
+                    result = candidate
+                } else if candidate.0.status == "connected", result.1.isEmpty { result = candidate }
             }
         }
+        if !result.1.isEmpty { return result }
         if provider == .claude, let cached = cachedClaude() { return cached }
         return result
+    }
+
+    static func claudeStatuslineJournal() -> Data? {
+        let support = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Library/Application Support")
+        let current = support.appendingPathComponent("BubbleTaxBar/claude-statusline")
+        let legacy = support.appendingPathComponent("SubRIP/claude-statusline")
+        let folder = !FileManager.default.fileExists(atPath: current.appendingPathComponent("configuration.json").path) &&
+            FileManager.default.fileExists(atPath: legacy.appendingPathComponent("configuration.json").path) ? legacy : current
+        let file = folder.appendingPathComponent("history.json")
+        guard let size = try? file.resourceValues(forKeys: [.fileSizeKey]).fileSize, size <= 16 * 1024 * 1024 else { return nil }
+        return try? Data(contentsOf: file)
     }
 
     private static func cachedClaude() -> (ProviderConnection, [QuotaWindow])? {
@@ -95,8 +112,10 @@ enum CollectorProcess {
         process.executableURL = URL(fileURLWithPath: executable)
         process.arguments = arguments
         var environment = ProcessInfo.processInfo.environment
-        environment["PATH"] = "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:" +
-            FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(".local/bin").path
+        // Claude's current native installer lives here. An older Homebrew CLI
+        // can be logged into a different session or hang on the usage probe.
+        environment["PATH"] = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(".local/bin").path +
+            ":/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
         process.environment = environment
         process.standardOutput = pipe
         process.standardError = FileHandle.nullDevice

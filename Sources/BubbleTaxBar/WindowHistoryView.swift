@@ -14,16 +14,23 @@ struct WindowHistoryView: View {
     private func title(_ value: WindowComparison) -> String {
         let weekly = value.first.weekly
         let label = weekly.windowLabel ?? (weekly.limitID == "claude:secondary" ? "All models" : "Model-specific")
-        let previous = store.connection(provider)?.accountKey != value.first.accountKey
+        if value.first.isLocalStream {
+            return "Local session " + value.first.accountKey.suffix(6) + " · account unverified"
+        }
+        let previous = store.connection(provider)?.accountKey.map { $0 != value.first.accountKey } ?? false
         return "\(label) · \(value.first.planLabel ?? "Unknown plan")" + (previous ? " · Previous account" : "")
     }
 
     var body: some View {
-        let all = WindowQuotaHistory.comparisons((provider == .claude ? store.data.claudeQuotaSamples : store.data.codexQuotaSamples) ?? [])
-        let choices = all.reduce(into: [WindowComparison]()) { result, value in
+        let verified = (provider == .claude ? store.data.claudeQuotaSamples : store.data.codexQuotaSamples) ?? []
+        let local = provider == .claude ? (store.data.claudeLocalQuotaSamples ?? []) : []
+        let all = WindowQuotaHistory.comparisons(verified + local)
+        let choices = all.reversed().reduce(into: [WindowComparison]()) { result, value in
             if !result.contains(where: { key($0) == key(value) }) { result.append(value) }
-        }.reversed()
-        let active = choices.contains(where: { key($0) == selectedLimit }) ? selectedLimit : choices.first.map(key) ?? ""
+        }
+        let currentAccount = store.connection(provider)?.accountKey
+        let preferred = choices.first { !$0.first.isLocalStream && $0.first.accountKey == currentAccount } ?? choices.first
+        let active = choices.contains(where: { key($0) == selectedLimit }) ? selectedLimit : preferred.map(key) ?? ""
         let candidates = Array(all.filter { key($0) == active }.suffix(30))
         let events = store.data.modelUsageArchive ?? []
         let models = Set(candidates.flatMap { WindowModelActivity.summaries(events, window: $0).compactMap(\.model) }).sorted()
@@ -32,9 +39,20 @@ struct WindowHistoryView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 Text("\(provider == .claude ? "Claude" : "Codex") · 5-hour → weekly").font(.headline)
+                if let latest = rows.last {
+                    Text("Last paired reading · " + Date(timeIntervalSince1970: latest.last.observedAt)
+                        .formatted(.dateTime.month(.abbreviated).day().hour().minute().locale(Locale(identifier: "en_US"))))
+                        .font(.caption2).foregroundStyle(.secondary)
+                }
+                if provider == .claude, let connection = store.connection(provider) {
+                    Text(connection.status == "connected" ? "Reading via " + (connection.source ?? "server") +
+                         (connection.accountKey == nil ? " · account unverified" : " · account identified") :
+                         "Live lookup unavailable · saved readings shown")
+                        .font(.caption2).foregroundStyle(.secondary)
+                }
                 if rows.isEmpty {
                     Label("Waiting for paired readings", systemImage: "clock").font(.callout.weight(.medium))
-                    Text("Connect \(provider == .claude ? "Claude" : "Codex") and keep Bubble Tax running. Each refresh records the 5-hour and weekly meters together; earlier windows can't be reconstructed.")
+                    Text("Connect \(provider == .claude ? "Claude" : "Codex") and keep Bubble Tax running. Each refresh records the 5-hour and weekly meters together. Local statusline sessions are stored separately; earlier unrecorded windows cannot be reconstructed.")
                         .font(.callout).foregroundStyle(.secondary)
                 } else {
                     if choices.count > 1 {
@@ -82,6 +100,10 @@ struct WindowHistoryView: View {
                         WindowReceipt(row: row, models: WindowModelActivity.summaries(events, window: row), logsConnected: store.logFolder(provider) != nil)
                     }
                 }
+                if rows.first?.first.isLocalStream == true {
+                    Text("Measured statusline quotas for this local session. Account ownership is unverified; these readings are never merged into account history or subscription recommendations.")
+                        .font(.caption2).foregroundStyle(.secondary)
+                }
                 Text("Local model activity adds context; quota changes are account-wide.")
                     .font(.caption2).foregroundStyle(.secondary)
                 DisclosureGroup("About these records") {
@@ -112,6 +134,8 @@ private struct WindowReceipt: View {
                 Text("5-hour reset · \(row.samples.count) \(row.samples.count == 1 ? "reading" : "readings")").font(.caption2).foregroundStyle(.secondary)
                 if row.samples.count < 2 {
                     Text("One reading · waiting for a change").font(.caption).foregroundStyle(.secondary)
+                    Text("5-hour \(number(row.last.session.usedPercent))% used · weekly \(number(row.last.weekly.usedPercent))% used")
+                        .font(.caption).monospacedDigit()
                 } else {
                     HStack(alignment: .firstTextBaseline) {
                         Text("+\(number(row.sessionDelta)) pp").font(.title3.weight(.medium))

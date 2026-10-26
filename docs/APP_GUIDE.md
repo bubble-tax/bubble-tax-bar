@@ -105,3 +105,12 @@ Quota history now includes Claude and Codex window comparisons. Connect local co
 ## This week’s usage pattern
 
 The main screen estimates the daily time and 5-hour quota equivalents needed to use the remaining weekly balance at your recent observed pace. It distinguishes insufficient records, an exhausted weekly limit, a pace too slow for the deadline, and insufficient 5-hour capacity at observed conversion rates. Estimates follow the current account, plan and weekly cycle; changing models or work patterns can change the outcome.
+
+
+### Claude quota collection and local session history
+
+Claude refresh tries OAuth, the authenticated Claude CLI, then automatic lookup. The user-installed CLI in `~/.local/bin` takes precedence over older Homebrew copies. If a response has usage but no identity, the app keeps trying the CLI before falling back to anonymous readings. Existing account records are never relabeled from the current login alone.
+
+The connected Claude statusline bridge also retains sanitized pairs of 5-hour and weekly percentages, including while Bubble Tax is closed. Each session is isolated by a hashed session ID; raw session IDs, prompts, paths and credentials are not retained in this journal. It keeps at most 10,000 pairs over 180 days, sampled at five-minute intervals. Only periods actually observed by the updated bridge can be imported; installing it cannot recover missing historical measurements.
+
+Local session readings appear separately as account-unverified and are excluded from subscription recommendations and account forecasts. Quota history shows the most recent paired reading and live collection source. A missing current identity no longer labels the saved account as a previous account.
