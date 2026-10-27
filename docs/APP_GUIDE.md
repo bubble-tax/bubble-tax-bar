@@ -86,7 +86,7 @@ Optional monthly or yearly renewal schedules can be set locally with an anchor d
 
 Local state is stored at `~/Library/Application Support/BubbleTaxBar/state.json`, with file permissions 0600. Existing service authentication is used for live queries; the app does not require users to paste passwords into its settings.
 
-The installed app requires macOS 14+ and Apple silicon. Provider quota refresh calls the bundled native helper directly. Local Claude/Codex/Pi activity and the optional Claude statusline bridge use a bundled collector with its own Python runtime. Users do not need Python, Command Line Tools or a local server. Move the app to Applications before connecting the bridge; reconnect it in Settings if the app moves. Existing Python bridges are safely migrated when reconnected; user-edited statuslines are preserved.
+The installed app requires macOS 14+ and Apple silicon. Provider quota refresh calls the bundled native helper directly. Local Claude/Codex/Pi activity and the optional Claude statusline bridge use a bundled collector with its own Python runtime. Users do not need Python, Command Line Tools or a local server. Move the app to Applications before connecting the bridge; reconnect it in Settings if the app moves. Owned legacy connections migrate at launch. User-edited statuslines are left alone until you explicitly enable quota fallback again.
 
 To build from source, run `bash scripts/run.command`. Development requires Swift 5.9+ and python.org Python 3.12 for bundling the collector; PyInstaller is installed only into a project-local build environment. Native provider requests are bounded by time and response size; unverified or failed data stays unavailable.
 
@@ -114,3 +114,10 @@ Claude refresh tries OAuth, the authenticated Claude CLI, then automatic lookup.
 The connected Claude statusline bridge also retains sanitized pairs of 5-hour and weekly percentages, including while Bubble Tax is closed. Each session is isolated by a hashed session ID; raw session IDs, prompts, paths and credentials are not retained in this journal. It keeps at most 10,000 pairs over 180 days, sampled at five-minute intervals. Only periods actually observed by the updated bridge can be imported; installing it cannot recover missing historical measurements.
 
 Local session readings appear separately as account-unverified and are excluded from subscription recommendations and account forecasts. Quota history shows the most recent paired reading and live collection source. A missing current identity no longer labels the saved account as a previous account.
+
+
+### Build 13 statusline change
+
+Quota fallback now owns its Claude Code display while connected, showing only the remaining five-hour and weekly quota. It never runs the previously configured statusline or any shell command. Disconnect restores the saved display command. Enabling explicitly replaces the current display after backing it up; automatic migration only updates a connection still owned by Bubble Tax.
+
+Legacy Python bridge files are backed up and retired as no-op entry points. The legacy `original` delegation key is cleared, so old frozen collectors also stop chaining. Existing quota history is retained. If another tool later takes over the statusline, choose which tool should own the display; nested statusline chaining is no longer supported.

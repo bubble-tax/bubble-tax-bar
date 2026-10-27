@@ -7,8 +7,6 @@ import math
 import os
 from pathlib import Path
 import shlex
-import signal
-import subprocess
 import sys
 import tempfile
 import time
@@ -48,27 +46,44 @@ def configure(action, home, script=None, executable=None):
     statusline = document.get("statusLine")
     current = statusline.get("command") if isinstance(statusline, dict) else None
     owned = configuration is not None and current == configuration.get("command", command)
-    # Migrate the old Python bridge even if that interpreter is no longer installed.
     if configuration is not None and "command" not in configuration and isinstance(current, str):
         parts = shlex.split(current)
         owned = len(parts) == 3 and parts[1:] == [str(folder / "bridge.py"), "capture"]
     if action == "status":
-        return owned and current == command
+        return owned and current == command and configuration.get("version") == 2
+    if action == "migrate":
+        # Automatic upgrades touch only a bridge we still own, never a user replacement.
+        if not owned:
+            return False
+        action = "install"
     if action == "install":
         if configuration is not None and not owned:
-            raise ValueError("Settings changed since installation; remove the old bridge first")
-        if owned and current == command:
-            return True
-        original = configuration["original"] if configuration is not None else statusline
+            # Explicit Enable replaces the current display, as the settings UI
+            # states. Automatic migration returned above without touching it.
+            atomic_json(folder / "configuration-before-reconnect.json", configuration)
+            configuration = None
+        original = configuration.get("restoreStatusLine", configuration.get("original")) if configuration is not None else statusline
         if original is not None and (not isinstance(original, dict) or original.get("type") != "command" or not isinstance(original.get("command"), str)):
             raise ValueError("Unsupported existing statusline")
         if configuration is None:
             atomic_json(folder / "settings-backup.json", document)
-        if not executable:
-            (folder / "bridge.py").write_text(Path(script or __file__).read_text())
-            (folder / "bridge.py").chmod(0o600)
-        updated = dict(document, statusLine=dict(original or {}, type="command", command=command))
-        atomic_json(saved, {"original": original, "command": command})
+        elif configuration.get("version") != 2:
+            atomic_json(folder / "configuration-v1-backup.json", configuration)
+        bridge = folder / "bridge.py"
+        if executable and bridge.exists():
+            # Old tools may still call the Python bridge directly. Retire its
+            # executable code, not merely the command in Claude's settings.
+            backup = folder / "bridge-v1-backup.py"
+            if not backup.exists():
+                backup.write_bytes(bridge.read_bytes()); backup.chmod(0o600)
+            bridge.write_text('"""Retired Bubble Tax bridge. Reconnect quota fallback in Bubble Tax."""\n')
+            bridge.chmod(0o600)
+        elif not executable:
+            bridge.write_text(Path(script or __file__).read_text()); bridge.chmod(0o600)
+        updated = dict(document, statusLine=dict(statusline or {}, type="command", command=command))
+        # A null original stops even pre-v2 frozen collectors from delegating.
+        # The restore-only value is never executed by the v2 capture path.
+        atomic_json(saved, {"version": 2, "original": None, "restoreStatusLine": original, "command": command})
         try:
             atomic_json(settings, updated)
         except OSError:
@@ -79,12 +94,12 @@ def configure(action, home, script=None, executable=None):
             raise
         return True
     if action == "remove" and configuration is not None:
-        # Never overwrite a statusline changed by the user after installation.
         if owned:
-            if configuration["original"] is None:
+            original = configuration.get("restoreStatusLine", configuration.get("original"))
+            if original is None:
                 document.pop("statusLine", None)
             else:
-                document["statusLine"] = configuration["original"]
+                document["statusLine"] = original
             atomic_json(settings, document)
         saved.unlink()
         (folder / "quota.json").unlink(missing_ok=True)
@@ -110,30 +125,15 @@ def readings(document, now):
     return result
 
 
-# Set for the delegated original statusline. Another tool can wrap this bridge
-# while this bridge still delegates to that tool; each would start the other
-# forever. A capture started inside our own delegation does nothing.
+# Suppress captures invoked from a pre-v2 delegated command during migration.
 NESTED = "BUBBLE_TAX_IN_STATUSLINE"
-
-
-def delegate(command, raw, timeout=5):
-    """Run the original statusline; on timeout stop its whole process group."""
-    child = subprocess.Popen(command, shell=True, stdin=subprocess.PIPE, stderr=subprocess.DEVNULL,
-                             env=dict(os.environ, **{NESTED: "1"}), start_new_session=True)
-    try:
-        child.communicate(raw, timeout=timeout)
-    except subprocess.TimeoutExpired:
-        try:
-            os.killpg(child.pid, signal.SIGKILL)
-        except OSError:
-            pass
-        child.wait()
 
 
 def capture(home, raw):
     if os.environ.get(NESTED) == "1":
         return
     _, folder = paths(home)
+    value = []
     try:
         document = json.loads(raw)
         now = time.time()
@@ -146,13 +146,11 @@ def capture(home, raw):
             record_history(folder, dict(windows=value, streamID=stream), now)
     except (ValueError, OSError, TypeError):
         pass
-    try:
-        original = json.loads((folder / "configuration.json").read_text()).get("original")
-        if isinstance(original, dict) and original.get("command"):
-            # Delegate the original user-configured display, with unchanged stdin.
-            delegate(original["command"], raw)
-    except (ValueError, OSError):
-        pass
+    # No shell commands, subprocesses or shared-config delegation. The bridge
+    # owns its display while connected; disconnect restores the saved command.
+    labels = {300: "5h", 10080: "Wk"}
+    display = " · ".join(f"{labels[w['windowMinutes']]} {100 - w['usedPercent']:g}% left" for w in value)
+    print(display or "Quota unavailable")
 
 
 def record_history(folder, entry, now):
@@ -207,7 +205,7 @@ def cached(home, now=None):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("action", choices=["install", "remove", "status", "capture"])
+    parser.add_argument("action", choices=["install", "remove", "status", "migrate", "capture"])
     arguments = parser.parse_args()
     try:
         if arguments.action == "capture":

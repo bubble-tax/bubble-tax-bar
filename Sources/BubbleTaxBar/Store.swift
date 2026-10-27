@@ -70,7 +70,7 @@ final class Store: ObservableObject {
         if (!providers.isEmpty || data.piFolder != nil) && !recentlyRefreshed {
             Task { await scan() }
         }
-        Task { await configureClaudeStatusline("status") }
+        Task { await configureClaudeStatusline("migrate") }
     }
 
     var providers: [Provider] { (data.enabledProviders ?? Provider.supported).filter { Provider.supported.contains($0) } }

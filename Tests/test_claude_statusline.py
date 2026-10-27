@@ -1,4 +1,7 @@
 import json
+import io
+import contextlib
+import subprocess
 from pathlib import Path
 import sys
 import tempfile
@@ -125,35 +128,80 @@ class ClaudeStatuslineTests(unittest.TestCase):
             hook.configure("remove", home, executable="/moved/collector")
             self.assertEqual(json.loads(settings.read_text())["statusLine"], original)
 
-    def test_frozen_bridge_refuses_to_overwrite_user_replacement(self):
+    def test_explicit_enable_replaces_and_restores_current_user_display(self):
         with tempfile.TemporaryDirectory() as directory:
             home = Path(directory)
             hook.configure("install", home, executable="/bundled/collector")
             settings, _ = hook.paths(home)
             changed = {"statusLine": {"type": "command", "command": "printf user"}}
             hook.atomic_json(settings, changed)
-            with self.assertRaises(ValueError):
-                hook.configure("install", home, executable="/updated/collector")
+            self.assertTrue(hook.configure("install", home, executable="/updated/collector"))
+            self.assertTrue((hook.paths(home)[1] / "configuration-before-reconnect.json").exists())
             hook.configure("remove", home, executable="/updated/collector")
             self.assertEqual(json.loads(settings.read_text()), changed)
 
-    def test_original_that_runs_the_bridge_again_ends_after_one_round(self):
-        # Another tool wrapped this bridge while the bridge still delegates to it.
+    def test_capture_never_executes_original_even_with_a_recursive_configuration(self):
         with tempfile.TemporaryDirectory() as directory:
             home = Path(directory)
             _, folder = hook.paths(home)
-            rounds = home / "rounds"
+            marker = home / "unexpected-delegation"
             again = hook.shlex.join(["env", f"HOME={home}", sys.executable, hook.__file__, "capture"])
             hook.atomic_json(folder / "configuration.json", {"original": {
-                "type": "command", "command": f"printf x >> {hook.shlex.quote(str(rounds))}; {again}"}})
-            with patch.dict(hook.os.environ, {hook.NESTED: ""}):
-                hook.capture(home, b"{}")
-            self.assertEqual(rounds.read_text(), "x")
+                "type": "command", "command": f"touch {hook.shlex.quote(str(marker))}; {again}"}})
+            raw = b'{"rate_limits":{"five_hour":{"used_percentage":5,"resets_at":3000},"seven_day":{"used_percentage":62,"resets_at":9000}}}'
+            output = io.StringIO()
+            with patch.object(hook.time, "time", return_value=1000), contextlib.redirect_stdout(output), \
+                    patch("subprocess.Popen", side_effect=AssertionError("Capture must not spawn a subprocess")):
+                hook.capture(home, raw)
+            self.assertEqual(output.getvalue().strip(), "5h 95% left · Wk 38% left")
+            self.assertFalse(marker.exists())
 
-    def test_timed_out_original_leaves_no_processes_behind(self):
+    def test_migration_retires_old_python_and_disables_old_frozen_delegation(self):
         with tempfile.TemporaryDirectory() as directory:
-            pidfile = Path(directory) / "pid"
-            hook.delegate(f"sleep 30 & echo $! > {hook.shlex.quote(str(pidfile))}; wait", b"{}", timeout=0.5)
-            pid = int(pidfile.read_text())
-            with self.assertRaises(ProcessLookupError):
-                hook.os.kill(pid, 0)
+            home = Path(directory)
+            settings, folder = hook.paths(home)
+            marker = home / "old-code-ran"
+            folder.mkdir(parents=True)
+            bridge = folder / "bridge.py"
+            old_code = f"from pathlib import Path\nPath({str(marker)!r}).touch()\n"
+            bridge.write_text(old_code)
+            old_command = hook.shlex.join(["/missing/python3", str(bridge), "capture"])
+            original = {"type": "command", "command": "node existing-display.js"}
+            hook.atomic_json(folder / "configuration.json", {"original": original})
+            hook.atomic_json(settings, {"statusLine": {"type": "command", "command": old_command}, "theme": "dark"})
+            self.assertTrue(hook.configure("migrate", home, executable="/new/collector"))
+            configuration = json.loads((folder / "configuration.json").read_text())
+            self.assertEqual(configuration["version"], 2)
+            self.assertIsNone(configuration["original"])
+            self.assertEqual(configuration["restoreStatusLine"], original)
+            self.assertEqual((folder / "bridge-v1-backup.py").read_text(), old_code)
+            subprocess.run([sys.executable, str(bridge), "capture"], input=b"{}", check=True, timeout=2)
+            self.assertFalse(marker.exists())
+            hook.configure("remove", home, executable="/new/collector")
+            restored = json.loads(settings.read_text())
+            self.assertEqual(restored["statusLine"], original)
+            self.assertEqual(restored["theme"], "dark")
+
+    def test_migration_updates_unchanged_frozen_path_and_is_idempotent(self):
+        with tempfile.TemporaryDirectory() as directory:
+            home = Path(directory); settings, folder = hook.paths(home)
+            command = hook.shlex.join(["/same/collector", "statusline", "capture"])
+            hook.atomic_json(folder / "configuration.json", {"original": None, "command": command})
+            hook.atomic_json(settings, {"statusLine": {"type": "command", "command": command}})
+            self.assertFalse(hook.configure("status", home, executable="/same/collector"))
+            self.assertTrue(hook.configure("migrate", home, executable="/same/collector"))
+            self.assertTrue(hook.configure("status", home, executable="/same/collector"))
+            saved = json.loads((folder / "configuration.json").read_text())
+            self.assertTrue(hook.configure("migrate", home, executable="/same/collector"))
+            self.assertEqual(json.loads((folder / "configuration.json").read_text()), saved)
+
+    def test_automatic_migration_preserves_user_replacement(self):
+        with tempfile.TemporaryDirectory() as directory:
+            home = Path(directory); settings, folder = hook.paths(home)
+            hook.configure("install", home, executable="/old/collector")
+            replacement = {"statusLine": {"type": "command", "command": "node user-choice.js"}}
+            hook.atomic_json(settings, replacement)
+            saved = (folder / "configuration.json").read_bytes()
+            self.assertFalse(hook.configure("migrate", home, executable="/new/collector"))
+            self.assertEqual(json.loads(settings.read_text()), replacement)
+            self.assertEqual((folder / "configuration.json").read_bytes(), saved)

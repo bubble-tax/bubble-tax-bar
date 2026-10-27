@@ -13,7 +13,7 @@ def main():
     if mode == "collect":
         collector.main()
     else:
-        if len(sys.argv) != 2 or sys.argv[1] not in ("install", "remove", "status", "capture"):
+        if len(sys.argv) != 2 or sys.argv[1] not in ("install", "remove", "status", "migrate", "capture"):
             raise ValueError("Unknown statusline operation")
         action = sys.argv[1]
         if action == "capture":

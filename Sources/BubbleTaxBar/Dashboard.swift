@@ -63,7 +63,7 @@ struct Connections: View {
                             Button(store.claudeStatuslineEnabled ? "Remove quota fallback" : "Enable Claude Code quota fallback") {
                                 Task { await store.configureClaudeStatusline(store.claudeStatuslineEnabled ? "remove" : "install") }
                             }.controlSize(.small).disabled(store.scanning || store.configuringStatusline)
-                            Text("Captures quota from Claude Code. Backs up settings and keeps your existing statusline. Updates when Claude Code runs.")
+                            Text("Shows quota in Claude Code while connected. Replaces the current statusline; disconnect to restore it. Updates when Claude Code runs.")
                                 .font(.caption).foregroundStyle(.secondary)
                         }
                     }
