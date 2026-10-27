@@ -7,6 +7,7 @@ import math
 import os
 from pathlib import Path
 import shlex
+import signal
 import subprocess
 import sys
 import tempfile
@@ -109,7 +110,29 @@ def readings(document, now):
     return result
 
 
+# Set for the delegated original statusline. Another tool can wrap this bridge
+# while this bridge still delegates to that tool; each would start the other
+# forever. A capture started inside our own delegation does nothing.
+NESTED = "BUBBLE_TAX_IN_STATUSLINE"
+
+
+def delegate(command, raw, timeout=5):
+    """Run the original statusline; on timeout stop its whole process group."""
+    child = subprocess.Popen(command, shell=True, stdin=subprocess.PIPE, stderr=subprocess.DEVNULL,
+                             env=dict(os.environ, **{NESTED: "1"}), start_new_session=True)
+    try:
+        child.communicate(raw, timeout=timeout)
+    except subprocess.TimeoutExpired:
+        try:
+            os.killpg(child.pid, signal.SIGKILL)
+        except OSError:
+            pass
+        child.wait()
+
+
 def capture(home, raw):
+    if os.environ.get(NESTED) == "1":
+        return
     _, folder = paths(home)
     try:
         document = json.loads(raw)
@@ -127,9 +150,8 @@ def capture(home, raw):
         original = json.loads((folder / "configuration.json").read_text()).get("original")
         if isinstance(original, dict) and original.get("command"):
             # Delegate the original user-configured display, with unchanged stdin.
-            subprocess.run(original["command"], shell=True, input=raw, timeout=5,
-                           stderr=subprocess.DEVNULL)
-    except (ValueError, OSError, subprocess.TimeoutExpired):
+            delegate(original["command"], raw)
+    except (ValueError, OSError):
         pass
 
 

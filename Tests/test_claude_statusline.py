@@ -136,3 +136,24 @@ class ClaudeStatuslineTests(unittest.TestCase):
                 hook.configure("install", home, executable="/updated/collector")
             hook.configure("remove", home, executable="/updated/collector")
             self.assertEqual(json.loads(settings.read_text()), changed)
+
+    def test_original_that_runs_the_bridge_again_ends_after_one_round(self):
+        # Another tool wrapped this bridge while the bridge still delegates to it.
+        with tempfile.TemporaryDirectory() as directory:
+            home = Path(directory)
+            _, folder = hook.paths(home)
+            rounds = home / "rounds"
+            again = hook.shlex.join(["env", f"HOME={home}", sys.executable, hook.__file__, "capture"])
+            hook.atomic_json(folder / "configuration.json", {"original": {
+                "type": "command", "command": f"printf x >> {hook.shlex.quote(str(rounds))}; {again}"}})
+            with patch.dict(hook.os.environ, {hook.NESTED: ""}):
+                hook.capture(home, b"{}")
+            self.assertEqual(rounds.read_text(), "x")
+
+    def test_timed_out_original_leaves_no_processes_behind(self):
+        with tempfile.TemporaryDirectory() as directory:
+            pidfile = Path(directory) / "pid"
+            hook.delegate(f"sleep 30 & echo $! > {hook.shlex.quote(str(pidfile))}; wait", b"{}", timeout=0.5)
+            pid = int(pidfile.read_text())
+            with self.assertRaises(ProcessLookupError):
+                hook.os.kill(pid, 0)
