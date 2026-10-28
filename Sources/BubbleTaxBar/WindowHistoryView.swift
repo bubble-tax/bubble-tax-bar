@@ -63,10 +63,10 @@ struct WindowHistoryView: View {
                         Text(title(value)).font(.caption).foregroundStyle(.secondary)
                     }
                     if !models.isEmpty {
-                        Picker("Local model", selection: Binding(get: { activeModel }, set: { selectedModel = $0 })) {
-                            Text("All local mixes").tag("")
+                        Picker("Model in logs", selection: Binding(get: { activeModel }, set: { selectedModel = $0 })) {
+                            Text("All models").tag("")
                             ForEach(models, id: \.self) { Text($0).tag($0) }
-                        }.help("Includes windows where local logs contain this model, including mixed-model windows.")
+                        }.help("Includes windows whose code logs mention this model, including mixed-model windows.")
                     }
                     let comparable = rows.filter { $0.weeklyPerFullSession != nil }
                     if !comparable.isEmpty {
@@ -104,7 +104,7 @@ struct WindowHistoryView: View {
                     Text("Measured statusline quotas for this local session. Account ownership is unverified; these readings are never merged into account history or subscription recommendations.")
                         .font(.caption2).foregroundStyle(.secondary)
                 }
-                Text("Local model activity adds context; quota changes are account-wide.")
+                Text("Model usage from saved code logs adds context; quota changes are account-wide.")
                     .font(.caption2).foregroundStyle(.secondary)
                 DisclosureGroup("About these records") {
                     Text("Latest 30 segments · 180 days · refresh every 5 minutes. pp = percentage points. Resets and plan changes start new segments. Gaps and small changes are excluded from rate comparisons. Local logs may be incomplete and their account ownership isn't verified. Token mix isn't quota share.")
@@ -200,11 +200,11 @@ private struct ModelMixView: View {
     }
     var body: some View {
         if models.isEmpty {
-            Text(logsConnected ? "No local model records in this interval" : "Connect code logs in Settings for model context")
+            Text(logsConnected ? "No model usage logged in this interval" : "Connect code logs in Settings for model context")
                 .font(.caption2).foregroundStyle(.secondary)
         } else {
             VStack(alignment: .leading, spacing: 5) {
-                Text("Local model mix").font(.caption.weight(.medium))
+                Text("Models used").font(.caption.weight(.medium))
                 GeometryReader { geometry in
                     HStack(spacing: 1) {
                         ForEach(models) { model in

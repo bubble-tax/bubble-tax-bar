@@ -32,28 +32,60 @@ struct AllocationView: View {
     @State private var addingReservation = false
     @State private var work: WorkKind = .coding
     @State private var workAccount = false
+    @State private var patternsProvider: Provider = .claude
     private var options: [AllocationOption] { Allocation.options(data: store.data, work: work, workAccount: workAccount) }
     private var budgetOptions: [AllocationOption] { Allocation.options(data: store.data, workAccount: workAccount, respectEligibility: false) }
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
-                if page != .patterns {
-                    Picker("Budget", selection: $workAccount) {
-                        Text("Personal").tag(false); Text("Work").tag(true)
-                    }.pickerStyle(.segmented).labelsHidden()
+        VStack(spacing: 0) {
+            Picker("Section", selection: $page) {
+                ForEach(AllocationPage.allCases) { Text($0.rawValue).tag($0) }
+            }
+            .pickerStyle(.segmented).labelsHidden()
+            .padding(.horizontal, 16).padding(.vertical, 12)
+
+            Divider()
+            HStack {
+                if page == .patterns {
+                    Picker("Log source", selection: $patternsProvider) {
+                        Text("Claude").tag(Provider.claude)
+                        Text("Codex").tag(Provider.openai)
+                    }
+                    .help("Usage recorded in code logs on this Mac, across accounts.")
+                    .fixedSize()
+                } else {
+                    Picker("Accounts", selection: $workAccount) {
+                        Text("Personal").tag(false)
+                        Text("Work").tag(true)
+                    }
+                    .help("Personal and work budgets are planned separately.")
+                    .fixedSize()
                 }
-                Picker("Section", selection: $page) { ForEach(AllocationPage.allCases) { Text($0.rawValue).tag($0) } }.pickerStyle(.segmented).labelsHidden()
-                switch page {
-                case .next: recommendation
-                case .reserve: reservations
-                case .forecast: AllocationForecastView(options: budgetOptions)
-                case .patterns: UsagePatternsView()
-                case .plans: PortfolioReviewView(workAccount: workAccount)
+                Spacer(minLength: 12)
+                if page == .next {
+                    Picker("Task", selection: $work) {
+                        ForEach(WorkKind.allCases) { Text($0.rawValue).tag($0) }
+                    }.fixedSize()
                 }
-            }.padding(16)
+            }
+            .pickerStyle(.menu).controlSize(.small)
+            .frame(height: 28)
+            .padding(.horizontal, 16).padding(.vertical, 6)
+            Divider()
+
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    switch page {
+                    case .next: recommendation
+                    case .reserve: reservations
+                    case .forecast: AllocationForecastView(options: budgetOptions)
+                    case .patterns: UsagePatternsView(provider: $patternsProvider)
+                    case .plans: PortfolioReviewView(workAccount: workAccount)
+                    }
+                }.padding(16)
+            }.id(page)
         }.frame(height: 500)
             .onAppear { work = store.data.allocationPreferences?.recentWork ?? .coding }
-            .onChange(of: work) { value in
+            .onChange(of: work) { _, value in
                 var preferences = store.data.allocationPreferences ?? AllocationPreferences()
                 guard preferences.recentWork != value else { return }
                 preferences.recentWork = value; store.setAllocationPreferences(preferences)
@@ -99,15 +131,13 @@ struct AllocationView: View {
                     }.frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
-            if budgetOptions.isEmpty { Text("A fresh overall weekly quota is needed. Check the selected Personal / Work budget.").font(.caption) }
+            if budgetOptions.isEmpty { Text("A fresh overall weekly quota is needed. Check the selected account group.").font(.caption) }
             Text("Local planning targets. Reservations don't lock provider quota. Marking work done releases its target; only provider readings change actual usage.")
                 .font(.caption2).foregroundStyle(.secondary)
         }
     }
     private var recommendation: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Picker("Task", selection: $work) { ForEach(WorkKind.allCases) { Text($0.rawValue).tag($0) } }
-                .pickerStyle(.segmented)
             if let next = options.first(where: \.ready) {
                 Text("Use \(next.title) next.").font(.title2.weight(.semibold))
                 Text("Weekly headroom for your \(work.rawValue.lowercased()) queue.")

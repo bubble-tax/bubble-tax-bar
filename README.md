@@ -1,13 +1,13 @@
 # Bubble Tax
 
-**Stop sponsoring the AI bubble.**
+**Know your limits. Plan your work.**
 
-A Mac menu-bar app for AI subscriptions you pay for and barely use.
-See what is **left**, spot the plans worth reviewing, and keep a record when you cancel or downgrade.
+Compare how five-hour windows draw down your weekly AI quota.
+Choose where the next task goes, reserve headroom, and review the capacity you actually need.
 
-[Download the Mac app](https://github.com/bubble-tax/bubble-tax-bar/releases/download/v0.1.0-build.13/Bubble-Tax-0.1.0-macOS-arm64.zip) · [Website](https://bubble-tax.github.io/) · [Release notes](https://github.com/bubble-tax/bubble-tax-bar/releases/tag/v0.1.0-build.13)
+[Download the Mac app](https://github.com/bubble-tax/bubble-tax-bar/releases/download/v0.1.0-build.14/Bubble-Tax-0.1.0-macOS-arm64.zip) · [Website](https://bubble-tax.github.io/) · [Release notes](https://github.com/bubble-tax/bubble-tax-bar/releases/tag/v0.1.0-build.14)
 
-![Bubble Tax — Stop sponsoring the AI bubble. Unused quota. Smaller plans. Less money burned.](site/assets/bubble-tax-og.png)
+![Bubble Tax — Know your limits. Plan your work.](site/assets/bubble-tax-og.png)
 
 ## Your quota is chilling. Your subscription money isn't.
 
@@ -16,25 +16,25 @@ On a MacBook with a notch, click the quota beside the camera to expand the app. 
 
 <table>
   <tr>
-    <td align="center"><strong>What you still haven't used</strong></td>
-    <td align="center"><strong>What you stopped paying for</strong></td>
+    <td align="center"><strong>How windows affect your week</strong></td>
+    <td align="center"><strong>What you've set aside</strong></td>
   </tr>
   <tr>
     <td valign="top">
-<a href="site/assets/overview.png">
+<a href="site/assets/model-windows.png">
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="site/assets/overview-dark.png">
-  <source media="(prefers-color-scheme: light)" srcset="site/assets/overview.png">
-  <img src="site/assets/overview.png" alt="Bubble Tax overview: five AI subscriptions, weekly quota left and a contextual roast" width="380">
+  <source media="(prefers-color-scheme: dark)" srcset="site/assets/model-windows-dark.png">
+  <source media="(prefers-color-scheme: light)" srcset="site/assets/model-windows.png">
+  <img src="site/assets/model-windows.png" alt="Recorded five-hour and weekly quota consumption for Codex" width="380">
 </picture>
 </a>
     </td>
     <td valign="top">
-<a href="site/assets/savings.png">
+<a href="site/assets/reserve.png">
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="site/assets/savings-dark.png">
-  <source media="(prefers-color-scheme: light)" srcset="site/assets/savings.png">
-  <img src="site/assets/savings.png" alt="Savings: recorded cancellations and downgrades, with estimated monthly price reductions" width="380">
+  <source media="(prefers-color-scheme: dark)" srcset="site/assets/reserve-dark.png">
+  <source media="(prefers-color-scheme: light)" srcset="site/assets/reserve.png">
+  <img src="site/assets/reserve.png" alt="Named task reservations with used, reserved and unallocated weekly quota" width="380">
 </picture>
 </a>
     </td>
@@ -65,15 +65,15 @@ The point is to spend less, not burn more tokens to justify the bill.
 
 ## Try the preview
 
-**v0.1.0 · Build 13 · Apple silicon · macOS 14+**
+**v0.1.0 · Build 14 · Apple silicon · macOS 14+**
 
-1. [Download the ZIP](https://github.com/bubble-tax/bubble-tax-bar/releases/download/v0.1.0-build.13/Bubble-Tax-0.1.0-macOS-arm64.zip), extract it and move **Bubble Tax.app** to Applications.
+1. [Download the ZIP](https://github.com/bubble-tax/bubble-tax-bar/releases/download/v0.1.0-build.14/Bubble-Tax-0.1.0-macOS-arm64.zip), extract it and move **Bubble Tax.app** to Applications.
 2. Open the app, then click **†** in the menu bar. There is no Dock window.
 3. Open Settings to connect existing provider sessions or choose local log folders, then refresh.
 
 Provider quotas, local log activity and the Claude statusline bridge work without installing Python or developer tools. Both collectors ship inside the app. Move it to Applications before connecting the Claude bridge; reconnect if you move it later. While connected, quota fallback owns the Claude Code statusline and shows quota only. Disconnect restores the saved display.
 
-This preview is **Developer ID signed and notarized by Apple**. Installation details and checksums are on the [release page](https://github.com/bubble-tax/bubble-tax-bar/releases/tag/v0.1.0-build.13). No Intel build is included.
+This preview is **Developer ID signed and notarized by Apple**. Installation details and checksums are on the [release page](https://github.com/bubble-tax/bubble-tax-bar/releases/tag/v0.1.0-build.14). No Intel build is included.
 
 Install with Homebrew:
 
@@ -87,7 +87,7 @@ To update: `brew update && brew upgrade --cask bubble-tax`. [Homebrew tap](https
 
 - Quotas come from available provider sessions. Local Claude / Codex logs and Pi coding-agent sessions add activity; token counts alone cannot establish subscription quota or who paid.
 - ChatGPT's displayed quota is **Codex quota**, not every ChatGPT feature. Availability depends on the provider and authentication; missing readings stay unknown.
-- Claude and Codex window history shows local model activity alongside quota changes. Allocation adds service suggestions, protected-work targets, weekly runway forecasts, local usage patterns and evidence-based plan reviews.
+- Claude and Codex window history shows model usage from saved code logs alongside quota changes. Allocation adds service suggestions, protected-work targets, weekly runway forecasts, local usage patterns and evidence-based plan reviews.
 - History and completed-change records stay on your Mac. USD list prices are estimates, not your invoices, refunds or accumulated cash saved.
 - Bubble Tax opens provider instructions. It does not cancel subscriptions or change billing on your behalf.
 

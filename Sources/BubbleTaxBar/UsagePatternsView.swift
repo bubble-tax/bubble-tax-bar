@@ -3,13 +3,12 @@ import BubbleTaxBarCore
 
 struct UsagePatternsView: View {
     @EnvironmentObject var store: Store
-    @State private var provider: Provider = .claude
+    @Binding var provider: Provider
     var body: some View {
         let summary = UsagePatternSummary.make(events: store.data.modelUsageArchive ?? [], provider: provider)
         VStack(alignment: .leading, spacing: 14) {
             Text("A closer look at the input.").font(.title3.weight(.semibold))
-            Picker("Local logs", selection: $provider) { Text("Claude").tag(Provider.claude); Text("Codex").tag(Provider.openai) }.pickerStyle(.segmented).labelsHidden()
-            Text("Local logs · last 7 days · across accounts").font(.caption2).foregroundStyle(.secondary)
+            Text("Code logs on this Mac · last 7 days · across accounts").font(.caption2).foregroundStyle(.secondary)
             if summary.requests > 0 {
                 GroupBox {
                     VStack(alignment: .leading, spacing: 8) {
@@ -33,7 +32,7 @@ struct UsagePatternsView: View {
                 }
                 GroupBox {
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("Local model mix").font(.headline)
+                        Text("Models used").font(.headline)
                         ForEach(Array(summary.models.prefix(3).enumerated()), id: \.offset) { _, model in
                             HStack {
                                 Text(model.name).lineLimit(1).truncationMode(.middle)
@@ -44,10 +43,10 @@ struct UsagePatternsView: View {
                         }
                     }.frame(maxWidth: .infinity, alignment: .leading)
                 }
-                Text("\(summary.requests) local events · \(summary.knownRequests) with token breakdowns. Large inputs may be necessary. These records don't reveal retries, task success, or which account paid.")
+                Text("\(summary.requests) logged requests · \(summary.knownRequests) with token breakdowns. Large inputs may be necessary. These records don't reveal retries, task success, or which account paid.")
                     .font(.caption2).foregroundStyle(.secondary)
             } else {
-                ContentUnavailableView("No local activity yet", systemImage: "chart.bar.xaxis", description: Text("Connect code logs in Settings. Quota readings alone can't explain request patterns."))
+                ContentUnavailableView("No logged activity yet", systemImage: "chart.bar.xaxis", description: Text("Connect code logs in Settings. Quota readings alone can't explain request patterns."))
             }
         }
     }

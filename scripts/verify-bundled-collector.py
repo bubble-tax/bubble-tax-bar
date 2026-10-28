@@ -30,9 +30,11 @@ with tempfile.TemporaryDirectory(prefix='bubble-tax-no-python-') as temporary:
     snapshot = json.loads(run(['collect', '--claude-folder', str(logs), '--timezone', 'Asia/Seoul']))
     assert snapshot['days'] == [{'provider': 'claude', 'day': '2026-10-02', 'tokens': 15, 'requests': 1}], snapshot
     assert 'PRIVATE PROMPT' not in json.dumps(snapshot)
-    # Install over an existing user display, retain its output and restore it on remove.
+    # Own the quota display without executing the previous command; restore it on remove.
     settings = home / '.claude/settings.json'; settings.parent.mkdir()
-    original = {'theme': 'dark', 'statusLine': {'type': 'command', 'command': 'printf original', 'padding': 2}}
+    marker = root / 'previous-command-ran'
+    previous = 'printf original; touch ' + shlex.quote(str(marker))
+    original = {'theme': 'dark', 'statusLine': {'type': 'command', 'command': previous, 'padding': 2}}
     settings.write_text(json.dumps(original))
     assert json.loads(run(['statusline', 'install']))['enabled']
     assert json.loads(run(['statusline', 'status']))['enabled']
@@ -41,7 +43,8 @@ with tempfile.TemporaryDirectory(prefix='bubble-tax-no-python-') as temporary:
     assert shlex.split(command) == [str(binary.resolve()), 'statusline', 'capture']
     payload = json.dumps({'prompt': 'PRIVATE', 'rate_limits': {'five_hour': {'used_percentage': 25, 'resets_at': time.time()+1000}}}).encode()
     output = subprocess.run(command, shell=True, input=payload, env=env, capture_output=True, check=True, timeout=15).stdout
-    assert output == b'original', output
+    assert output == b'5h 75% left\n', output
+    assert not marker.exists(), 'Previous statusline must never be executed'
     cache = home / 'Library/Application Support/BubbleTaxBar/claude-statusline/quota.json'
     assert json.loads(cache.read_text())['windows'][0]['usedPercent'] == 25
     assert 'PRIVATE' not in cache.read_text()

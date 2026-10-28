@@ -36,12 +36,12 @@ Settings → General → Use MacBook notch switches back to the menu bar. Displa
 
 ## Allocate work and protect headroom
 
-Open Allocation from the main screen or the branch icon in the toolbar.
+Open Allocation from the main screen or the branch icon in the toolbar. The fixed tabs choose the feature. The labeled row below filters the current section by account group and, for Use next, task type. Patterns uses a log-source filter and summarizes records across accounts. Switching sections resets the scroll position while preserving your filters.
 
 - **Use next** suggests Claude or Codex from fresh overall weekly and 5-hour meters. Choose a work type and separate Personal / Work budgets. Configure eligible services for each task in Settings → Task routing. Suggestions describe headroom, not equivalent token capacity or model quality. View quota opens the suggested service in the overview.
 - **Reserve** records named weekly-quota targets with deadlines before the current reset. Targets are tied to the reported account, plan and reset. The app won't create targets exceeding unallocated quota. Mark done or remove a target to release it. This is local planning; provider quota is never locked or transferred.
 - **Forecast** combines measured paired-window changes with an editable daily time plan (initially 2h/day). It shows expected headroom at reset or planned usage before hitting a protected target. Observed hours include idle time; early estimates and missing data are labeled. Model changes, other devices and short-window limits can alter the outcome. No background work is started to consume quota.
-- **Patterns** summarizes seven days of local metadata: repeated new inputs of at least 32K tokens, cache-read share and local model mix. Local logs may cover several accounts. These numbers don't establish task quality, retries, waste, billing savings or account-wide quota attribution.
+- **Patterns** summarizes seven days of local metadata: repeated new inputs of at least 32K tokens, cache-read share and model mix from saved code logs. Local logs may cover several accounts. These numbers don't establish task quality, retries, waste, billing savings or account-wide quota attribution.
 - **Plans** compares capacity needs with current use and near-reset history. Pending reservations and recent 95%-used short windows take priority over downgrade reviews. At least three eligible resets spanning roughly two quota periods are needed to suggest comparing a smaller tier; consistently unused headroom doesn't guarantee a cheaper tier has the required features. Work seats stay separate from personal costs.
 
 Preferences and reservation targets stay in the existing local state file. Expired, completed, previous-account and previous-reset targets don't reserve the current quota. The old weekly quota-exhaustion target has been replaced by Weekly runway.
