@@ -43,7 +43,7 @@
     openScreen(screen) {
       const mapping={'use-next':'next',reserve:'reserve',forecast:'forecast',patterns:'patterns',plans:'plans'};
       if (mapping[screen]) { this.state.page='allocation'; this.state.section=mapping[screen]; }
-      else if (['model-windows','claude-windows','unused-history'].includes(screen)) { this.state.page='history'; this.state.history=screen==='claude-windows'?'claude':screen==='unused-history'?'unused':'codex'; }
+      else if (['model-windows','claude-windows','unused-history'].includes(screen)) { this.state.page='history'; this.state.model='all'; this.state.history=screen==='claude-windows'?'claude':screen==='unused-history'?'unused':'codex'; }
       else this.state.page=screen==='connections'?'settings':screen==='savings'?'savings':'overview';
       this.render(true);
     }
@@ -81,6 +81,8 @@
       if (dialog) dialog.showModal();
       else if (focus) ([...this.querySelectorAll('[data-focus]')].find(el=>el.dataset.focus===focus) || this.querySelector('[role=tab][aria-selected=true]') || this.querySelector('.bt-toolbar strong'))?.focus({preventScroll:true});
       this.dispatchEvent(new CustomEvent('demo-change',{detail:this.quotaEntries,bubbles:true}));
+      const screen=s.page==='allocation'?({next:'use-next'}[s.section] || s.section):s.page==='history'?({codex:'model-windows',claude:'claude-windows',unused:'unused-history'}[s.history]):s.page==='settings'?'connections':s.page;
+      this.dispatchEvent(new CustomEvent('demo-screen',{detail:screen,bubbles:true}));
     }
     overview() {
       const s=this.state, p=this.provider(), next=this.suggestion(), tracked=this.tracked();

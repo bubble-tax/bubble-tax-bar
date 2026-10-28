@@ -21,7 +21,9 @@
   document.getElementById('copy-brew').addEventListener('click', () => {
     gtag('event', 'homebrew_copy_click');
   });
-  document.querySelectorAll('[data-screen]').forEach(button => button.addEventListener('click', () => {
-    gtag('event', 'feature_view', {feature: button.dataset.screen});
-  }));
+  const featureSelect = document.getElementById('demo-feature');
+  const features = new Set([...featureSelect.options].map(option => option.value));
+  featureSelect.addEventListener('change', () => {
+    if (features.has(featureSelect.value)) gtag('event', 'feature_view', {feature: featureSelect.value});
+  });
 })();

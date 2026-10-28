@@ -2,11 +2,11 @@
 
 Static English landing page, published from [bubble-tax/bubble-tax.github.io](https://github.com/bubble-tax/bubble-tax.github.io). The app repository keeps the canonical source in `site/`; it does not run a Pages deployment workflow.
 
-The product tour leads with paired five-hour/weekly quota comparisons, then task allocation, reservations, forecasts, usage patterns and plan review. Allocation captures keep feature tabs above a separate row of account, task or log-source filters. Model labels refer to usage recorded in code logs. The hero offers menu-bar and MacBook-notch previews. Theme changes swap native light/dark captures as well as page colors.
+The landing uses one interactive product preview with an Explore menu for quota comparisons, task allocation, reservations, forecasts, usage patterns and plan review. There is no separate screenshot-tour section. Allocation captures keep feature tabs above a separate row of account, task or log-source filters. Model labels refer to usage recorded in code logs. The hero offers menu-bar and MacBook-notch previews. Theme changes swap native light/dark captures as well as page colors.
 
 ## Interactive web preview
 
-`demo.js` and `demo.css` implement an accessible, scrollable HTML replica of the native app. The hero opens from the simulated menu bar or notch. Each screenshot's “Try this screen” button opens the corresponding interactive screen. Native light/dark captures remain available for comparison.
+`demo.js` and `demo.css` implement an accessible, scrollable HTML replica of the native app. The hero opens from the simulated menu bar or notch. The Explore selector opens any screen in place, and navigating inside the app keeps the selector and feature explanation in sync. “View Mac app capture” opens the corresponding native light/dark screenshot for comparison.
 
 The preview includes quota selection, disclosures, task eligibility and account filters, reservation validation and completion, forecasts, model/window filters, reset receipts, savings records, renewal schedules and Settings. All accounts, quota readings, rates, paths and prices shown in the preview are fictional examples. Refresh advances the sample meters; it does not contact a provider. Each demo instance holds changes only in memory and has its own Reset button. No account authentication, filesystem access, subscription changes, statusline edits or OS preferences are performed. System folder pickers and provider management screens are represented by explicit sample dialogs.
 

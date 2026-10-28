@@ -32,18 +32,18 @@
       document.documentElement.dataset.theme = theme === 'light' || theme === 'dark' ? theme : (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
     })();
   </script>
-  <link rel="stylesheet" href="styles.css?v=0cb568b79215">
-  <link rel="stylesheet" href="demo.css?v=5c1fce59c687">
-  <script src="demo.js?v=7ff479911112" defer></script>
+  <link rel="stylesheet" href="styles.css?v=5c11eb1477f6">
+  <link rel="stylesheet" href="demo.css?v=4b6d62d63b4f">
+  <script src="demo.js?v=845f44aa6a91" defer></script>
   <script src="config.js?v=7aec48963070" defer></script>
-  <script src="analytics.js?v=3bac31c7a50d" defer></script>
-  <script src="app.js?v=d4b96db4fa40" defer></script>
+  <script src="analytics.js?v=c6d5b16dff0c" defer></script>
+  <script src="app.js?v=09eb5f2889e9" defer></script>
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
   <header class="masthead wrap">
     <a class="brand" href="#" aria-label="Bubble Tax home">Bubble Tax</a>
-    <div class="header-controls"><a class="header-link" href="#inside">A look inside</a><button id="theme-toggle" class="theme-toggle" aria-label="Switch to dark mode">Dark</button></div>
+    <div class="header-controls"><a class="header-link" href="#interactive">Try the app</a><button id="theme-toggle" class="theme-toggle" aria-label="Switch to dark mode">Dark</button></div>
   </header>
   <main id="main">
     <section class="hero wrap" aria-labelledby="hero-title">
@@ -54,10 +54,18 @@
         <p class="fine-print">macOS 14+ · Apple silicon</p>
         <p class="hero-aside">Your subscriptions have limits. Your to-do list doesn’t.</p>
       </div>
-      <figure class="hero-visual">
+      <figure id="interactive" class="hero-visual">
+        <span id="inside" class="anchor-alias" aria-hidden="true"></span>
+        <div class="demo-controls"><div class="demo-navigation"><label for="demo-feature">Explore</label><select id="demo-feature" aria-label="Explore app features">
+          <option value="overview">Overview</option>
+          <optgroup label="Quota history"><option value="model-windows">Codex windows</option><option value="claude-windows">Claude windows</option><option value="unused-history">Unused quota</option></optgroup>
+          <optgroup label="Allocation"><option value="use-next">Use next</option><option value="reserve">Reserve</option><option value="forecast">Forecast</option><option value="patterns">Patterns</option><option value="plans">Plans</option></optgroup>
+          <option value="savings">Savings</option><option value="connections">Settings</option>
+        </select></div>
         <div class="preview-modes" role="group" aria-label="App placement">
           <button data-preview="notch" aria-pressed="true">MacBook notch</button>
           <button data-preview="menu" aria-pressed="false">Menu bar</button>
+        </div>
         </div>
         <div class="mac-desktop" data-preview="notch" aria-label="Interactive Bubble Tax web preview with a simulated MacBook notch">
           <div class="mac-menubar">
@@ -80,39 +88,12 @@
             <bubble-tax-demo id="hero-demo" screen="overview" collapsible></bubble-tax-demo>
           </div>
         </div>
-        <figcaption><span id="preview-caption">Interactive web preview · sample data.</span><span>Scroll inside the app. Try the buttons, filters and disclosures.</span></figcaption>
+        <div class="demo-guide" aria-live="polite" aria-atomic="true"><h2 id="feature-title">Your plans, side by side.</h2><p id="feature-body">Scroll through quota, switch services and open their details. Use Explore to jump to any feature.</p><p id="feature-note">Fictional sample data. No accounts or files are accessed.</p></div>
+        <figcaption><span id="preview-caption">Interactive web preview · sample data.</span><button id="native-capture" type="button">View Mac app capture</button></figcaption>
       </figure>
     </section>
     <p class="services wrap">Compare and plan with Claude and Codex. Track available quota for Cursor, GitHub Copilot and Antigravity too. Lives in your menu bar or MacBook notch.</p>
-    <section id="inside" class="inside wrap" aria-labelledby="inside-title">
-      <h2 id="inside-title">A look inside</h2>
-      <div class="tour-tabs" role="group" aria-label="Choose an app screenshot">
-        <button class="tour-tab active" data-screen="model-windows" aria-pressed="true">Window comparison</button>
-        <button class="tour-tab" data-screen="claude-windows" aria-pressed="false">Claude windows</button>
-        <button class="tour-tab" data-screen="use-next" aria-pressed="false">Use next</button>
-        <button class="tour-tab" data-screen="reserve" aria-pressed="false">Reserve</button>
-        <button class="tour-tab" data-screen="forecast" aria-pressed="false">Forecast</button>
-        <button class="tour-tab" data-screen="patterns" aria-pressed="false">Patterns</button>
-        <button class="tour-tab" data-screen="plans" aria-pressed="false">Plans</button>
-        <button class="tour-tab" data-screen="savings" aria-pressed="false">Savings</button>
-        <button class="tour-tab" data-screen="connections" aria-pressed="false">Settings</button>
-      </div>
-      <div class="app-tour">
-        <div class="tour-copy">
-          <div class="tour-description" aria-live="polite" aria-atomic="true">
-            <h3 id="tour-title">Five hours. One weekly budget.</h3>
-            <p id="tour-body">See how much weekly quota each five-hour window actually consumed. Compare recorded meter changes with model usage from logs before planning the next task.</p>
-            <p id="tour-note" class="tour-note">Claude and Codex · observed percentage-point changes, not a fixed token-to-quota formula.</p>
-            <div class="tour-try"><button id="try-screen" type="button">Try this screen</button></div>
-          </div>
-        </div>
-        <figure class="tour-shot">
-          <button id="tour-image-button" class="image-button" data-image="assets/model-windows.png?v=20261029" data-caption="Window comparison — actual macOS app, sample data." aria-label="Enlarge the selected app screenshot"><img id="tour-image" class="app-capture" data-light="assets/model-windows.png?v=20261029" data-dark="assets/model-windows-dark.png?v=20261029" src="assets/model-windows.png?v=20261029" alt="Bubble Tax comparing five-hour Codex windows with weekly quota consumption, using sample data." width="860" height="1232"></button>
-          <figcaption><span id="shot-label">Window comparison</span><span>Sample data · click for original</span></figcaption>
-        </figure>
-      </div>
-      <details class="data-note"><summary>About the data</summary><p>Claude and Codex comparisons use paired five-hour and weekly quota readings. Model names come from Claude Code and Codex logs stored on your Mac. Those logs add model and cache context; they do not reveal the provider’s exact quota formula or prove account-wide token attribution. Unobserved periods stay unknown. Codex quota does not cover every ChatGPT feature.</p><p>Task suggestions use fresh headroom and your service preferences. Reservations are local planning targets, not provider-side locks or transfers. Forecasts need enough observed history and remain estimates. Personal and work budgets stay separate.</p><p>The web preview uses fictional sample data held in browser memory. It does not connect accounts, read files or change subscriptions. macOS authentication and system dialogs are represented with sample interactions. In the Mac app, usage history, reservations and completed-change records stay on your Mac. Prices are published US list prices, not your invoice. Savings are projected rate reductions from changes you record after completing them with the provider.</p><p>The website uses Google Analytics for visits and feature and installation-link clicks. App usage records are not sent to website analytics. Global Privacy Control disables website analytics.</p></details>
-    </section>
+    <div class="wrap data-information"><details class="data-note"><summary>About the data</summary><p>Claude and Codex comparisons use paired five-hour and weekly quota readings. Model names come from Claude Code and Codex logs stored on your Mac. Those logs add model and cache context; they do not reveal the provider’s exact quota formula or prove account-wide token attribution. Unobserved periods stay unknown. Codex quota does not cover every ChatGPT feature.</p><p>Task suggestions use fresh headroom and your service preferences. Reservations are local planning targets, not provider-side locks or transfers. Forecasts need enough observed history and remain estimates. Personal and work budgets stay separate.</p><p>The web preview uses fictional sample data held in browser memory. It does not connect accounts, read files or change subscriptions. macOS authentication and system dialogs are represented with sample interactions. In the Mac app, usage history, reservations and completed-change records stay on your Mac. Prices are published US list prices, not your invoice. Savings are projected rate reductions from changes you record after completing them with the provider.</p><p>The website uses Google Analytics for visits and feature and installation-link clicks. App usage records are not sent to website analytics. Global Privacy Control disables website analytics.</p></details></div>
     <section id="get-app" class="get-app wrap" aria-labelledby="download-title">
       <div><h2 id="download-title">Bubble Tax for Mac</h2><p id="release-status">v0.1.0 Preview · Build 14</p><p class="fine-print">macOS 14+ · Apple silicon<br>Developer ID signed · Apple notarized.<br><a class="release-notes-link" href="https://github.com/bubble-tax/bubble-tax-bar/releases/tag/v0.1.0-build.14">Release notes &amp; installation</a></p></div>
       <div class="install-options">
@@ -137,7 +118,7 @@
     <p class="coffee-aside">Apparently, the bubble needs me more than caffeine does.</p>
     <div class="coffee-actions"><a id="coffee-destination" class="button ink" target="_blank" rel="noopener noreferrer">Still want to buy me one?</a><button id="skip-coffee" class="coffee-skip">Back to funding the bubble.</button></div>
   </dialog>
-  <dialog id="demo-dialog" class="demo-dialog" aria-label="Interactive Bubble Tax web demo"><div class="dialog-bar"><p>Interactive web preview · sample data</p><button id="close-demo">Close demo</button></div><bubble-tax-demo id="tour-demo"></bubble-tax-demo></dialog>
+
   <dialog id="image-dialog" aria-label="Original macOS screenshot"><div class="dialog-bar"><p id="image-caption"></p><button id="close-dialog" aria-label="Close screenshot">Close</button></div><div class="dialog-image"><img id="full-image" alt=""></div></dialog>
 </body>
 </html>

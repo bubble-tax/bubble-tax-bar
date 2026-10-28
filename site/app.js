@@ -1,5 +1,7 @@
 (() => {
   const screens = {
+  "overview": {title:"Your plans, side by side.",body:"Scroll through quota, switch services and open their details. Use Explore to jump to any feature.",note:"Fictional sample data. No accounts or files are accessed.",label:"Overview"},
+  "unused-history": {title:"The quota left behind.",body:"Review unused quota from recorded resets. Switch between weekly and five-hour windows, then open the receipts.",note:"Only observed resets count. Missing periods stay unknown.",label:"Unused quota"},
   "model-windows": {
     "title": "Five hours. One weekly budget.",
     "body": "See how much weekly quota each five-hour window actually consumed. Compare recorded meter changes with model usage from logs before planning the next task.",
@@ -83,31 +85,16 @@
   });
   systemTheme.addEventListener("change", event => { if (!manualTheme) applyTheme(event.matches ? "dark" : "light"); });
   applyTheme(root.dataset.theme);
-  let selectedScreen = "model-windows";
-  const tourImage = document.getElementById("tour-image");
-  const tourButton = document.getElementById("tour-image-button");
-  document.querySelectorAll("[data-screen]").forEach(button => {
-    button.addEventListener("click", () => {
-      const key = button.dataset.screen;
-      selectedScreen = key;
-      const screen = screens[key];
-      document.querySelectorAll("[data-screen]").forEach(item => {
-        const selected = item === button;
-        item.classList.toggle("active", selected);
-        item.setAttribute("aria-pressed", String(selected));
-      });
-      tourImage.dataset.light = assetUrl(key);
-      tourImage.dataset.dark = assetUrl(key + "-dark");
-      tourImage.src = themedSource(tourImage);
-      tourImage.alt = `${screen.label} — actual Bubble Tax macOS app with sample data.`;
-      tourButton.dataset.image = tourImage.getAttribute("src");
-      tourButton.dataset.caption = tourImage.alt;
-      document.getElementById("shot-label").textContent = screen.label;
-      document.getElementById("tour-title").textContent = screen.title;
-      document.getElementById("tour-body").textContent = screen.body;
-      document.getElementById("tour-note").textContent = screen.note;
-    });
-  });
+  let selectedScreen = "overview";
+  const featureSelect = document.getElementById("demo-feature");
+  const updateFeature = key => {
+    if (!screens[key]) return;
+    selectedScreen = key;
+    featureSelect.value = key;
+    document.getElementById("feature-title").textContent = screens[key].title;
+    document.getElementById("feature-body").textContent = screens[key].body;
+    document.getElementById("feature-note").textContent = screens[key].note;
+  };
   let previewMode = "notch";
   const desktop = document.querySelector(".mac-desktop");
   const notchToggle = document.getElementById("notch-quota-toggle");
@@ -151,13 +138,12 @@
   heroDemo.addEventListener("demo-change", event => { quotaExamples=event.detail; renderQuota(); });
   heroDemo.addEventListener("demo-collapse", () => { setExpanded(false); (previewMode === "notch" ? notchToggle : quotaToggle).focus(); });
   heroDemo.addEventListener("demo-placement", event => document.querySelector(`button[data-preview="${event.detail}"]`).click());
-  const demoDialog = document.getElementById("demo-dialog");
-  document.getElementById("try-screen").addEventListener("click", () => {
-    document.getElementById("tour-demo").openScreen(selectedScreen);
-    demoDialog.showModal(); document.body.classList.add("modal-open");
+  heroDemo.addEventListener("demo-screen", event => updateFeature(event.detail));
+  featureSelect.addEventListener("change", () => {
+    if (!screens[featureSelect.value]) return;
+    heroDemo.openScreen(featureSelect.value);
+    setExpanded(true);
   });
-  document.getElementById("close-demo").addEventListener("click", () => demoDialog.close());
-  demoDialog.addEventListener("close", () => document.body.classList.remove("modal-open"));
   renderQuota();
   setInterval(async () => {
     if (document.hidden || document.querySelector("dialog[open]") || quotaToggle.getAttribute("aria-expanded") === "true") return;
@@ -171,19 +157,15 @@
     await flipTarget.animate([{transform: "rotateX(90deg)"}, {transform: "rotateX(0deg)"}], {duration: 170, easing: "ease-out"}).finished;
   }, 8000);
   const dialog = document.getElementById("image-dialog");
-  document.querySelectorAll("[data-image]").forEach(button => {
-    button.addEventListener("click", () => {
-      const caption = button.dataset.caption;
-      const fullImage = document.getElementById("full-image");
-      const thumbnail = button.querySelector("img");
-      fullImage.dataset.light = thumbnail.dataset.light;
-      fullImage.dataset.dark = thumbnail.dataset.dark;
-      fullImage.src = button.dataset.image;
-      document.getElementById("full-image").alt = caption;
-      document.getElementById("image-caption").textContent = caption;
-      dialog.showModal();
-      document.body.classList.add("modal-open");
-    });
+  document.getElementById("native-capture").addEventListener("click", () => {
+    const image = document.getElementById("full-image");
+    const asset = selectedScreen === "overview" ? "overview" : selectedScreen;
+    image.dataset.light = assetUrl(asset);
+    image.dataset.dark = assetUrl(asset + "-dark");
+    image.src = themedSource(image);
+    image.alt = `${screens[selectedScreen].label} — actual macOS app capture, sample data.`;
+    document.getElementById("image-caption").textContent = image.alt;
+    dialog.showModal(); document.body.classList.add("modal-open");
   });
   document.getElementById("close-dialog").addEventListener("click", () => dialog.close());
   dialog.addEventListener("close", () => document.body.classList.remove("modal-open"));
