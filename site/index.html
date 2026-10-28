@@ -33,9 +33,11 @@
     })();
   </script>
   <link rel="stylesheet" href="styles.css?v=0cb568b79215">
+  <link rel="stylesheet" href="demo.css?v=5c1fce59c687">
+  <script src="demo.js?v=7ff479911112" defer></script>
   <script src="config.js?v=7aec48963070" defer></script>
   <script src="analytics.js?v=3bac31c7a50d" defer></script>
-  <script src="app.js?v=99b7ef75f5a2" defer></script>
+  <script src="app.js?v=d4b96db4fa40" defer></script>
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
@@ -57,7 +59,7 @@
           <button data-preview="notch" aria-pressed="true">MacBook notch</button>
           <button data-preview="menu" aria-pressed="false">Menu bar</button>
         </div>
-        <div class="mac-desktop" data-preview="notch" aria-label="Mac desktop illustration with a simulated notch and actual Bubble Tax app capture">
+        <div class="mac-desktop" data-preview="notch" aria-label="Interactive Bubble Tax web preview with a simulated MacBook notch">
           <div class="mac-menubar">
             <div class="mac-app-menu" aria-hidden="true">
               <svg class="mac-apple" viewBox="0 0 24 24"><path fill="currentColor" d="M16.1 1.5c.2 1.6-.5 3-1.4 4-.9 1-2.1 1.6-3.4 1.5-.2-1.4.5-2.9 1.4-3.9.9-1 2.2-1.6 3.4-1.6ZM19 12.2c0-2.4 2-3.6 2.1-3.6-1.1-1.7-2.8-1.9-3.4-1.9-1.5-.2-3 1-3.8 1-.8 0-2-1-3.3-.9-1.8 0-3.4 1-4.3 2.6-1.9 3.2-.5 8 1.3 10.5.8 1.2 1.8 2.5 3.1 2.4 1.3 0 1.8-.8 3.4-.8 1.5 0 2 .8 3.4.8 1.4 0 2.2-1.2 3-2.4.9-1.4 1.3-2.8 1.3-2.8-.1 0-2.8-1.1-2.8-4.9Z"/></svg>
@@ -75,10 +77,10 @@
           </button>
           <div class="mac-wallpaper" aria-hidden="true"></div>
           <div id="mac-popover" class="mac-popover">
-            <button class="image-button" data-image="assets/notch-claude.png?v=20261029" data-caption="Notch preview — native macOS app capture, sample data." aria-label="Enlarge the actual macOS overview screenshot"><img class="app-capture" data-light="assets/notch-claude.png?v=20261029" data-dark="assets/notch-claude-dark.png?v=20261029" src="assets/notch-claude.png?v=20261029" alt="Bubble Tax notch preview showing Claude weekly quota with sample data." width="860" height="1240" fetchpriority="high"></button>
+            <bubble-tax-demo id="hero-demo" screen="overview" collapsible></bubble-tax-demo>
           </div>
         </div>
-        <figcaption><span id="preview-caption">Notch preview · native app capture · sample data.</span><span>Paid plans flip every 8 seconds. Click the quota to open or close.</span></figcaption>
+        <figcaption><span id="preview-caption">Interactive web preview · sample data.</span><span>Scroll inside the app. Try the buttons, filters and disclosures.</span></figcaption>
       </figure>
     </section>
     <p class="services wrap">Compare and plan with Claude and Codex. Track available quota for Cursor, GitHub Copilot and Antigravity too. Lives in your menu bar or MacBook notch.</p>
@@ -101,6 +103,7 @@
             <h3 id="tour-title">Five hours. One weekly budget.</h3>
             <p id="tour-body">See how much weekly quota each five-hour window actually consumed. Compare recorded meter changes with model usage from logs before planning the next task.</p>
             <p id="tour-note" class="tour-note">Claude and Codex · observed percentage-point changes, not a fixed token-to-quota formula.</p>
+            <div class="tour-try"><button id="try-screen" type="button">Try this screen</button></div>
           </div>
         </div>
         <figure class="tour-shot">
@@ -108,7 +111,7 @@
           <figcaption><span id="shot-label">Window comparison</span><span>Sample data · click for original</span></figcaption>
         </figure>
       </div>
-      <details class="data-note"><summary>About the data</summary><p>Claude and Codex comparisons use paired five-hour and weekly quota readings. Model names come from Claude Code and Codex logs stored on your Mac. Those logs add model and cache context; they do not reveal the provider’s exact quota formula or prove account-wide token attribution. Unobserved periods stay unknown. Codex quota does not cover every ChatGPT feature.</p><p>Task suggestions use fresh headroom and your service preferences. Reservations are local planning targets, not provider-side locks or transfers. Forecasts need enough observed history and remain estimates. Personal and work budgets stay separate.</p><p>Usage history, reservations and completed-change records stay on your Mac. Prices are published US list prices, not your invoice. Savings are projected rate reductions from changes you record after completing them with the provider.</p><p>The website uses Google Analytics for visits and feature and installation-link clicks. App usage records are not sent to website analytics. Global Privacy Control disables website analytics.</p></details>
+      <details class="data-note"><summary>About the data</summary><p>Claude and Codex comparisons use paired five-hour and weekly quota readings. Model names come from Claude Code and Codex logs stored on your Mac. Those logs add model and cache context; they do not reveal the provider’s exact quota formula or prove account-wide token attribution. Unobserved periods stay unknown. Codex quota does not cover every ChatGPT feature.</p><p>Task suggestions use fresh headroom and your service preferences. Reservations are local planning targets, not provider-side locks or transfers. Forecasts need enough observed history and remain estimates. Personal and work budgets stay separate.</p><p>The web preview uses fictional sample data held in browser memory. It does not connect accounts, read files or change subscriptions. macOS authentication and system dialogs are represented with sample interactions. In the Mac app, usage history, reservations and completed-change records stay on your Mac. Prices are published US list prices, not your invoice. Savings are projected rate reductions from changes you record after completing them with the provider.</p><p>The website uses Google Analytics for visits and feature and installation-link clicks. App usage records are not sent to website analytics. Global Privacy Control disables website analytics.</p></details>
     </section>
     <section id="get-app" class="get-app wrap" aria-labelledby="download-title">
       <div><h2 id="download-title">Bubble Tax for Mac</h2><p id="release-status">v0.1.0 Preview · Build 14</p><p class="fine-print">macOS 14+ · Apple silicon<br>Developer ID signed · Apple notarized.<br><a class="release-notes-link" href="https://github.com/bubble-tax/bubble-tax-bar/releases/tag/v0.1.0-build.14">Release notes &amp; installation</a></p></div>
@@ -134,6 +137,7 @@
     <p class="coffee-aside">Apparently, the bubble needs me more than caffeine does.</p>
     <div class="coffee-actions"><a id="coffee-destination" class="button ink" target="_blank" rel="noopener noreferrer">Still want to buy me one?</a><button id="skip-coffee" class="coffee-skip">Back to funding the bubble.</button></div>
   </dialog>
+  <dialog id="demo-dialog" class="demo-dialog" aria-label="Interactive Bubble Tax web demo"><div class="dialog-bar"><p>Interactive web preview · sample data</p><button id="close-demo">Close demo</button></div><bubble-tax-demo id="tour-demo"></bubble-tax-demo></dialog>
   <dialog id="image-dialog" aria-label="Original macOS screenshot"><div class="dialog-bar"><p id="image-caption"></p><button id="close-dialog" aria-label="Close screenshot">Close</button></div><div class="dialog-image"><img id="full-image" alt=""></div></dialog>
 </body>
 </html>

@@ -83,11 +83,13 @@
   });
   systemTheme.addEventListener("change", event => { if (!manualTheme) applyTheme(event.matches ? "dark" : "light"); });
   applyTheme(root.dataset.theme);
+  let selectedScreen = "model-windows";
   const tourImage = document.getElementById("tour-image");
   const tourButton = document.getElementById("tour-image-button");
   document.querySelectorAll("[data-screen]").forEach(button => {
     button.addEventListener("click", () => {
       const key = button.dataset.screen;
+      selectedScreen = key;
       const screen = screens[key];
       document.querySelectorAll("[data-screen]").forEach(item => {
         const selected = item === button;
@@ -122,50 +124,44 @@
   }));
   // Mirror the native 8-second cadence and 130ms fold / 170ms unfold.
   const quotaLabel = document.getElementById("mac-quota-label");
-  const heroImage = document.querySelector(".mac-popover img");
-  const quotaExamples = [
-    {name: "Claude", period: "Weekly", left: 44, image: "overview"},
-    {name: "Codex", period: "Weekly", left: 72, image: "overview-openai"},
-  ];
+  const heroDemo = document.getElementById("hero-demo");
+  let quotaExamples = heroDemo.quotaEntries;
   const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
   let quotaIndex = 0;
   const renderQuota = () => {
-    const examples = previewMode === "notch" ? quotaExamples.slice(0, 2) : quotaExamples;
-    const example = examples[quotaIndex % examples.length];
-    const asset = previewMode === "notch" ? `notch-${example.name === "Claude" ? "claude" : "openai"}` : example.image;
+    const example = quotaExamples[quotaIndex % Math.max(1,quotaExamples.length)] || {name:"Bubble Tax",period:"No paid plans",left:null};
     document.getElementById("notch-service").textContent = example.name;
-    notchQuotaLabel.textContent = `${example.period} ${example.left}% left`;
-    quotaLabel.textContent = `† ${example.name} · ${example.period} quota ${example.left}% left`;
-    heroImage.dataset.light = assetUrl(asset);
-    heroImage.dataset.dark = assetUrl(asset + "-dark");
-    heroImage.src = themedSource(heroImage);
-    heroImage.alt = `Bubble Tax ${previewMode === "notch" ? "notch preview" : "on macOS"} showing ${example.name} quota left with sample data.`;
-    heroImage.closest("[data-image]").dataset.image = heroImage.getAttribute("src");
-    heroImage.closest("[data-image]").dataset.caption = `${example.name} ${previewMode === "notch" ? "notch preview" : "overview"} — native macOS app capture, sample data.`;
+    notchQuotaLabel.textContent = example.left===null?example.period:`${example.period} ${example.left}% left`;
+    quotaLabel.textContent = example.left===null?"† No paid plans tracked":`† ${example.name} · ${example.period} quota ${example.left}% left`;
+
   };
   document.querySelectorAll("button[data-preview]").forEach(button => {
     button.addEventListener("click", () => {
       previewMode = button.dataset.preview;
+      heroDemo.setPlacement(previewMode);
       desktop.dataset.preview = previewMode;
-      desktop.setAttribute("aria-label", previewMode === "notch" ? "Mac desktop illustration with a simulated notch and actual Bubble Tax app capture" : "Mac desktop illustration with the actual Bubble Tax app open");
+      desktop.setAttribute("aria-label", previewMode === "notch" ? "Interactive Bubble Tax web preview with a simulated MacBook notch" : "Interactive Bubble Tax web preview in the Mac menu bar");
       quotaIndex = 0;
       document.querySelectorAll("button[data-preview]").forEach(item => item.setAttribute("aria-pressed", String(item === button)));
-      document.getElementById("preview-caption").textContent = previewMode === "notch" ? "Notch preview · native app capture · sample data." : "Actual app capture · sample data.";
+      document.getElementById("preview-caption").textContent = "Interactive web preview · sample data.";
       setExpanded(true);
       renderQuota();
     });
   });
-  // Warm both appearances so changing services or themes doesn't flash a blank image.
-  quotaExamples.forEach(example => {
-    ["", "-dark"].forEach(suffix => { const image = new Image(); image.src = assetUrl(example.image + suffix); });
+  heroDemo.addEventListener("demo-change", event => { quotaExamples=event.detail; renderQuota(); });
+  heroDemo.addEventListener("demo-collapse", () => { setExpanded(false); (previewMode === "notch" ? notchToggle : quotaToggle).focus(); });
+  heroDemo.addEventListener("demo-placement", event => document.querySelector(`button[data-preview="${event.detail}"]`).click());
+  const demoDialog = document.getElementById("demo-dialog");
+  document.getElementById("try-screen").addEventListener("click", () => {
+    document.getElementById("tour-demo").openScreen(selectedScreen);
+    demoDialog.showModal(); document.body.classList.add("modal-open");
   });
-  ["claude", "openai"].forEach(provider => ["", "-dark"].forEach(suffix => {
-    const image = new Image(); image.src = assetUrl(`notch-${provider}${suffix}`);
-  }));
+  document.getElementById("close-demo").addEventListener("click", () => demoDialog.close());
+  demoDialog.addEventListener("close", () => document.body.classList.remove("modal-open"));
   renderQuota();
   setInterval(async () => {
-    if (document.hidden || document.querySelector("dialog[open]")) return;
-    quotaIndex = (quotaIndex + 1) % (previewMode === "notch" ? 2 : quotaExamples.length);
+    if (document.hidden || document.querySelector("dialog[open]") || quotaToggle.getAttribute("aria-expanded") === "true") return;
+    quotaIndex = (quotaIndex + 1) % Math.max(1,quotaExamples.length);
     if (reducedMotion.matches) { renderQuota(); return; }
     const flipTarget = previewMode === "notch" ? notchQuotaLabel : quotaLabel;
     const fold = flipTarget.animate([{transform: "rotateX(0deg)"}, {transform: "rotateX(-90deg)"}], {duration: 130, easing: "ease-in", fill: "forwards"});

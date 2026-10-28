@@ -4,6 +4,14 @@ Static English landing page, published from [bubble-tax/bubble-tax.github.io](ht
 
 The product tour leads with paired five-hour/weekly quota comparisons, then task allocation, reservations, forecasts, usage patterns and plan review. Allocation captures keep feature tabs above a separate row of account, task or log-source filters. Model labels refer to usage recorded in code logs. The hero offers menu-bar and MacBook-notch previews. Theme changes swap native light/dark captures as well as page colors.
 
+## Interactive web preview
+
+`demo.js` and `demo.css` implement an accessible, scrollable HTML replica of the native app. The hero opens from the simulated menu bar or notch. Each screenshot's “Try this screen” button opens the corresponding interactive screen. Native light/dark captures remain available for comparison.
+
+The preview includes quota selection, disclosures, task eligibility and account filters, reservation validation and completion, forecasts, model/window filters, reset receipts, savings records, renewal schedules and Settings. All accounts, quota readings, rates, paths and prices shown in the preview are fictional examples. Refresh advances the sample meters; it does not contact a provider. Each demo instance holds changes only in memory and has its own Reset button. No account authentication, filesystem access, subscription changes, statusline edits or OS preferences are performed. System folder pickers and provider management screens are represented by explicit sample dialogs.
+
+Keep demo task names and form contents out of analytics. Keyboard tabs, dialog Escape, scroll containment, tracking-empty states, dark/light appearance and narrow layouts are part of the browser QA. The menu/notch label follows enabled paid sample plans and rotates every eight seconds while collapsed, pausing while the app or a dialog is open.
+
 ## Screenshots
 
 Use the native app with isolated `--demo-data`, `--hide-demo-badge`, and `--appearance-light` / `--appearance-dark`. Fixtures must contain fictional accounts and logs. Capture the relevant view, crop the popover arrow and outer transparent padding, and keep public “sample data” captions. Never publish screenshots from real account state.
