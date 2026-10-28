@@ -2,13 +2,13 @@
 
 Static English landing page, published from [bubble-tax/bubble-tax.github.io](https://github.com/bubble-tax/bubble-tax.github.io). The app repository keeps the canonical source in `site/`; it does not run a Pages deployment workflow.
 
-The product tour leads with paired five-hour/weekly quota comparisons, then task allocation, reservations, forecasts, usage patterns and plan review. The hero offers menu-bar and MacBook-notch previews. Theme changes swap native light/dark captures as well as page colors.
+The product tour leads with paired five-hour/weekly quota comparisons, then task allocation, reservations, forecasts, usage patterns and plan review. Allocation captures keep feature tabs above a separate row of account, task or log-source filters. Model labels refer to usage recorded in code logs. The hero offers menu-bar and MacBook-notch previews. Theme changes swap native light/dark captures as well as page colors.
 
 ## Screenshots
 
 Use the native app with isolated `--demo-data`, `--hide-demo-badge`, and `--appearance-light` / `--appearance-dark`. Fixtures must contain fictional accounts and logs. Capture the relevant view, crop the popover arrow and outer transparent padding, and keep public “sample data” captions. Never publish screenshots from real account state.
 
-Reservations are planning targets, forecasts are estimates, and local log model usage is not on-device model inference or verified quota attribution. Do not describe suggestions as automatic task execution or quotas as transferable.
+Reservations are planning targets, forecasts are estimates, and model usage comes from saved code logs and does not establish account-wide quota attribution. Do not describe suggestions as automatic task execution or quotas as transferable.
 
 ## Configuration
 

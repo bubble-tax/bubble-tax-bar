@@ -15,7 +15,7 @@
   "use-next": {
     "title": "Give the next task a home.",
     "body": "See which suitable service has headroom after your planned work is accounted for. Choose coding, writing or research, then open the service’s quota view.",
-    "note": "Claude and Codex · suggestions based on availability and your preferences, not model quality or automatic task routing.",
+    "note": "Claude and Codex · availability and your preferences. You choose where to run the task.",
     "label": "Use next"
   },
   "reserve": {
