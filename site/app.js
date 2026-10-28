@@ -1,21 +1,66 @@
 (() => {
   const screens = {
-    "weekly-pattern": {title: "Your subscription needs a second job.", body: "See the daily pace needed to finish your remaining weekly quota. If keeping up sounds like work, the smaller plan might be enough.", note: "Claude and Codex · an estimate from observed use, including idle time. Too little data stays unknown.", label: "Weekly pattern"},
-    "model-windows": {title: "Five hours. One weekly budget.", body: "Follow how each Claude or Codex window draws down the weekly meter. See the local model mix alongside the recorded changes.", note: "Token counts add context; they don't reveal a provider's exact quota formula.", label: "Codex windows"},
-    "claude-windows": {title: "Same window. Different models.", body: "Compare Claude windows with their local model mix. Check whether similar short-window usage made a different dent in the weekly limit.", note: "Observed meter changes, with input, output and cache details available in the app.", label: "Claude windows"},
-    "unused-history": {title: "The quota you left behind.", body: "Browse recorded resets across your subscriptions. See unused quota over time, with weekly and session limits kept separate.", note: "Only observed near-reset readings count. Missing periods aren't guessed.", label: "Unused history"},
-    overview: {title: "The plans you're keeping.", body: "See current quota left across your AI services. Plans with repeated unused headroom move to the front for review.", note: "Current remaining quota isn't expired waste.", label: "Overview"},
-    details: {title: "What went unused.", body: "See the quota left near past resets. A few quiet hours aren't enough to label a whole subscription a waste.", note: "Weekly and session limits stay separate.", label: "Past resets"},
-    downgrade: {title: "Maybe the smaller plan is enough.", body: "Compare cheaper tiers. Turn the price difference into a weekly, monthly or yearly budget for something outside a chat window.", note: "Published list prices; check that the tier covers your work.", label: "Smaller plans"},
-    savings: {title: "A smaller monthly bill.", body: "Record your completed cancellations and downgrades. Before-and-after prices show the monthly difference.", note: "Projected list-price reduction, not cash already recovered.", label: "Savings"},
-    connections: {title: "Use what's already signed in.", body: "Read available usage from existing service sessions. For Claude and Codex, connect the default log folder or choose your own.", note: "Missing data stays unknown.", label: "Connections"},
-    enterprise: {title: "Your boss's budget.", body: "Work plans get a seat review. Record a released seat when you're done, without counting company costs as your personal savings.", note: "Some workspace quotas may be shared.", label: "Work accounts"},
-  };
+  "model-windows": {
+    "title": "Five hours. One weekly budget.",
+    "body": "See how much weekly quota each five-hour window actually consumed. Compare recorded meter changes with model usage from logs before planning the next task.",
+    "note": "Claude and Codex · observed percentage-point changes, not a fixed token-to-quota formula.",
+    "label": "Window comparison"
+  },
+  "claude-windows": {
+    "title": "What did that window cost?",
+    "body": "Compare Claude’s five-hour usage with the weekly quota it drew down. Model usage from logs adds context to the differences between windows.",
+    "note": "Gaps remain visible. Model mix is context, not a claim about exact quota weights.",
+    "label": "Claude windows"
+  },
+  "use-next": {
+    "title": "Give the next task a home.",
+    "body": "See which suitable service has headroom after your planned work is accounted for. Choose coding, writing or research, then open the service’s quota view.",
+    "note": "Claude and Codex · suggestions based on availability and your preferences, not model quality or automatic task routing.",
+    "label": "Use next"
+  },
+  "reserve": {
+    "title": "Save room for Friday.",
+    "body": "Set aside a share of weekly quota for a named task and deadline. See what is used, reserved and still unallocated at a glance.",
+    "note": "Local planning targets. Quota is not locked or moved between providers.",
+    "label": "Reserve"
+  },
+  "forecast": {
+    "title": "Will the week’s work fit?",
+    "body": "Set your expected daily hours and compare projected headroom at reset with the quota you have set aside. Adjust the plan before the meter runs out.",
+    "note": "Estimates from observed window history, including idle time. Too little data stays unknown.",
+    "label": "Forecast"
+  },
+  "patterns": {
+    "title": "Know what fills the meter.",
+    "body": "See which models you used, cache reuse and large-input requests together. Use the pattern as a starting point for changing how you work.",
+    "note": "Metadata from locally stored logs; not a measurement of answer quality or guaranteed savings.",
+    "label": "Patterns"
+  },
+  "plans": {
+    "title": "Keep the capacity you need.",
+    "body": "Review plan choices against recorded resets, peak use and upcoming work. Keep useful headroom; reconsider tiers that repeatedly go unused.",
+    "note": "Evidence needs time. Personal costs and shared work capacity are reviewed separately.",
+    "label": "Plans"
+  },
+  "savings": {
+    "title": "Make the smaller bill stick.",
+    "body": "Record completed downgrades and cancellations. Keep the before-and-after monthly difference in one place.",
+    "note": "Published list-price reductions, not cash already recovered.",
+    "label": "Savings"
+  },
+  "connections": {
+    "title": "Start with what’s signed in.",
+    "body": "Connect available provider sessions and choose your local log folders. Tracking, task preferences and display options live in Settings.",
+    "note": "Optional Claude Code quota statusline replaces the current display while connected; disconnect restores it.",
+    "label": "Settings"
+  }
+};
   const root = document.documentElement;
   const themeToggle = document.getElementById("theme-toggle");
   let manualTheme = false;
   try { manualTheme = ["light", "dark"].includes(localStorage.getItem("bubble-tax-theme")); } catch {}
   const systemTheme = matchMedia("(prefers-color-scheme: dark)");
+  const assetUrl = name => `assets/${name}.png?v=${window.BUBBLE_TAX_BAR_CONFIG.assetVersion}`;
   const themedSource = image => image.dataset[root.dataset.theme];
   const applyTheme = theme => {
     root.dataset.theme = theme;
@@ -49,8 +94,8 @@
         item.classList.toggle("active", selected);
         item.setAttribute("aria-pressed", String(selected));
       });
-      tourImage.dataset.light = `assets/${key === "enterprise" ? "enterprise-light" : key}.png`;
-      tourImage.dataset.dark = `assets/${key === "enterprise" ? "enterprise" : key + "-dark"}.png`;
+      tourImage.dataset.light = assetUrl(key);
+      tourImage.dataset.dark = assetUrl(key + "-dark");
       tourImage.src = themedSource(tourImage);
       tourImage.alt = `${screen.label} — actual Bubble Tax macOS app with sample data.`;
       tourButton.dataset.image = tourImage.getAttribute("src");
@@ -79,11 +124,8 @@
   const quotaLabel = document.getElementById("mac-quota-label");
   const heroImage = document.querySelector(".mac-popover img");
   const quotaExamples = [
-    {name: "Claude", period: "Weekly", left: 88, image: "overview"},
+    {name: "Claude", period: "Weekly", left: 44, image: "overview"},
     {name: "Codex", period: "Weekly", left: 72, image: "overview-openai"},
-    {name: "Cursor", period: "Monthly", left: 82, image: "overview-cursor"},
-    {name: "Copilot", period: "Monthly", left: 77, image: "overview-copilot"},
-    {name: "Antigravity", period: "Weekly", left: 93, image: "overview-antigravity"},
   ];
   const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
   let quotaIndex = 0;
@@ -94,8 +136,8 @@
     document.getElementById("notch-service").textContent = example.name;
     notchQuotaLabel.textContent = `${example.period} ${example.left}% left`;
     quotaLabel.textContent = `† ${example.name} · ${example.period} quota ${example.left}% left`;
-    heroImage.dataset.light = `assets/${asset}.png`;
-    heroImage.dataset.dark = `assets/${asset}-dark.png`;
+    heroImage.dataset.light = assetUrl(asset);
+    heroImage.dataset.dark = assetUrl(asset + "-dark");
     heroImage.src = themedSource(heroImage);
     heroImage.alt = `Bubble Tax ${previewMode === "notch" ? "notch preview" : "on macOS"} showing ${example.name} quota left with sample data.`;
     heroImage.closest("[data-image]").dataset.image = heroImage.getAttribute("src");
@@ -115,10 +157,10 @@
   });
   // Warm both appearances so changing services or themes doesn't flash a blank image.
   quotaExamples.forEach(example => {
-    ["", "-dark"].forEach(suffix => { const image = new Image(); image.src = `assets/${example.image}${suffix}.png`; });
+    ["", "-dark"].forEach(suffix => { const image = new Image(); image.src = assetUrl(example.image + suffix); });
   });
   ["claude", "openai"].forEach(provider => ["", "-dark"].forEach(suffix => {
-    const image = new Image(); image.src = `assets/notch-${provider}${suffix}.png`;
+    const image = new Image(); image.src = assetUrl(`notch-${provider}${suffix}`);
   }));
   renderQuota();
   setInterval(async () => {

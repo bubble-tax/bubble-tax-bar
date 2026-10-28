@@ -4,27 +4,27 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f7f6f2">
-  <meta name="description" content="Bubble Tax is a Mac menu-bar app for AI plans you pay for and barely use. See unused quota, compare smaller plans and record completed changes.">
-  <meta property="og:title" content="Bubble Tax — Stop sponsoring the AI bubble.">
-  <meta property="og:description" content="A Mac menu-bar app for AI plans you pay for and barely use.">
+  <meta name="description" content="Compare five-hour and weekly AI quota consumption. Choose where your next task goes and set aside headroom, right from your Mac menu bar or notch.">
+  <meta property="og:title" content="Bubble Tax — Know your limits. Plan your work.">
+  <meta property="og:description" content="Compare five-hour and weekly quota. Then give your next task some room.">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Bubble Tax">
   <meta property="og:locale" content="en_US">
   <meta property="og:url" content="https://bubble-tax.github.io/">
-  <meta property="og:image" content="https://bubble-tax.github.io/assets/bubble-tax-og.png">
-  <meta property="og:image:secure_url" content="https://bubble-tax.github.io/assets/bubble-tax-og.png">
+  <meta property="og:image" content="https://bubble-tax.github.io/assets/bubble-tax-og.png?v=20261028">
+  <meta property="og:image:secure_url" content="https://bubble-tax.github.io/assets/bubble-tax-og.png?v=20261028">
   <meta property="og:image:type" content="image/png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="Bubble Tax: Stop sponsoring the AI bubble. A black-and-white cartoon coin holds an inflated bubble beside the headline.">
+  <meta property="og:image:alt" content="Bubble Tax: compare quota consumption and plan your AI work. A black-and-white comic mascot accompanies the headline.">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Bubble Tax — Stop sponsoring the AI bubble.">
-  <meta name="twitter:description" content="A Mac menu-bar app for AI plans you pay for and barely use.">
-  <meta name="twitter:image" content="https://bubble-tax.github.io/assets/bubble-tax-og.png">
-  <meta name="twitter:image:alt" content="Bubble Tax: Stop sponsoring the AI bubble. A black-and-white cartoon coin holds an inflated bubble beside the headline.">
+  <meta name="twitter:title" content="Bubble Tax — Know your limits. Plan your work.">
+  <meta name="twitter:description" content="Compare five-hour and weekly quota. Then give your next task some room.">
+  <meta name="twitter:image" content="https://bubble-tax.github.io/assets/bubble-tax-og.png?v=20261028">
+  <meta name="twitter:image:alt" content="Bubble Tax: compare quota consumption and plan your AI work. A black-and-white comic mascot accompanies the headline.">
   <link rel="canonical" href="https://bubble-tax.github.io/">
-  <title>Bubble Tax — Stop sponsoring the AI bubble.</title>
-  <link rel="icon" href="assets/donationAngel.png" type="image/png">
+  <title>Bubble Tax — Know your limits. Plan your work.</title>
+  <link rel="icon" href="assets/donationAngel.png?v=20261028" type="image/png">
   <script>
     (() => {
       let theme;
@@ -32,9 +32,10 @@
       document.documentElement.dataset.theme = theme === 'light' || theme === 'dark' ? theme : (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
     })();
   </script>
-  <link rel="stylesheet" href="styles.css?v=bc57fe7d9cbe">
-  <script src="config.js?v=b2d70c06b20d" defer></script>
-  <script src="app.js?v=650d760d89d9" defer></script>
+  <link rel="stylesheet" href="styles.css?v=0cb568b79215">
+  <script src="config.js?v=349590f04ef7" defer></script>
+  <script src="analytics.js?v=3bac31c7a50d" defer></script>
+  <script src="app.js?v=bb21b4cd96c7" defer></script>
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
@@ -45,11 +46,11 @@
   <main id="main">
     <section class="hero wrap" aria-labelledby="hero-title">
       <div class="hero-copy">
-        <h1 id="hero-title">Stop sponsoring<br>the AI bubble.</h1>
-        <p class="hero-description">A Mac menu-bar app for AI plans you pay for and barely use.</p>
+        <h1 id="hero-title">Know your limits.<br>Plan your work.</h1>
+        <p class="hero-description">Compare five-hour and weekly quota. Then give your next task some room.</p>
         <a class="button ink" href="#get-app">Get the Mac app</a>
         <p class="fine-print">macOS 14+ · Apple silicon</p>
-        <p class="hero-aside">Your auto-renewal has excellent attendance.</p>
+        <p class="hero-aside">Your subscriptions have limits. Your to-do list doesn’t.</p>
       </div>
       <figure class="hero-visual">
         <div class="preview-modes" role="group" aria-label="App placement">
@@ -63,50 +64,51 @@
               <span class="finder-label">Finder</span><span class="mac-menu-word">File</span><span class="mac-menu-word">Edit</span><span class="mac-menu-word">View</span>
             </div>
             <div class="mac-status-menu">
-              <button id="mac-quota-toggle" class="mac-quota" aria-label="Close Bubble Tax preview" aria-expanded="true" aria-controls="mac-popover" aria-describedby="mac-quota-label"><span id="mac-quota-label" class="mac-quota-label">† Claude · Weekly quota 88% left</span><span class="mac-quota-sizer" aria-hidden="true">† Antigravity · Weekly quota 93% left</span></button>
+              <button id="mac-quota-toggle" class="mac-quota" aria-label="Close Bubble Tax preview" aria-expanded="true" aria-controls="mac-popover" aria-describedby="mac-quota-label"><span id="mac-quota-label" class="mac-quota-label">† Claude · Weekly quota 44% left</span><span class="mac-quota-sizer" aria-hidden="true">† Claude · Weekly quota 44% left</span></button>
               <svg class="mac-status-icon" aria-hidden="true" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 7.5q8-7 16 0M5 10.5q5-4.5 10 0M8 13.5q2-2 4 0"/></g><circle cx="10" cy="16" r="1" fill="currentColor"/></svg>
               <svg class="mac-status-icon mac-control" aria-hidden="true" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.3"><rect x="2" y="3" width="16" height="6" rx="3"/><rect x="2" y="11" width="16" height="6" rx="3"/></g><circle cx="6" cy="6" r="2" fill="currentColor"/><circle cx="14" cy="14" r="2" fill="currentColor"/></svg>
               <span class="mac-clock" aria-hidden="true">Sat 9:41 AM</span>
             </div>
           </div>
           <button id="notch-quota-toggle" class="notch-quota" aria-expanded="true" aria-controls="mac-popover" aria-label="Close notch preview">
-            <span id="notch-service">Claude</span><span class="notch-camera" aria-hidden="true"></span><span id="notch-quota-label">Weekly 88% left</span>
+            <span id="notch-service">Claude</span><span class="notch-camera" aria-hidden="true"></span><span id="notch-quota-label">Weekly 44% left</span>
           </button>
           <div class="mac-wallpaper" aria-hidden="true"></div>
           <div id="mac-popover" class="mac-popover">
-            <button class="image-button" data-image="assets/notch-claude.png" data-caption="Notch preview — native macOS app capture, sample data." aria-label="Enlarge the actual macOS overview screenshot"><img class="app-capture" data-light="assets/notch-claude.png" data-dark="assets/notch-claude-dark.png" src="assets/notch-claude.png" alt="Bubble Tax notch preview showing Claude weekly quota with sample data." width="860" height="1240" fetchpriority="high"></button>
+            <button class="image-button" data-image="assets/notch-claude.png?v=20261028" data-caption="Notch preview — native macOS app capture, sample data." aria-label="Enlarge the actual macOS overview screenshot"><img class="app-capture" data-light="assets/notch-claude.png?v=20261028" data-dark="assets/notch-claude-dark.png?v=20261028" src="assets/notch-claude.png?v=20261028" alt="Bubble Tax notch preview showing Claude weekly quota with sample data." width="860" height="1240" fetchpriority="high"></button>
           </div>
         </div>
         <figcaption><span id="preview-caption">Notch preview · native app capture · sample data.</span><span>Paid plans flip every 8 seconds. Click the quota to open or close.</span></figcaption>
       </figure>
     </section>
-    <p class="services wrap">Works with ChatGPT / Codex, Claude, Cursor, GitHub Copilot and Antigravity. Available data depends on your account. Click-to-expand MacBook notch support; menu bar on other displays.</p>
+    <p class="services wrap">Compare and plan with Claude and Codex. Track available quota for Cursor, GitHub Copilot and Antigravity too. Lives in your menu bar or MacBook notch.</p>
     <section id="inside" class="inside wrap" aria-labelledby="inside-title">
       <h2 id="inside-title">A look inside</h2>
       <div class="tour-tabs" role="group" aria-label="Choose an app screenshot">
-        <button class="tour-tab active" data-screen="weekly-pattern" aria-pressed="true">Weekly pattern</button>
-        <button class="tour-tab" data-screen="model-windows" aria-pressed="false">Codex windows</button>
+        <button class="tour-tab active" data-screen="model-windows" aria-pressed="true">Window comparison</button>
         <button class="tour-tab" data-screen="claude-windows" aria-pressed="false">Claude windows</button>
-        <button class="tour-tab" data-screen="unused-history" aria-pressed="false">Unused history</button>
-        <button class="tour-tab" data-screen="downgrade" aria-pressed="false">Smaller plans</button>
+        <button class="tour-tab" data-screen="use-next" aria-pressed="false">Use next</button>
+        <button class="tour-tab" data-screen="reserve" aria-pressed="false">Reserve</button>
+        <button class="tour-tab" data-screen="forecast" aria-pressed="false">Forecast</button>
+        <button class="tour-tab" data-screen="patterns" aria-pressed="false">Patterns</button>
+        <button class="tour-tab" data-screen="plans" aria-pressed="false">Plans</button>
         <button class="tour-tab" data-screen="savings" aria-pressed="false">Savings</button>
-        <button class="tour-tab" data-screen="connections" aria-pressed="false">Connections</button>
-        <button class="tour-tab" data-screen="enterprise" aria-pressed="false">Work accounts</button>
+        <button class="tour-tab" data-screen="connections" aria-pressed="false">Settings</button>
       </div>
       <div class="app-tour">
         <div class="tour-copy">
           <div class="tour-description" aria-live="polite" aria-atomic="true">
-            <h3 id="tour-title">Your subscription needs a second job.</h3>
-            <p id="tour-body">See the daily pace needed to finish your remaining weekly quota. If keeping up sounds like work, the smaller plan might be enough.</p>
-            <p id="tour-note" class="tour-note">Claude and Codex · an estimate from observed use, including idle time. Too little data stays unknown.</p>
+            <h3 id="tour-title">Five hours. One weekly budget.</h3>
+            <p id="tour-body">See how much weekly quota each five-hour window actually consumed. Compare recorded meter changes with model usage from logs before planning the next task.</p>
+            <p id="tour-note" class="tour-note">Claude and Codex · observed percentage-point changes, not a fixed token-to-quota formula.</p>
           </div>
         </div>
         <figure class="tour-shot">
-          <button id="tour-image-button" class="image-button" data-image="assets/weekly-pattern.png" data-caption="Weekly pattern — actual macOS app, sample data." aria-label="Enlarge the selected app screenshot"><img id="tour-image" class="app-capture" data-light="assets/weekly-pattern.png" data-dark="assets/weekly-pattern-dark.png" src="assets/weekly-pattern.png" alt="Bubble Tax on macOS estimating 7.2 hours per day to finish the weekly Codex quota, with sample data." width="860" height="1188"></button>
-          <figcaption><span id="shot-label">Weekly pattern</span><span>Sample data · click for original</span></figcaption>
+          <button id="tour-image-button" class="image-button" data-image="assets/model-windows.png?v=20261028" data-caption="Window comparison — actual macOS app, sample data." aria-label="Enlarge the selected app screenshot"><img id="tour-image" class="app-capture" data-light="assets/model-windows.png?v=20261028" data-dark="assets/model-windows-dark.png?v=20261028" src="assets/model-windows.png?v=20261028" alt="Bubble Tax comparing five-hour Codex windows with weekly quota consumption, using sample data." width="860" height="1232"></button>
+          <figcaption><span id="shot-label">Window comparison</span><span>Sample data · click for original</span></figcaption>
         </figure>
       </div>
-      <details class="data-note"><summary>About the data</summary><p>The app reads available usage through your signed-in provider sessions, with local Claude / Codex records as fallback. Claude and Codex window history adds local model context. The main screen estimates the daily pattern needed to finish your weekly quota. Usage history and completed-change records stay on your Mac. Missing readings stay unknown; Codex quota doesn't represent every ChatGPT feature.</p><p>Prices are published US monthly list prices, not your invoice. Savings are projected rate reductions. You cancel or downgrade with the provider, then record the change here. Work budgets stay out of personal savings.</p></details>
+      <details class="data-note"><summary>About the data</summary><p>Claude and Codex comparisons use paired five-hour and weekly quota readings. Model names come from Claude Code and Codex logs stored on your Mac. Those logs add model and cache context; they do not reveal the provider’s exact quota formula or prove account-wide token attribution. Unobserved periods stay unknown. Codex quota does not cover every ChatGPT feature.</p><p>Task suggestions use fresh headroom and your service preferences. Reservations are local planning targets, not provider-side locks or transfers. Forecasts need enough observed history and remain estimates. Personal and work budgets stay separate.</p><p>Usage history, reservations and completed-change records stay on your Mac. Prices are published US list prices, not your invoice. Savings are projected rate reductions from changes you record after completing them with the provider.</p><p>The website uses Google Analytics for visits and feature and installation-link clicks. App usage records are not sent to website analytics. Global Privacy Control disables website analytics.</p></details>
     </section>
     <section id="get-app" class="get-app wrap" aria-labelledby="download-title">
       <div><h2 id="download-title">Bubble Tax for Mac</h2><p id="release-status">v0.1.0 Preview · Build 13</p><p class="fine-print">macOS 14+ · Apple silicon<br>Developer ID signed · Apple notarized.<br><a class="release-notes-link" href="https://github.com/bubble-tax/bubble-tax-bar/releases/tag/v0.1.0-build.13">Release notes &amp; installation</a></p></div>

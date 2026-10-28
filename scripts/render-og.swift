@@ -21,9 +21,9 @@ func text(_ value: String, x: CGFloat, top: CGFloat, width: CGFloat, height: CGF
         withAttributes: [.font: NSFont.systemFont(ofSize: size, weight: weight), .foregroundColor: color])
 }
 text("Bubble Tax", x: 64, top: 55, width: 700, height: 55, size: 36, weight: .bold)
-text("Stop sponsoring", x: 64, top: 190, width: 740, height: 100, size: 76, weight: .bold)
-text("the AI bubble.", x: 64, top: 275, width: 740, height: 100, size: 76, weight: .bold)
-text("Unused quota. Smaller plans. Less money burned.", x: 64, top: 399,
+text("Know your limits.", x: 64, top: 190, width: 740, height: 100, size: 64, weight: .bold)
+text("Plan your work.", x: 64, top: 275, width: 740, height: 100, size: 64, weight: .bold)
+text("Compare quota. Allocate work. Keep headroom.", x: 64, top: 399,
      width: 740, height: 44, size: 25, color: muted)
 text("A Mac menu-bar app for AI subscriptions.", x: 64, top: 535,
      width: 950, height: 40, size: 22, color: muted)
